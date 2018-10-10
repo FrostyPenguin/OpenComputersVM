@@ -2,31 +2,28 @@ package emulator.computer;
 
 import emulator.computer.API.Component;
 import emulator.computer.API.Computer;
+import emulator.computer.API.Unicode;
 import emulator.computer.components.GPU;
+import emulator.computer.components.Keyboard;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.util.Duration;
 import org.luaj.vm2.Globals;
-import org.luaj.vm2.LuaError;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 public class Machine extends Thread {
     public String initCode;
-    
-    private double screenScale = 1;
     private Pane screensPane;
-    
-    private double oldMouseX, oldMouseY;
-    private boolean mouseClicked;
 
     public Machine(Pane screensPane, String initCode) {
         this.screensPane = screensPane;
         this.initCode = initCode;
-    }
-    
-    private void updateScale(ImageView imageView) {
-        imageView.setScaleX(screenScale);
-        imageView.setScaleY(screenScale);
+        
+        start();
     }
     
     @Override
@@ -35,55 +32,31 @@ public class Machine extends Thread {
             ImageView imageView = new ImageView();
             imageView.setLayoutX(0);
             imageView.setLayoutY(0);
-            updateScale(imageView);
 
             Platform.runLater(() -> {
-                imageView.setOnMousePressed(event -> {
-                    imageView.toFront();
-                    
-                    oldMouseX = event.getScreenX();
-                    oldMouseY = event.getScreenY();
-                    mouseClicked = true;
-                });
-
-                imageView.setOnMouseDragged(event -> {
-                    if (mouseClicked) {
-                        double newX = event.getScreenX(), newY = event.getScreenY();
-
-                        imageView.setX(imageView.getX() + newX - oldMouseX);
-                        imageView.setY(imageView.getY() + newY - oldMouseY);
-
-                        oldMouseX = newX;
-                        oldMouseY = newY;
-                    }
-                });
-
-                imageView.setOnMouseReleased(event -> {
-                    mouseClicked = false;
-                });
-                
-                imageView.setOnScroll(event -> {
-                    imageView.toFront();
-                    
-                    screenScale *= event.getDeltaY() > 0 ? 1.1 : 0.9;
-                    updateScale(imageView);
-                });
-
                 screensPane.getChildren().add(imageView);
             });
 
-            Globals globals = JsePlatform.standardGlobals();
+            Keyboard keyboard = new Keyboard();
+            GPU gpu = new GPU(imageView, 80, 25);
+            
+            Signal signalThread = new Signal(keyboard, imageView);
+            Computer computer = new Computer(signalThread);
 
             Component component = new Component();
-            component.add(new GPU(imageView, 80, 25));
+            component.add(gpu);
+            component.add(keyboard);
+
+            Globals globals = JsePlatform.standardGlobals();
             
+            globals.set("computer", computer);
             globals.set("component", component);
-            globals.set("computer", new Computer());
+            globals.set("unicode", new Unicode());
 
             globals.load(initCode).call();
         }
-        catch (LuaError e) {
-            System.out.println("Lua error: " + e.getMessage());
+        catch (Exception e) {
+            System.out.println("VM runtime error: " + e.getMessage());
         }
     }
 }

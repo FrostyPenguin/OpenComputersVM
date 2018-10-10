@@ -1,6 +1,6 @@
 package emulator.computer.API;
 
-import emulator.computer.components.ComponentBase;
+import emulator.computer.ComponentBase;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;

@@ -1,4 +1,4 @@
-package emulator.computer.components;
+package emulator.computer;
 
 import org.luaj.vm2.LuaTable;
 

@@ -3,6 +3,7 @@ package emulator.computer.components;
 import emulator.Color;
 import emulator.Glyph;
 import emulator.Pixel;
+import emulator.computer.ComponentBase;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;

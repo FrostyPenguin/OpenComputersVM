@@ -16,7 +16,7 @@ public class Glyph {
         this.pixels = new boolean[this.width * HEIGHT];
     }
 
-    public static void loadMap() {
+    public static void initialize() {
         try {
             for (int i = 0; i < map.length; i++) {
                 map[i] = new Glyph(8);
