@@ -1,8 +1,8 @@
 package emulator.computer.components;
 
-import emulator.Color;
-import emulator.Glyph;
-import emulator.Pixel;
+import emulator.computer.Color;
+import emulator.computer.Glyph;
+import emulator.computer.Pixel;
 import emulator.computer.ComponentBase;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
@@ -132,13 +132,12 @@ public class GPU extends ComponentBase {
                 int javaX = x.toint() - 1, javaY = y.toint() - 1;
                 String javaText = text.tojstring();
 
-                for (int i = 0; i < text.length(); i++) {
-                    pixels[javaY][javaX].code = javaText.codePointAt(i);
-                    pixels[javaY][javaX].foreground = foreground;
+                for (int i = 0; i < javaText.length(); i++) {
+                    rawSet(javaX, javaY, background, foreground, javaText.codePointAt(i));
 
                     javaX++;
                 }
-                
+
                 update();
 
                 return LuaValue.NIL;

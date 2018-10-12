@@ -1,4 +1,4 @@
-package emulator;
+package emulator.computer;
 
 public class Color {
     public byte red, green, blue;

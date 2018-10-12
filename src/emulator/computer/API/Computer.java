@@ -7,11 +7,15 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.ZeroArgFunction;
 
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Computer extends LuaTable {
-    private long startTime = System.currentTimeMillis();
+    private static final int totalMemory = 1024 * 1024 * 4;
+    private static final int
+        freeMemoryMin = (int) (totalMemory * 0.1),
+        freeMemoryMax = (int) (totalMemory * 0.5);
     
-    private Object mutex = new Object();
+    private long startTime = System.currentTimeMillis();
     
     public Computer(Signal signal) {
         set("uptime", new ZeroArgFunction() {
@@ -31,6 +35,18 @@ public class Computer extends LuaTable {
                 signal.push(data);
                 
                 return LuaValue.NIL;
+            }
+        });
+        
+        set("totalMemory", new ZeroArgFunction() {
+            public LuaValue call() {
+                return LuaValue.valueOf(totalMemory);
+            }
+        });
+
+        set("freeMemory", new ZeroArgFunction() {
+            public LuaValue call() {
+                return LuaValue.valueOf(ThreadLocalRandom.current().nextInt(freeMemoryMin, freeMemoryMax));
             }
         });
     }

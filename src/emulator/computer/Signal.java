@@ -1,27 +1,26 @@
 package emulator.computer;
 
 import emulator.computer.components.Keyboard;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import emulator.computer.components.Screen;
 import javafx.application.Platform;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.util.Duration;
+import javafx.scene.input.MouseEvent;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 
 import java.util.HashMap;
 
 public class Signal extends Thread {
-    public Varargs[] stack = new Varargs[256];
-
-    private double mouseOldX, mouseOldY;
-    private boolean mouseClicked;
+    private Varargs[] stack = new Varargs[256];
     
     private HashMap<KeyCode, Boolean> keyCodes = new HashMap<>();
     private Keyboard keyboard;
+    private Screen screen;
+    private ImageView imageView;
+    
+    private double lastX, lastY;
     
     public void push(Varargs signal) {
         int nullIndex = -1;
@@ -48,19 +47,6 @@ public class Signal extends Thread {
             long deadline = infinite ? 0 : System.currentTimeMillis() + (long) (timeout * 1000);
 
             while (infinite || System.currentTimeMillis() <= deadline) {
-                try {
-                    System.out.println("Waiting");
-                    if (infinite) {
-                        wait();
-                    } 
-                    else {
-                        wait(deadline - System.currentTimeMillis());
-                    }
-                }
-                catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
                 if (stack[0] != null) {
                     Varargs result = stack[0];
 
@@ -77,6 +63,19 @@ public class Signal extends Thread {
 
                     return result;
                 }
+
+                try {
+//                    System.out.println("Waiting");
+                    if (infinite) {
+                        wait();
+                    }
+                    else {
+                        wait(deadline - System.currentTimeMillis());
+                    }
+                }
+                catch (InterruptedException e) {
+                    System.out.println("Machine thread was interrupted");
+                }
             }
 
             return LuaValue.NIL;
@@ -88,80 +87,88 @@ public class Signal extends Thread {
     }
 
     private void pushKeySignal(KeyEvent event, String name) {
-        Key key = KeyMap.get(event.getCode());
+//        System.out.println("key text: " + event.getText() + ", key code name: " + event.getCode().getName());
         
+        String text = event.getText();
+        int OCKeyboardCode = KeyMap.get(event.getCode());
+                
         push(LuaValue.varargsOf(new LuaValue[] {
             LuaValue.valueOf(name),
             keyboard.get("address"),
-            LuaValue.valueOf(isKeyPressed(KeyCode.SHIFT) ? key.upper : key.unicode),
-            LuaValue.valueOf(key.ascii)
+            LuaValue.valueOf(text.length() > 0 ? text.codePointAt(0) : OCKeyboardCode),
+            LuaValue.valueOf(OCKeyboardCode)
         }));
+
+//        System.out.println("SIGNALSTACK: ");
+//        for (Varargs v : stack)
+//            if (v != null)
+//                System.out.println(v.tojstring());
     }
     
-    public Signal(Keyboard keyboard, ImageView imageView) {
+    private int getOCButton(MouseEvent event) {
+        switch (event.getButton()) {
+            case MIDDLE: return 3;
+            case SECONDARY: return 2;
+            default: return 1;
+        }
+    }
+
+    private void pushTouchSignal(double sceneX, double sceneY, int state, String name) {
+        imageView.requestFocus();
+        
+        lastX = sceneX;
+        lastY = sceneY;
+        
+        double
+            x = (sceneX - imageView.getX()) / Glyph.WIDTH + 1,
+            y = (sceneY - imageView.getY()) / Glyph.HEIGHT + 1;
+
+        push(LuaValue.varargsOf(new LuaValue[] {
+            LuaValue.valueOf(name),
+            screen.get("address"),
+            LuaValue.valueOf(screen.precise ? x : (int) x),
+            LuaValue.valueOf(screen.precise ? y : (int) y),
+            LuaValue.valueOf(state),
+            LuaValue.valueOf("Player")
+        }));
+    } 
+    
+    public Signal(ImageView imageView, Keyboard keyboard, Screen screen) {
         super();
         this.keyboard = keyboard;
+        this.screen = screen;
+        this.imageView = imageView;
 
         Platform.runLater(() -> {
             imageView.setOnKeyPressed(event -> {
                 // Иначе оно спамит даунами
                 if (!isKeyPressed(event.getCode())) {
-//                    System.out.println("Key down: " + event.getText());
-
                     keyCodes.put(event.getCode(), true);
                     pushKeySignal(event, "key_down");
                 }
             });
 
             imageView.setOnKeyReleased(event -> {
-//                System.out.println("Key up: " + event.getText());
-
                 keyCodes.put(event.getCode(), false);
                 pushKeySignal(event, "key_up");
             });
             
             imageView.setOnMousePressed(event -> {
-                imageView.toFront();
-                imageView.requestFocus();
-
-                mouseOldX = event.getScreenX();
-                mouseOldY = event.getScreenY();
-                mouseClicked = true;
+                pushTouchSignal(event.getSceneX(), event.getSceneY(), getOCButton(event), "touch");
             });
 
             imageView.setOnMouseDragged(event -> {
-                if (mouseClicked) {
-                    double newX = event.getScreenX(), newY = event.getScreenY();
-
-                    imageView.setX(imageView.getX() + newX - mouseOldX);
-                    imageView.setY(imageView.getY() + newY - mouseOldY);
-
-                    mouseOldX = newX;
-                    mouseOldY = newY;
-                }
+                double sceneX = event.getSceneX(), sceneY = event.getSceneY();
+                if (screen.precise || (Math.abs(sceneX - lastX) >= Glyph.WIDTH || Math.abs(sceneY - lastY) >= Glyph.HEIGHT))
+                    pushTouchSignal(sceneX, sceneY, getOCButton(event), "drag");
             });
 
             imageView.setOnMouseReleased(event -> {
-                mouseClicked = false;
+                pushTouchSignal(event.getSceneX(), event.getSceneY(), getOCButton(event), "drop");
             });
 
             imageView.setOnScroll(event -> {
-                imageView.toFront();
-
-                double scale = event.getDeltaY() > 0 ? 1.2 : 0.8;
-
-                new Timeline(
-                    new KeyFrame(
-                        new Duration(0),
-                        new KeyValue(imageView.scaleXProperty(), imageView.getScaleX()),
-                        new KeyValue(imageView.scaleYProperty(), imageView.getScaleY())
-                    ),
-                    new KeyFrame(
-                        new Duration(50),
-                        new KeyValue(imageView.scaleXProperty(), imageView.getScaleX() * scale),
-                        new KeyValue(imageView.scaleYProperty(), imageView.getScaleY() * scale)
-                    )
-                ).play();
+                pushTouchSignal(event.getSceneX(), event.getSceneY(), event.getDeltaY() > 0 ? 1 : -1, "scroll");
             });
 
             imageView.requestFocus();

@@ -1,4 +1,6 @@
-package emulator;
+package emulator.computer;
+
+import emulator.computer.Color;
 
 public class Pixel {
     public int code;

@@ -1,4 +1,6 @@
-package emulator;
+package emulator.computer;
+
+import emulator.Main;
 
 import java.io.BufferedReader;
 import java.io.IOException;

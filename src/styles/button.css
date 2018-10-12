@@ -1,0 +1,17 @@
+.button {
+    -fx-background-image: url("resources/button_power_default.png");
+    -fx-background-repeat: no-repeat;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-background-color: transparent;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+
+.button:hover {
+     -fx-background-image: url("resources/button_power_hovered.png");
+}
+
+.button:pressed {
+    -fx-background-image: url("resources/button_power_on.png");
+}
