@@ -1,11 +1,13 @@
 package VM;
 
 import VM.API.Component;
-import VM.API.Computer;
 import VM.API.Unicode;
 import VM.components.GPU;
 import VM.components.Keyboard;
 import VM.components.Screen;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
@@ -15,10 +17,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import org.luaj.vm2.Globals;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Varargs;
+import javafx.util.Duration;
+import org.luaj.vm2.*;
+import org.luaj.vm2.lib.ZeroArgFunction;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import java.io.File;
@@ -26,23 +27,32 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Machine {
+    private static final double energy = 10000;
+    private static final int totalMemory = 1024 * 1024 * 4;
+    private static final int
+        freeMemoryMin = (int) (totalMemory * 0.1),
+        freeMemoryMax = (int) (totalMemory * 0.5);
+    
     public static Machine current;
+    
     public boolean running = false;
+    public long startTime;
     
     private GPU gpuComponent;
     private Screen screenComponent;
     private Keyboard keyboardComponent;
-    private Player computerRunningPlayer;
-    private ScreenWidget screenWidget;
-
+    private Computer computerComponent;
+    
     private LuaThread luaThread;
     private SignalThread signalThread;
     
-    private Varargs[] signalStack = new Varargs[256];
+    private Player computerRunningPlayer;
+    private ScreenWidget screenWidget;
+    private Varargs[] signalStack;
     private HashMap<KeyCode, Boolean> pressedKeyCodes = new HashMap<>();
-
     private double lastClickX, lastClickY;
 
     public Machine() {
@@ -85,6 +95,7 @@ public class Machine {
         
         keyboardComponent = new Keyboard();
         screenComponent = new Screen();
+        computerComponent = new Computer();
     }
 
     public void focusScreenWidget(boolean force) {
@@ -107,8 +118,6 @@ public class Machine {
         @Override
         public void run() {
             try {
-                Computer computer = new Computer(signalThread);
-                
                 Component component = new Component();
                 component.add(gpuComponent);
                 component.add(keyboardComponent);
@@ -116,7 +125,7 @@ public class Machine {
 
                 Globals globals = JsePlatform.standardGlobals();
 
-                globals.set("computer", computer);
+                globals.set("computer", computerComponent);
                 globals.set("component", component);
                 globals.set("unicode", new Unicode());
                 
@@ -148,6 +157,7 @@ public class Machine {
     public void boot() {
         try {
             running = true;
+            startTime = System.currentTimeMillis();
 
             String code = new String(Files.readAllBytes(new File(StaticControls.EEPROMPathTextField.getText()).toPath()), StandardCharsets.UTF_8);
 
@@ -170,6 +180,8 @@ public class Machine {
 
     public class SignalThread extends Thread {
         public SignalThread() {
+            signalStack = new Varargs[256];
+            
             Platform.runLater(() -> {
                 // Ивенты клавиш всему скринвиджету
                 screenWidget.setOnKeyPressed(event -> {
@@ -338,15 +350,86 @@ public class Machine {
 
         public void applyScale() {
             double
-                width = gpuComponent.GlyphWIDTHMulWidth * scale,
-                height = gpuComponent.GlyphHEIGHTMulHeight * scale;
+                newWidth = gpuComponent.GlyphWIDTHMulWidth * scale,
+                newHeight = gpuComponent.GlyphHEIGHTMulHeight * scale;
 
-            setPrefSize(width, height + label.getPrefHeight());
+            new Timeline(
+                new KeyFrame(Duration.ZERO,
+                    new KeyValue(prefWidthProperty(), getPrefWidth()),
+                    new KeyValue(prefHeightProperty(), getPrefHeight()),
+                    
+                    new KeyValue(imageView.fitWidthProperty(), imageView.getFitWidth()),
+                    new KeyValue(imageView.fitHeightProperty(), imageView.getFitHeight()),
 
-            imageView.setFitWidth(width);
-            imageView.setFitHeight(height);
+                    new KeyValue(label.prefWidthProperty(), label.getPrefWidth())
+                ),
+                new KeyFrame(new Duration(100),
+                    new KeyValue(prefWidthProperty(), newWidth + label.getPrefHeight()),
+                    new KeyValue(prefHeightProperty(), newHeight),
 
-            label.setPrefWidth(width);
+                    new KeyValue(imageView.fitWidthProperty(), newWidth),
+                    new KeyValue(imageView.fitHeightProperty(), newHeight),
+
+                    new KeyValue(label.prefWidthProperty(), newWidth)
+                )
+            ).play();
+        }
+    }
+
+    public class Computer extends ComponentBase {
+        public Computer() {
+            super("computer");
+            
+            set("isRobot", LuaValues.FALSE_FUNCTION);
+            set("users", LuaValues.EMPTY_TABLE);
+            set("addUser", LuaValues.TRUE_FUNCTION);
+            set("removeUser", LuaValues.TRUE_FUNCTION);
+            
+            ZeroArgFunction energyFunction = new ZeroArgFunction() {
+                public LuaValue call() {
+                    return LuaValue.valueOf(energy);
+                }
+            };
+            set("energy", energyFunction);
+            set("maxEnergy", energyFunction);
+
+            set("realTime", new ZeroArgFunction() {
+                public synchronized LuaValue call() {
+                    return LuaValue.valueOf(System.currentTimeMillis() / 1000f);
+                }
+            });
+
+            set("uptime", new ZeroArgFunction() {
+                public synchronized LuaValue call() {
+                    return LuaValue.valueOf((System.currentTimeMillis() - startTime) / 1000f);
+                }
+            });
+
+            set("pullSignal", new LuaFunction() {
+                public synchronized Varargs invoke(Varargs timeout) {
+                    return signalThread.pull(timeout.arg(1).isnil() ? -1 : timeout.arg(1).tofloat());
+                }
+            });
+
+            set("pushSignal", new LuaFunction() {
+                public synchronized Varargs invoke(Varargs data) {
+                    signalThread.push(data);
+
+                    return LuaValue.NIL;
+                }
+            });
+
+            set("totalMemory", new ZeroArgFunction() {
+                public LuaValue call() {
+                    return LuaValue.valueOf(totalMemory);
+                }
+            });
+
+            set("freeMemory", new ZeroArgFunction() {
+                public LuaValue call() {
+                    return LuaValue.valueOf(ThreadLocalRandom.current().nextInt(freeMemoryMin, freeMemoryMax));
+                }
+            });
         }
     }
 }
