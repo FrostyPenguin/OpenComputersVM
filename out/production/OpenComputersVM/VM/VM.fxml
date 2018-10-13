@@ -19,7 +19,7 @@
   </rowConstraints>
    <children>
       <Pane fx:id="screensPane" />
-      <VBox fx:id="toolVBox" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" style="-fx-background-color: #2D2D2D;" GridPane.columnIndex="1">
+      <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" style="-fx-background-color: #2D2D2D;" GridPane.columnIndex="1">
          <children>
             <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="228.0" prefWidth="294.0">
                <children>
@@ -155,7 +155,7 @@
                         </Pane>
                      </children>
                   </GridPane>
-                  <ToggleButton fx:id="powerButton" layoutX="120.0" layoutY="156.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onMousePressed="#onPowerButtonTouch" prefHeight="54.0" prefWidth="54.0" styleClass="eblo" stylesheets="@../styles/button.css" />
+                  <ToggleButton fx:id="powerButton" layoutX="120.0" layoutY="156.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onMousePressed="#onPowerButtonTouch" prefHeight="54.0" prefWidth="54.0" styleClass="eblo" stylesheets="@../styles/powerButton.css" />
                </children>
             </Pane>
             <GridPane>

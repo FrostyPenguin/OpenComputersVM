@@ -1,6 +1,6 @@
 package VM.API;
 
-import VM.Signal;
+import VM.Machine;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -17,7 +17,7 @@ public class Computer extends LuaTable {
     
     private long startTime = System.currentTimeMillis();
     
-    public Computer(Signal signal) {
+    public Computer(Machine.SignalThread signalThread) {
         set("uptime", new ZeroArgFunction() {
             public synchronized LuaValue call() {
                 return LuaValue.valueOf((System.currentTimeMillis() - startTime) / 1000f);
@@ -26,13 +26,13 @@ public class Computer extends LuaTable {
         
         set("pullSignal", new LuaFunction() {
             public synchronized Varargs invoke(Varargs timeout) {
-               return signal.pull(timeout.arg(1).isnil() ? -1 : timeout.arg(1).tofloat());
+               return signalThread.pull(timeout.arg(1).isnil() ? -1 : timeout.arg(1).tofloat());
             }
         });
         
         set("pushSignal", new LuaFunction() {
             public synchronized Varargs invoke(Varargs data) {
-                signal.push(data);
+                signalThread.push(data);
                 
                 return LuaValue.NIL;
             }

@@ -1,7 +1,7 @@
 <component name="libraryTable">
-  <library name="vorbisspi1.0.3">
+  <library name="commons-text-1.5">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/src/libraries/vorbisspi1.0.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/libraries/commons-text-1.5.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

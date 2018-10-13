@@ -8,8 +8,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="luaj-jse-3.0.1" level="project" />
-    <orderEntry type="library" name="jnativehook-2.1.0" level="project" />
-    <orderEntry type="library" name="vorbisspi1.0.3" level="project" />
-    <orderEntry type="library" name="jogg-0.0.7" level="project" />
+    <orderEntry type="library" name="commons-text-1.5" level="project" />
   </component>
 </module>

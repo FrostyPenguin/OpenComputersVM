@@ -9,17 +9,14 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class Main extends Application {
     public GridPane windowGridPane;
     public ToggleButton powerButton;
-    public VBox toolVBox;
     public Pane screensPane;
     public TextField EEPROMPathTextField, HDDPathTextField;
-    
-    public static Machine currentMachine;
     
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -27,7 +24,7 @@ public class Main extends Application {
         Scene scene = new Scene(root);
 
         primaryStage.setScene(scene);
-        primaryStage.setTitle("JavaFX OpenComputers Emulator");
+        primaryStage.setTitle("OpenComputers VM");
         primaryStage.show();
     }
 
@@ -39,6 +36,11 @@ public class Main extends Application {
         Glyph.initialize();
         KeyMap.initialize();
         
+        StaticControls.powerButton = powerButton;
+        StaticControls.screensPane = screensPane;
+        StaticControls.EEPROMPathTextField = EEPROMPathTextField;
+        StaticControls.HDDPathTextField = HDDPathTextField;
+        StaticControls.windowGridPane = windowGridPane;
     }
     
     public static void addStyleSheet(Region control, String styleName) {
@@ -46,20 +48,20 @@ public class Main extends Application {
     }
     
     public void onGenerateButtonTouch() {
-        currentMachine = new Machine(EEPROMPathTextField.getText(), HDDPathTextField.getText(), screensPane, powerButton);
+       new Machine();
     }
     
     public void onPowerButtonTouch() {
         new Player("click.mp3").play();
         
-        if (currentMachine == null) {
+        if (Machine.current == null) {
             powerButton.setSelected(false);
         }
         else {
             if (powerButton.isSelected()) {
-                currentMachine.shutdown();
+                Machine.current.shutdown();
             } else {
-                currentMachine.boot();
+                Machine.current.boot();
             }
         }
     }

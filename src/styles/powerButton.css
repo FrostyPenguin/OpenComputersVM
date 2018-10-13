@@ -13,6 +13,10 @@
      -fx-background-image: url("../resources/images/button_power_hovered.png");
 }
 
-.eblo:pressed, .eblo:selected {
+.eblo:selected {
     -fx-background-image: url("../resources/images/button_power_on.png");
+}
+
+.eblo:selected:hover {
+    -fx-background-image: url("../resources/images/button_power_on_hovered.png");
 }

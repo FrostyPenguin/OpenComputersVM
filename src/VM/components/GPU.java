@@ -1,6 +1,8 @@
 package VM.components;
 
-import VM.*;
+import VM.ComponentBase;
+import VM.Glyph;
+import VM.Machine;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
@@ -9,131 +11,33 @@ import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.*;
 
 public class GPU extends ComponentBase {
-    private int
+    public int
         width,
         height,
-        GlyphWIDTHMul3,
         GlyphWIDTHMulWidth,
-        GlyphHEIGHTMulHeight;
-    private byte[] buffer;
+        GlyphHEIGHTMulHeight,
+        GlyphHEIGHTMulWidthMulHeight;
+    private int[] buffer;
     private Pixel[][] pixels;
-    private ScreenWidget screenWidget;
+    private Machine.ScreenWidget screenWidget;
     private PixelWriter pixelWriter;
-    private Color background, foreground;
+    private int background, foreground;
     
-    public void rawSetResolution(int newWidth, int newHeight) {
-        width = newWidth;
-        height = newHeight;
-
-        GlyphWIDTHMul3 = Glyph.WIDTH * 3;
-        GlyphWIDTHMulWidth = Glyph.WIDTH * width;
-        GlyphHEIGHTMulHeight = Glyph.HEIGHT * height;
-
-        WritableImage writableImage = new WritableImage(GlyphWIDTHMulWidth, GlyphHEIGHTMulHeight);
-        pixelWriter = writableImage.getPixelWriter();
-        screenWidget.imageView.setImage(writableImage);
-
-        pixels = new Pixel[height][width];
-        flush();
-
-        buffer = new byte[width * height * GlyphWIDTHMul3 * Glyph.HEIGHT];
-        for (int i = 0; i < buffer.length; i++) {
-            buffer[i] = (byte) 0;
-        }
-
-        screenWidget.setResolution(GlyphWIDTHMulWidth, GlyphHEIGHTMulHeight);
-    }
-    
-    public void flush() {
-        background = Color.BLACK;
-        foreground = Color.WHITE;
-        
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                pixels[y][x] = new Pixel(background, foreground, 32);
-            }
-        }
-    }
-    
-    private int getIndex(int x, int y) {
-        return y * width * GlyphWIDTHMul3 * Glyph.HEIGHT + x * GlyphWIDTHMul3;
-    }
-
-    public void update() {
-        int lineStep = width * GlyphWIDTHMul3;
-
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                int bufferIndex = getIndex(x, y);
-                int glyphIndex = 0;
-
-                for (int j = 0; j < Glyph.HEIGHT; j++) {
-                    for (int i = 0; i < GlyphWIDTHMul3; i += 3) {
-                        if (Glyph.map[pixels[y][x].code].pixels[glyphIndex]) {
-                            buffer[bufferIndex + i] = pixels[y][x].foreground.red;
-                            buffer[bufferIndex + i + 1] = pixels[y][x].foreground.green;
-                            buffer[bufferIndex + i + 2] = pixels[y][x].foreground.blue;
-                        }
-                        else {
-                            buffer[bufferIndex + i] = pixels[y][x].background.red;
-                            buffer[bufferIndex + i + 1] = pixels[y][x].background.green;
-                            buffer[bufferIndex + i + 2] = pixels[y][x].background.blue;
-                        }
-
-                        glyphIndex++;
-                    }
-
-                    bufferIndex += lineStep;
-                }
-            }
-        }
-
-        pixelWriter.setPixels(
-            0, 
-            0,
-            GlyphWIDTHMulWidth,
-            GlyphHEIGHTMulHeight,
-            PixelFormat.getByteRgbInstance(),
-            buffer, 
-            0, 
-            GlyphWIDTHMulWidth * 3
-        );
-    }
-
-    public void rawSet(int x, int y, Color background, Color foreground, int code) {
-        if (x >= 0 && x < width && y >= 0 && y < height) {
-            pixels[y][x].background = background;
-            pixels[y][x].foreground = foreground;
-            pixels[y][x].code = code;
-        }
-        else {
-            System.out.println("Invalid position, cyka: " + x + " x " + y);
-        }
-    }
-
-    public void rawFill(int x, int y, int width, int height, Color background, Color foreground, int symbol) {
-        for (int j = y; j < y + height; j++) {
-            for (int i = x; i < x + width; i++) {
-                rawSet(i, j, background, foreground, symbol);
-            }
-        }
-    }
-    
-    public GPU(ScreenWidget screenWidget, int width, int height) {
+    public GPU(Machine.ScreenWidget screenWidget) {
         super("gpu");
         this.screenWidget = screenWidget;
-        
+
         set("set", new ThreeArgFunction() {
             public LuaValue call(LuaValue x, LuaValue y, LuaValue text) {
-                x.checknumber();
-                y.checknumber();
+                x.checkint();
+                y.checkint();
                 text.checkjstring();
-                
+
                 int javaX = x.toint() - 1, javaY = y.toint() - 1;
                 String javaText = text.tojstring();
 
                 for (int i = 0; i < javaText.length(); i++) {
-                    rawSet(javaX, javaY, background, foreground, javaText.codePointAt(i));
+                    rawSet(javaX, javaY, javaText.codePointAt(i));
 
                     javaX++;
                 }
@@ -143,14 +47,15 @@ public class GPU extends ComponentBase {
                 return LuaValue.NIL;
             }
         });
-        
+
         set("setResolution", new TwoArgFunction() {
             public LuaValue call(LuaValue width, LuaValue height) {
-                width.checknumber();
-                height.checknumber();
-                
+                width.checkint();
+                height.checkint();
+
                 rawSetResolution(width.toint(), height.toint());
-                
+                update();
+
                 return LuaValue.NIL;
             }
         });
@@ -166,33 +71,31 @@ public class GPU extends ComponentBase {
 
         set("fill", new VarArgFunction() {
             public Varargs invoke(Varargs args) {
-                args.arg(1).checknumber();
-                args.arg(2).checknumber();
-                args.arg(3).checknumber();
-                args.arg(4).checknumber();
+                args.arg(1).checkint();
+                args.arg(2).checkint();
+                args.arg(3).checkint();
+                args.arg(4).checkint();
                 args.arg(5).checkjstring();
-                
+
                 rawFill(
                     args.arg(1).toint() - 1,
                     args.arg(2).toint() - 1,
                     args.arg(3).toint(),
                     args.arg(4).toint(),
-                    background,
-                    foreground,
                     args.arg(5).tojstring().codePointAt(0)
                 );
-                
+
                 update();
-                
+
                 return LuaValue.NIL;
             }
         });
-        
+
         set("setBackground", new OneArgFunction() {
             public LuaValue call(LuaValue color) {
-                color.checknumber();
-                
-                background = new Color(color.toint());
+                color.checkint();
+
+                background = 0xFF000000 | color.toint();
 
                 return LuaValue.NIL;
             }
@@ -200,27 +103,139 @@ public class GPU extends ComponentBase {
 
         set("setForeground", new OneArgFunction() {
             public LuaValue call(LuaValue color) {
-                color.checknumber();
-                
-                foreground = new Color(color.toint());
-                
+                color.checkint();
+
+                foreground = 0xFF000000 | color.toint();
+
                 return LuaValue.NIL;
             }
         });
 
         set("getBackground", new ZeroArgFunction() {
             public LuaValue call() {
-                return LuaValue.valueOf(background.toInteger());
+                return LuaValue.valueOf(background);
             }
         });
 
         set("getForeground", new ZeroArgFunction() {
             public LuaValue call() {
-                return LuaValue.valueOf(foreground.toInteger());
+                return LuaValue.valueOf(foreground);
             }
         });
+    }
 
-        rawSetResolution(width, height);
-        update();
+    class Pixel {
+        int code, background, foreground;
+
+        Pixel(int background, int foreground, int code) {
+            this.background = background;
+            this.foreground = foreground;
+            this.code = code;
+        }
+    }
+    
+    public void rawSetResolution(int newWidth, int newHeight) {
+        width = newWidth;
+        height = newHeight;
+        GlyphWIDTHMulWidth = width * Glyph.WIDTH;
+        GlyphHEIGHTMulHeight = height * Glyph.HEIGHT;
+        GlyphHEIGHTMulWidthMulHeight = GlyphWIDTHMulWidth * Glyph.HEIGHT;
+        
+        WritableImage writableImage = new WritableImage(GlyphWIDTHMulWidth, GlyphHEIGHTMulHeight);
+        pixelWriter = writableImage.getPixelWriter();
+        screenWidget.imageView.setImage(writableImage);
+
+        pixels = new Pixel[height][width];
+        buffer = new int[width * height * Glyph.WIDTH * Glyph.HEIGHT];
+
+        flush();
+        
+        screenWidget.applyScale();
+    }
+    
+    public void flush() {
+        background = 0xFF000000;
+        foreground = 0xFFFFFFFF;
+        
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                pixels[y][x] = new Pixel(background, foreground, 32);
+            }
+        }
+    }
+    
+    public void update() {
+        int bufferIndex = 0, glyphIndex;
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                glyphIndex = 0;
+
+                for (int j = 0; j < Glyph.HEIGHT; j++) {
+                    for (int i = 0; i < Glyph.WIDTH; i++) {
+                        buffer[bufferIndex + i] = Glyph.map[pixels[y][x].code].pixels[glyphIndex] ? pixels[y][x].foreground : pixels[y][x].background;
+
+                        glyphIndex++;
+                    }
+
+                    bufferIndex += GlyphWIDTHMulWidth;
+                }
+
+                bufferIndex += Glyph.WIDTH - GlyphHEIGHTMulWidthMulHeight;
+            }
+
+            bufferIndex += GlyphHEIGHTMulWidthMulHeight - GlyphWIDTHMulWidth;
+        }
+
+        pixelWriter.setPixels(
+            0, 
+            0,
+            GlyphWIDTHMulWidth,
+            GlyphHEIGHTMulHeight,
+            PixelFormat.getIntArgbPreInstance(),
+            buffer, 
+            0, 
+            GlyphWIDTHMulWidth
+        );
+    }
+
+    public void rawSet(int x, int y, int code) {
+        if (x >= 0 && x < width && y >= 0 && y < height) {
+            pixels[y][x].background = background;
+            pixels[y][x].foreground = foreground;
+            pixels[y][x].code = code;
+        }
+        else {
+            System.out.println("Invalid position, cyka: " + x + " x " + y);
+        }
+    }
+
+    public void rawText(int x, int y, String text) {
+        for (int i = 0; i < text.length(); i++) {
+            rawSet(x, y, text.codePointAt(i));
+            x++;
+        }
+    }
+    
+    public void rawFill(int x, int y, int width, int height, int symbol) {
+        for (int j = y; j < y + height; j++) {
+            for (int i = x; i < x + width; i++) {
+                rawSet(i, j, symbol);
+            }
+        }
+    }
+
+    public void rawError(String text) {
+        String[] lines = text.split("\n");
+        
+        background = 0xFF0000FF;
+        foreground = 0xFFFFFFFF;
+        
+        rawFill(0, 0, width, height, 32);
+        
+        int y = height / 2 - lines.length / 2;
+        for (int i = 0; i < lines.length; i++) {
+            rawText(width / 2 - lines[i].length() / 2, y + i, lines[i]);
+        }
     }
 }
