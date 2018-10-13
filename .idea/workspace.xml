@@ -7,25 +7,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="aefaef">
-      <change afterPath="$PROJECT_DIR$/src/VM/LuaValues.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/VM/Pixel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/commons_text_1_5.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/OpenComputersVM.iml" beforeDir="false" afterPath="$PROJECT_DIR$/OpenComputersVM.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/API/Computer$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/API/Computer$2.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/API/Computer$3.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/API/Computer$4.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/API/Computer$5.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/API/Computer.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Machine$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Machine$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Machine$LuaThread.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Machine$LuaThread.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Machine$ScreenWidget.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Machine$ScreenWidget.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Machine$SignalThread.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Machine$SignalThread.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Machine.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Machine.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/VM/API/Computer.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/VM/Machine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/VM/Machine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/resources/machine.lua.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/resources/machine.lua" afterDir="false" />
     </list>
     <ignored path="JavaFxApplication.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -185,7 +167,7 @@
     <session id="232186380">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="7" />
+          <entry key="project.closed" value="8" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.10" value="1" />
           <entry key="project.open.time.11" value="1" />
@@ -200,13 +182,13 @@
         <counts>
           <entry key="css" value="161" />
           <entry key="dummy" value="26" />
-          <entry key="java" value="8094" />
+          <entry key="java" value="8329" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CSS" value="161" />
-          <entry key="JAVA" value="8094" />
+          <entry key="JAVA" value="8329" />
           <entry key="PLAIN_TEXT" value="26" />
         </counts>
       </usages-collector>
@@ -235,30 +217,22 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/VM/ComponentBase.java">
+        <entry file="file://$PROJECT_DIR$/src/VM/API/Component.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="308">
-              <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
+            <state relative-caret-position="154">
+              <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/VM/API/Component.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="220">
-              <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/VM/LuaValues.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="220">
-              <caret line="10" column="9" lean-forward="true" selection-start-line="10" selection-start-column="9" selection-end-line="10" selection-end-column="9" />
+            <state relative-caret-position="242">
+              <caret line="11" column="6" lean-forward="true" selection-start-line="11" selection-start-column="6" selection-end-line="11" selection-end-column="6" />
               <folding>
                 <element signature="e#158#263#0" expanded="true" />
+                <element signature="e#262#263#0" expanded="true" />
                 <element signature="e#357#463#0" expanded="true" />
                 <element signature="e#462#463#0" expanded="true" />
                 <element signature="e#474#581#0" expanded="true" />
@@ -271,23 +245,40 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/resources/machine.lua">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="1372" column="30" selection-start-line="1372" selection-start-column="21" selection-end-line="1372" selection-end-column="30" />
+            <state relative-caret-position="206">
+              <caret line="1345" column="15" selection-start-line="1345" selection-start-column="5" selection-end-line="1345" selection-end-column="15" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/VM/Machine.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="340">
-              <caret line="390" column="17" lean-forward="true" selection-start-line="390" selection-start-column="17" selection-end-line="390" selection-end-column="17" />
+            <state relative-caret-position="228">
+              <caret line="384" column="48" lean-forward="true" selection-start-line="384" selection-start-column="48" selection-end-line="384" selection-end-column="48" />
               <folding>
-                <element signature="e#13606#13761#0" expanded="true" />
-                <element signature="e#14438#14592#0" expanded="true" />
-                <element signature="e#14591#14592#0" expanded="true" />
-                <element signature="e#14626#14834#0" expanded="true" />
-                <element signature="e#14833#14834#0" expanded="true" />
+                <element signature="e#13682#13839#0" expanded="true" />
+                <element signature="e#13838#13839#0" expanded="true" />
+                <element signature="e#13871#14048#0" expanded="true" />
+                <element signature="e#14047#14048#0" expanded="true" />
+                <element signature="e#14078#14269#0" expanded="true" />
+                <element signature="e#14268#14269#0" expanded="true" />
+                <element signature="e#14303#14513#0" expanded="true" />
+                <element signature="e#14512#14513#0" expanded="true" />
+                <element signature="e#14547#14739#0" expanded="true" />
+                <element signature="e#14738#14739#0" expanded="true" />
+                <element signature="e#14774#14928#0" expanded="true" />
+                <element signature="e#14927#14928#0" expanded="true" />
+                <element signature="e#14962#15170#0" expanded="true" />
+                <element signature="e#15169#15170#0" expanded="true" />
+                <element signature="e#15219#15368#0" expanded="true" />
+                <element signature="e#15367#15368#0" expanded="true" />
+                <element signature="e#15622#15791#0" expanded="true" />
+                <element signature="e#15790#15791#0" expanded="true" />
+                <element signature="e#15900#16065#0" expanded="true" />
+                <element signature="e#16064#16065#0" expanded="true" />
+                <element signature="e#16105#16274#0" expanded="true" />
+                <element signature="e#16273#16274#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -313,10 +304,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>event.getSceneY()</find>
-      <find>sceneX</find>
-      <find>toolv</find>
-      <find>scale</find>
       <find>screenComponent =</find>
       <find>Meow</find>
       <find>computer =</find>
@@ -343,6 +330,10 @@
       <find>new GPU</find>
       <find>setBootAddress</find>
       <find>computer.</find>
+      <find>address</find>
+      <find>new Compu</find>
+      <find>new Co</find>
+      <find>address =</find>
     </findStrings>
     <replaceStrings>
       <replace>images/</replace>
@@ -465,13 +456,6 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="VM" type="462c0819:PsiDirectoryNode" />
               <item name="API" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="OpenComputersVM" type="b2602c69:ProjectViewProjectNode" />
-              <item name="OpenComputersVM" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="VM" type="462c0819:PsiDirectoryNode" />
-              <item name="components" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -640,13 +624,13 @@
     <frame x="0" y="23" width="1920" height="979" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.6703755" visible="true" weight="0.20127796" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.6703755" visible="true" weight="0.20127796" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info id="Favorites" order="2" />
       <window_info id="Designer" order="3" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.22322436" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.22660653" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.22660653" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -987,51 +971,69 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/VM/API/Component.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/VM/ComponentBase.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
+        <state relative-caret-position="154">
+          <caret line="7" column="4" lean-forward="true" selection-start-line="7" selection-start-column="4" selection-end-line="7" selection-end-column="4" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/VM/Machine.java">
+    <entry file="file://$PROJECT_DIR$/src/VM/API/Component.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="390" column="17" lean-forward="true" selection-start-line="390" selection-start-column="17" selection-end-line="390" selection-end-column="17" />
-          <folding>
-            <element signature="e#13606#13761#0" expanded="true" />
-            <element signature="e#14438#14592#0" expanded="true" />
-            <element signature="e#14591#14592#0" expanded="true" />
-            <element signature="e#14626#14834#0" expanded="true" />
-            <element signature="e#14833#14834#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="154">
+          <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/resources/machine.lua">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="1372" column="30" selection-start-line="1372" selection-start-column="21" selection-end-line="1372" selection-end-column="30" />
+        <state relative-caret-position="206">
+          <caret line="1345" column="15" selection-start-line="1345" selection-start-column="5" selection-end-line="1345" selection-end-column="15" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/VM/LuaValues.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="10" column="9" lean-forward="true" selection-start-line="10" selection-start-column="9" selection-end-line="10" selection-end-column="9" />
+        <state relative-caret-position="242">
+          <caret line="11" column="6" lean-forward="true" selection-start-line="11" selection-start-column="6" selection-end-line="11" selection-end-column="6" />
           <folding>
             <element signature="e#158#263#0" expanded="true" />
+            <element signature="e#262#263#0" expanded="true" />
             <element signature="e#357#463#0" expanded="true" />
             <element signature="e#462#463#0" expanded="true" />
             <element signature="e#474#581#0" expanded="true" />
             <element signature="e#580#581#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/VM/Machine.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="228">
+          <caret line="384" column="48" lean-forward="true" selection-start-line="384" selection-start-column="48" selection-end-line="384" selection-end-column="48" />
+          <folding>
+            <element signature="e#13682#13839#0" expanded="true" />
+            <element signature="e#13838#13839#0" expanded="true" />
+            <element signature="e#13871#14048#0" expanded="true" />
+            <element signature="e#14047#14048#0" expanded="true" />
+            <element signature="e#14078#14269#0" expanded="true" />
+            <element signature="e#14268#14269#0" expanded="true" />
+            <element signature="e#14303#14513#0" expanded="true" />
+            <element signature="e#14512#14513#0" expanded="true" />
+            <element signature="e#14547#14739#0" expanded="true" />
+            <element signature="e#14738#14739#0" expanded="true" />
+            <element signature="e#14774#14928#0" expanded="true" />
+            <element signature="e#14927#14928#0" expanded="true" />
+            <element signature="e#14962#15170#0" expanded="true" />
+            <element signature="e#15169#15170#0" expanded="true" />
+            <element signature="e#15219#15368#0" expanded="true" />
+            <element signature="e#15367#15368#0" expanded="true" />
+            <element signature="e#15622#15791#0" expanded="true" />
+            <element signature="e#15790#15791#0" expanded="true" />
+            <element signature="e#15900#16065#0" expanded="true" />
+            <element signature="e#16064#16065#0" expanded="true" />
+            <element signature="e#16105#16274#0" expanded="true" />
+            <element signature="e#16273#16274#0" expanded="true" />
           </folding>
         </state>
       </provider>

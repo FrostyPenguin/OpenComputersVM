@@ -19,6 +19,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 import org.luaj.vm2.*;
+import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.ZeroArgFunction;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
@@ -118,15 +119,15 @@ public class Machine {
         @Override
         public void run() {
             try {
+                Globals globals = JsePlatform.standardGlobals();
+                
                 Component component = new Component();
                 component.add(gpuComponent);
                 component.add(keyboardComponent);
                 component.add(screenComponent);
 
-                Globals globals = JsePlatform.standardGlobals();
-
-                globals.set("computer", computerComponent);
                 globals.set("component", component);
+                globals.set("computer", new ComputerAPI());
                 globals.set("unicode", new Unicode());
                 
                 globals.load(code).call();
@@ -155,26 +156,28 @@ public class Machine {
     }
 
     public void boot() {
-        try {
-            running = true;
-            startTime = System.currentTimeMillis();
+        if (!running) {
+            try {
+                running = true;
+                startTime = System.currentTimeMillis();
 
-            String code = new String(Files.readAllBytes(new File(StaticControls.EEPROMPathTextField.getText()).toPath()), StandardCharsets.UTF_8);
+                String code = new String(Files.readAllBytes(new File(StaticControls.EEPROMPathTextField.getText()).toPath()), StandardCharsets.UTF_8);
 
-            computerRunningPlayer = new Player("computer_running.mp3");
-            computerRunningPlayer.setRepeating(true);
-            computerRunningPlayer.play();
+                computerRunningPlayer = new Player("computer_running.mp3");
+                computerRunningPlayer.setRepeating(true);
+                computerRunningPlayer.play();
 
-            // Стартуем листенер сигналов
-            signalThread = new SignalThread();
-            signalThread.start();
-            
-            // Запускаем луа-машину
-            luaThread = new LuaThread(code);
-            luaThread.start();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
+                // Стартуем листенер сигналов
+                signalThread = new SignalThread();
+                signalThread.start();
+
+                // Запускаем луа-машину
+                luaThread = new LuaThread(code);
+                luaThread.start();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -375,44 +378,40 @@ public class Machine {
             ).play();
         }
     }
-
-    public class Computer extends ComponentBase {
-        public Computer() {
-            super("computer");
-            
+    
+    public class ComputerAPI extends LuaTable {
+        public ComputerAPI() {
             set("isRobot", LuaValues.FALSE_FUNCTION);
             set("users", LuaValues.EMPTY_TABLE);
             set("addUser", LuaValues.TRUE_FUNCTION);
             set("removeUser", LuaValues.TRUE_FUNCTION);
             
-            ZeroArgFunction energyFunction = new ZeroArgFunction() {
+            set("address", new ZeroArgFunction() {
                 public LuaValue call() {
-                    return LuaValue.valueOf(energy);
+                    return computerComponent.get("address");
                 }
-            };
-            set("energy", energyFunction);
-            set("maxEnergy", energyFunction);
+            });
 
             set("realTime", new ZeroArgFunction() {
-                public synchronized LuaValue call() {
+                public LuaValue call() {
                     return LuaValue.valueOf(System.currentTimeMillis() / 1000f);
                 }
             });
 
             set("uptime", new ZeroArgFunction() {
-                public synchronized LuaValue call() {
+                public LuaValue call() {
                     return LuaValue.valueOf((System.currentTimeMillis() - startTime) / 1000f);
                 }
             });
 
             set("pullSignal", new LuaFunction() {
-                public synchronized Varargs invoke(Varargs timeout) {
+                public Varargs invoke(Varargs timeout) {
                     return signalThread.pull(timeout.arg(1).isnil() ? -1 : timeout.arg(1).tofloat());
                 }
             });
 
             set("pushSignal", new LuaFunction() {
-                public synchronized Varargs invoke(Varargs data) {
+                public Varargs invoke(Varargs data) {
                     signalThread.push(data);
 
                     return LuaValue.NIL;
@@ -428,6 +427,43 @@ public class Machine {
             set("freeMemory", new ZeroArgFunction() {
                 public LuaValue call() {
                     return LuaValue.valueOf(ThreadLocalRandom.current().nextInt(freeMemoryMin, freeMemoryMax));
+                }
+            });
+
+            ZeroArgFunction energyFunction = new ZeroArgFunction() {
+                public LuaValue call() {
+                    return LuaValue.valueOf(energy);
+                }
+            };
+            
+            set("energy", energyFunction);
+            set("maxEnergy", energyFunction);
+        }
+    }
+
+    public class Computer extends ComponentBase {
+        public Computer() {
+            super("computer");
+            
+            set("beep", new TwoArgFunction() {
+                public LuaValue call(LuaValue time, LuaValue frequency) {
+                    return LuaValue.NIL;
+                }
+            });
+            
+            set("isRunning", LuaValues.TRUE_FUNCTION);
+            
+            set("start", new ZeroArgFunction() {
+                public LuaValue call() {
+                    boot();
+                    return LuaValue.NIL;
+                }
+            });
+            
+            set("stop", new ZeroArgFunction() {
+                public LuaValue call() {
+                    shutdown();
+                    return LuaValue.NIL;
                 }
             });
         }
