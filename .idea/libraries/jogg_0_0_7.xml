@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="jogg-0.0.7">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/libraries/jogg-0.0.7.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/libraries/tritonus_share.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/libraries/jorbis-0.0.15.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

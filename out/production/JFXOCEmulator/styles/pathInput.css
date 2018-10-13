@@ -1,0 +1,9 @@
+.text-input {
+    -fx-background-color: #FFFFFF10;
+    -fx-text-fill: #EEE;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-border: none;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}

@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.canvas.*?>
 <?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
 
-<GridPane fx:id="windowGridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1033.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="emulator.Main">
+<GridPane fx:id="windowGridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1033.0" style="-fx-background-color: #222;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="emulator.Main">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="294.0" />
@@ -20,13 +18,28 @@
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0" style="-fx-background-color: #222222;" GridPane.columnIndex="1">
+      <GridPane fx:id="imageGridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <ImageView fx:id="screenImageView" fitHeight="446.0" fitWidth="223.0" pickOnBounds="true" smooth="false" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+               <image>
+                  <Image url="@../../../../../Pictures/Govnokod.png" />
+               </image>
+            </ImageView>
+         </children>
+      </GridPane>
+      <VBox fx:id="toolVBox" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" style="-fx-background-color: #2D2D2D;" GridPane.columnIndex="1">
          <children>
             <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="228.0" prefWidth="294.0">
                <children>
                   <ImageView fitHeight="228.0" fitWidth="294.0" pickOnBounds="true">
                      <image>
-                        <Image url="@../styles/resources/plata.png" />
+                        <Image url="@../resources/images/plata.png" />
                      </image>
                   </ImageView>
                   <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="228.0" prefWidth="294.0">
@@ -46,7 +59,12 @@
                            <children>
                               <ImageView fitHeight="54.0" fitWidth="54.0" pickOnBounds="true" smooth="false">
                                  <image>
-                                    <Image url="@../styles/resources/slot.png" />
+                                    <Image url="@../resources/images/slot.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="3.0" layoutY="3.0" pickOnBounds="true" smooth="false">
+                                 <image>
+                                    <Image url="@../resources/images/CPU.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -55,7 +73,12 @@
                            <children>
                               <ImageView fitHeight="54.0" fitWidth="54.0" pickOnBounds="true" smooth="false">
                                  <image>
-                                    <Image url="@../styles/resources/slot.png" />
+                                    <Image url="@../resources/images/slot.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="3.0" layoutY="3.0" pickOnBounds="true" smooth="false">
+                                 <image>
+                                    <Image url="@../resources/images/GPU.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -64,7 +87,12 @@
                            <children>
                               <ImageView fitHeight="54.0" fitWidth="54.0" pickOnBounds="true" smooth="false">
                                  <image>
-                                    <Image url="@../styles/resources/slot.png" />
+                                    <Image url="@../resources/images/slot.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="3.0" layoutY="3.0" pickOnBounds="true" smooth="false">
+                                 <image>
+                                    <Image url="@../resources/images/INET.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -73,7 +101,12 @@
                            <children>
                               <ImageView fitHeight="54.0" fitWidth="54.0" pickOnBounds="true" smooth="false">
                                  <image>
-                                    <Image url="@../styles/resources/slot.png" />
+                                    <Image url="@../resources/images/slot.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="3.0" layoutY="3.0" pickOnBounds="true" smooth="false">
+                                 <image>
+                                    <Image url="@../resources/images/WLAN.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -82,7 +115,12 @@
                            <children>
                               <ImageView fitHeight="54.0" fitWidth="54.0" pickOnBounds="true" smooth="false">
                                  <image>
-                                    <Image url="@../styles/resources/slot.png" />
+                                    <Image url="@../resources/images/slot.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="3.0" layoutY="3.0" pickOnBounds="true" smooth="false">
+                                 <image>
+                                    <Image url="@../resources/images/RAM.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -91,7 +129,12 @@
                            <children>
                               <ImageView fitHeight="54.0" fitWidth="54.0" pickOnBounds="true" smooth="false">
                                  <image>
-                                    <Image url="@../styles/resources/slot.png" />
+                                    <Image url="@../resources/images/slot.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="3.0" layoutY="3.0" pickOnBounds="true" smooth="false">
+                                 <image>
+                                    <Image url="@../resources/images/RAM.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -100,7 +143,12 @@
                            <children>
                               <ImageView fitHeight="54.0" fitWidth="54.0" pickOnBounds="true" smooth="false">
                                  <image>
-                                    <Image url="@../styles/resources/slot.png" />
+                                    <Image url="@../resources/images/slot.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="3.0" layoutY="3.0" pickOnBounds="true" smooth="false">
+                                 <image>
+                                    <Image url="@../resources/images/RAM.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -109,23 +157,101 @@
                            <children>
                               <ImageView fitHeight="54.0" fitWidth="54.0" pickOnBounds="true" smooth="false">
                                  <image>
-                                    <Image url="@../styles/resources/slot.png" />
+                                    <Image url="@../resources/images/slot.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="3.0" layoutY="3.0" pickOnBounds="true" smooth="false">
+                                 <image>
+                                    <Image url="@../resources/images/RAM.png" />
                                  </image>
                               </ImageView>
                            </children>
                         </Pane>
                      </children>
                   </GridPane>
-                  <Button layoutX="120.0" layoutY="156.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="54.0" prefWidth="54.0" stylesheets="@../styles/button.css" />
+                  <ToggleButton fx:id="powerButton" layoutX="120.0" layoutY="156.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onMousePressed="#onPowerButtonTouch" prefHeight="54.0" prefWidth="54.0" styleClass="eblo" stylesheets="@../styles/button.css" />
                </children>
             </Pane>
-            <Button fx:id="connectButton" mnemonicParsing="false" onMouseClicked="#onConnectButtonTouch" prefHeight="27.0" prefWidth="166.0" text="RUN VASYA RUN" />
-            <TextArea fx:id="textArea" prefHeight="186.0" prefWidth="294.0" text="local gpu = component.proxy(component.list(&quot;gpu&quot;)())&#10;&#10;local width, height = gpu.getResolution()&#10;local x, y = 3, 2&#10;&#10;while true do&#10;  local e = {computer.pullSignal()}&#10;  print(&quot;Signal: &quot;, table.unpack(e))&#10;  &#10;  if e[1] == &quot;key_down&quot; then&#10;    if e[4] == 14 then&#10;      gpu.setBackground(math.random(0xFFFFFF))&#10;      gpu.setForeground(0xFFFFFF)      &#10;      gpu.fill(1, 1, width, height, &quot; &quot;)&#10;      x, y = 3, 2&#10;    elseif e[4] == 28 then&#10;      x, y = 3, y + 1&#10;    else&#10;      local char = unicode.char(e[3])&#10;      -- print(&quot;Lua char:&quot;, char)&#10;      if char:match(&quot;[^\29\219\56\42\15\58\56\28\14]&quot;) then&#10;        gpu.set(x, y, char)&#10;        x = x + 1&#10;      end&#10;    end&#10;  elseif e[1] == &quot;touch&quot; or e[1] == &quot;drag&quot; then&#10;    gpu.set(e[3], e[4], &quot;#&quot;)&#10;  end&#10;end">
+            <GridPane>
+               <children>
+                  <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
+                     <image>
+                        <Image url="@../resources/images/HDD.png" />
+                     </image>
+                  </ImageView>
+               </children>
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" />
+               </columnConstraints>
+               <padding>
+                  <Insets right="10.0" />
+               </padding>
+               <rowConstraints>
+                  <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="48.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+            </GridPane>
+            <VBox spacing="10.0">
+               <children>
+                  <GridPane>
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="48.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
+                           <image>
+                              <Image url="@../resources/images/HDD.png" />
+                           </image>
+                        </ImageView>
+                        <TextField editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Filesystem component path" styleClass="textField" stylesheets="@../styles/pathInput.css" text="/Users/igor/Documents/GitHub/JFXOCEmulator/src/resources/images/components" GridPane.columnIndex="1">
+                           <font>
+                              <Font name="Courier" size="13.0" />
+                           </font>
+                        </TextField>
+                        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" stylesheets="@../styles/pathButton.css" text="..." GridPane.columnIndex="2" />
+                     </children>
+                     <padding>
+                        <Insets right="10.0" />
+                     </padding>
+                  </GridPane>
+                  <GridPane>
+                     <children>
+                        <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
+                           <image>
+                              <Image url="@../resources/images/EEPROM.png" />
+                           </image>
+                        </ImageView>
+                        <TextField editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Filesystem component path" styleClass="textField" stylesheets="@../styles/pathInput.css" text="/Users/igor/Documents/GitHub/JFXOCEmulator/src/resources/images/components" GridPane.columnIndex="1">
+                           <font>
+                              <Font name="Courier" size="13.0" />
+                           </font>
+                        </TextField>
+                        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" stylesheets="@../styles/pathButton.css" text="..." GridPane.columnIndex="2" />
+                     </children>
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                     </columnConstraints>
+                     <padding>
+                        <Insets right="10.0" />
+                     </padding>
+                     <rowConstraints>
+                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="48.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                  </GridPane>
+               </children>
+            </VBox>
+            <TextArea fx:id="textArea" prefHeight="402.0" prefWidth="294.0" style="-fx-border-radius: 0; -fx-background-insets: 0; -fx-border-color: transparent;" text="local gpu = component.proxy(component.list(&quot;gpu&quot;)())&#10;&#10;local width, height = gpu.getResolution()&#10;local x, y = 3, 2&#10;&#10;while true do&#10;  local e = {computer.pullSignal()}&#10;  print(&quot;Signal: &quot;, table.unpack(e))&#10;  &#10;  if e[1] == &quot;key_down&quot; then&#10;    if e[4] == 14 then&#10;      gpu.setBackground(math.random(0xFFFFFF))&#10;      gpu.setForeground(0xFFFFFF)      &#10;      gpu.fill(1, 1, width, height, &quot; &quot;)&#10;      x, y = 3, 2&#10;    elseif e[4] == 28 then&#10;      x, y = 3, y + 1&#10;    else&#10;      local char = unicode.char(e[3])&#10;      -- print(&quot;Lua char:&quot;, char)&#10;      if char:match(&quot;[^\29\219\56\42\15\58\56\28\14]&quot;) then&#10;        gpu.set(x, y, char)&#10;        x = x + 1&#10;      end&#10;    end&#10;  elseif e[1] == &quot;touch&quot; or e[1] == &quot;drag&quot; then&#10;    gpu.set(e[3], e[4], &quot;#&quot;)&#10;  end&#10;end">
                <font>
                   <Font name="Courier" size="12.0" />
                </font></TextArea>
          </children>
       </VBox>
-      <ImageView fx:id="screenImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="LEFT" GridPane.valignment="TOP" />
    </children>
 </GridPane>

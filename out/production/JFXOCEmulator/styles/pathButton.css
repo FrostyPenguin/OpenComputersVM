@@ -1,0 +1,20 @@
+.button {
+    -fx-background-color: #FFFFFF20;
+    -fx-text-fill: #EEE;
+    
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-border: none;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+
+.button:hover {
+    -fx-background-color: #FFFFFF40;
+    -fx-text-fill: #EEE;
+}
+
+.button:pressed, .button:selected {
+    -fx-background-color: #FFF;
+    -fx-text-fill: #222;
+}
