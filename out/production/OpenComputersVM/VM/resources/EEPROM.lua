@@ -1,6 +1,5 @@
 
-
-component.proxy(component.list("computer")()).beep(1500, 1)
+component.proxy(component.list("computer")()).beep(1500, 0.3)
 
 local gpu = component.proxy(component.list("gpu")())
 

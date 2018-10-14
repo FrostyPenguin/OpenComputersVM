@@ -199,7 +199,7 @@
                               <Image url="@resources/images/HDD.png" />
                            </image>
                         </ImageView>
-                        <TextField fx:id="HDDPathTextField" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Filesystem component path" styleClass="textField" stylesheets="@styles/pathInput.css" text="/Users/igor/OpenComputersVM/Machines/Machine0/HDD" GridPane.columnIndex="1">
+                        <TextField fx:id="HDDPathTextField" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Filesystem component path" styleClass="textField" stylesheets="@styles/pathInput.css" text="/Users/igor/OpenComputersVM/Machines/Machine0/HDD/" GridPane.columnIndex="1">
                            <font>
                               <Font name="Courier" size="13.0" />
                            </font>

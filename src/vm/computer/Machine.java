@@ -24,7 +24,9 @@ import vm.computer.api.Component;
 import vm.computer.api.Unicode;
 import vm.computer.components.*;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -42,6 +44,7 @@ public class Machine {
     public Screen screenComponent;
     public Keyboard keyboardComponent;
     public Computer computerComponent;
+    public Filesystem filesystemComponent;
     
     public LuaThread luaThread;
     
@@ -91,6 +94,7 @@ public class Machine {
         screenComponent = new Screen();
         computerComponent = new Computer(this);
         eepromComponent = new EEPROM();
+        filesystemComponent = new Filesystem(StaticControls.HDDPathTextField.getText());
     }
 
     public void focusScreenWidget(boolean force) {
@@ -155,7 +159,7 @@ public class Machine {
             gpuComponent.update();
 
             for (int i = 0; i < 2; i++) {
-                computerComponent.rawBeep(1500, 0.3);
+                computerComponent.rawBeep(1400, 0.3);
             }
             
             shutdown(false);
@@ -173,6 +177,7 @@ public class Machine {
                 component.add(screenComponent);
                 component.add(computerComponent);
                 component.add(eepromComponent);
+                component.add(filesystemComponent);
 
                 globals.set("debug", new DebugLib().call(LuaValue.NIL, globals));
                 globals.set("component", component);
@@ -195,6 +200,9 @@ public class Machine {
             }
             catch (LuaError e) {
                 error(e.getMessage());
+            }
+            catch (IOException | URISyntaxException e) {
+                e.printStackTrace();
             }
         }
         
@@ -304,10 +312,9 @@ public class Machine {
     public void shutdown(boolean resetGPU) {
         if (started) {
             started = false;
-
+            
             computerRunningPlayer.stop();
             
-            StaticControls.powerButton.setSelected(false);
             if (resetGPU) {
                 gpuComponent.flush();
                 gpuComponent.update();
@@ -318,15 +325,12 @@ public class Machine {
         }
     }
     
-    private String loadResource(String name) {
-        try {
-            return new String(Files.readAllBytes(Paths.get(Main.class.getResource("resources/" + name).toURI())), StandardCharsets.UTF_8);
-        }
-        catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+    private String loadFile(URI uri) throws IOException {
+        return new String(Files.readAllBytes(Paths.get(uri)), StandardCharsets.UTF_8);
+    }
+    
+    private String loadResource(String name) throws URISyntaxException, IOException {
+        return loadFile(Main.class.getResource("resources/" + name).toURI());
     }
 
     public void boot() {
@@ -334,8 +338,13 @@ public class Machine {
             started = true;
             startTime = System.currentTimeMillis();
 
-            eepromComponent.code = loadResource("EEPROM.lua");
-            
+            try {
+                eepromComponent.code = loadFile(new File(StaticControls.EEPROMPathTextField.getText()).toURI());
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+
             // Бесконечно играем звук компека)00
             computerRunningPlayer = new Player("computer_running.mp3");
             computerRunningPlayer.setRepeating(true);
