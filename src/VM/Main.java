@@ -1,5 +1,9 @@
 package VM;
 
+import VM.Computer.Glyph;
+import VM.Computer.KeyMap;
+import VM.Computer.Machine;
+import VM.Computer.Player;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -55,16 +59,9 @@ public class Main extends Application {
        new Machine();
     }
     
-    public static String loadFile(String path) {
+    public static String loadFile(String path) throws IOException {
         System.out.println("Trying to open file: " + path);
-        try {
-            return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-        return null;
+        return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }
     
     public void onPowerButtonTouch() {

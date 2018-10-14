@@ -1,5 +1,7 @@
 
 
+component.proxy(component.list("computer")()).beep(1500, 1)
+
 local gpu = component.proxy(component.list("gpu")())
 
 local width, height = gpu.getResolution()
