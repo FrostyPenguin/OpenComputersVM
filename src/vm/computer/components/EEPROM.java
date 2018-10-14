@@ -1,6 +1,6 @@
-package VM.Computer.Components;
+package vm.computer.components;
 
-import VM.Computer.ComponentBase;
+import vm.computer.ComponentBase;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.ZeroArgFunction;

@@ -1,4 +1,4 @@
-package VM.Computer;
+package vm.computer;
 
 public class Pixel {
     public int code;

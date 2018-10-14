@@ -1,4 +1,4 @@
-package VM;
+package vm;
 
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;

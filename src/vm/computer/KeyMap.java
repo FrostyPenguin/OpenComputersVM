@@ -1,4 +1,4 @@
-package VM.Computer;
+package vm.computer;
 
 import javafx.scene.input.KeyCode;
 

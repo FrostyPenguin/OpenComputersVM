@@ -3,8 +3,8 @@
     <output-path>$PROJECT_DIR$/out/artifacts/JFXOCEmulator_jar</output-path>
     <root id="archive" name="JFXOCEmulator.jar">
       <element id="module-output" name="OpenComputersVM" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/src/libraries/luaj-jse-3.0.1.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/src/libraries/jnativehook-2.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/src/vm/libraries/luaj-jse-3.0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/src/vm/libraries/jnativehook-2.1.0.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

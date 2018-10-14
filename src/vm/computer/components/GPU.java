@@ -1,8 +1,8 @@
-package VM.Computer.Components;
+package vm.computer.components;
 
-import VM.Computer.ComponentBase;
-import VM.Computer.Glyph;
-import VM.Computer.Machine;
+import vm.computer.ComponentBase;
+import vm.computer.Glyph;
+import vm.computer.Machine;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;

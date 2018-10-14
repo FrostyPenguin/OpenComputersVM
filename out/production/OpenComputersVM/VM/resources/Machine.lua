@@ -16,7 +16,7 @@ end
 
 ---------------------------------------- EEPROM loading ----------------------------------------
 
-local eeprom = component.list("eeprom")()
+loca1l eeprom = component.list("eeprom")()
 if eeprom then
     eeprom = component.proxy(eeprom)
     

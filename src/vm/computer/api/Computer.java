@@ -1,7 +1,7 @@
-package VM.Computer.API;
+package vm.computer.api;
 
-import VM.Computer.LuaValues;
-import VM.Computer.Machine;
+import vm.computer.LuaValues;
+import vm.computer.Machine;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;

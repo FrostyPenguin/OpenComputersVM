@@ -1,6 +1,6 @@
-package VM.Computer.API;
+package vm.computer.api;
 
-import VM.Computer.ComponentBase;
+import vm.computer.ComponentBase;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;

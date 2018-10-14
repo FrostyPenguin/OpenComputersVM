@@ -1,4 +1,4 @@
-package VM.Computer;
+package vm.computer;
 
 import org.luaj.vm2.LuaTable;
 

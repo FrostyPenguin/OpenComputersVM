@@ -1,14 +1,5 @@
-package VM.Computer;
+package vm.computer;
 
-import VM.Computer.API.Component;
-import VM.Computer.Components.Computer;
-import VM.Computer.API.Unicode;
-import VM.Computer.Components.EEPROM;
-import VM.Computer.Components.GPU;
-import VM.Computer.Components.Keyboard;
-import VM.Computer.Components.Screen;
-import VM.Main;
-import VM.StaticControls;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -27,8 +18,17 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.DebugLib;
 import org.luaj.vm2.lib.jse.JsePlatform;
+import vm.Main;
+import vm.StaticControls;
+import vm.computer.api.Component;
+import vm.computer.api.Unicode;
+import vm.computer.components.*;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 
 public class Machine {
@@ -153,6 +153,12 @@ public class Machine {
         private void error(String text) {
             gpuComponent.rawError("Unrecoverable error\n\n" + text);
             gpuComponent.update();
+
+            for (int i = 0; i < 2; i++) {
+                computerComponent.rawBeep(1500, 0.3);
+            }
+            
+            shutdown(false);
         }
 
         @Override
@@ -170,10 +176,10 @@ public class Machine {
 
                 globals.set("debug", new DebugLib().call(LuaValue.NIL, globals));
                 globals.set("component", component);
-                globals.set("computer", new VM.Computer.API.Computer(machine));
+                globals.set("computer", new vm.computer.api.Computer(machine));
                 globals.set("unicode", new Unicode());
 
-                Varargs varargs = globals.load(loadResource("Computer.lua"), "machine").invoke();
+                Varargs varargs = globals.load(loadResource("machine.lua"), "machine").invoke();
                 
                 if (varargs.narg() > 0) {
                     if (varargs.arg(1).toboolean()) {
@@ -282,7 +288,7 @@ public class Machine {
                         }
                     }
                     catch (InterruptedException e) {
-                        System.out.println("Computer thread was interrupted");
+                        System.out.println("computer thread was interrupted");
                     }
                 }
 
@@ -294,14 +300,18 @@ public class Machine {
             return pressedKeyCodes.getOrDefault(keyCode, false);
         }
     }
-
-    public void shutdown() {
+    
+    public void shutdown(boolean resetGPU) {
         if (started) {
             started = false;
 
             computerRunningPlayer.stop();
-            gpuComponent.flush();
-            gpuComponent.update();
+            
+            StaticControls.powerButton.setSelected(false);
+            if (resetGPU) {
+                gpuComponent.flush();
+                gpuComponent.update();
+            }
             
             luaThread.interrupt();
             luaThread.stop();
@@ -310,12 +320,12 @@ public class Machine {
     
     private String loadResource(String name) {
         try {
-            return Main.loadFile(Main.class.getResource("../resources/" + name).getFile());
+            return new String(Files.readAllBytes(Paths.get(Main.class.getResource("resources/" + name).toURI())), StandardCharsets.UTF_8);
         }
-        catch (IOException e) {
+        catch (IOException | URISyntaxException e) {
             e.printStackTrace();
         }
-        
+
         return null;
     }
 

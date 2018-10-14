@@ -1,6 +1,6 @@
-package VM.Computer;
+package vm.computer;
 
-import VM.Main;
+import vm.Main;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
@@ -23,7 +23,7 @@ public class Player {
     
     public Player(String soundName) {
         try {
-            mediaPlayer = new MediaPlayer(new Media(Main.class.getResource("../resources/sounds/" + soundName).toURI().toString()));
+            mediaPlayer = new MediaPlayer(new Media(Main.class.getResource("resources/sounds/" + soundName).toURI().toString()));
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }

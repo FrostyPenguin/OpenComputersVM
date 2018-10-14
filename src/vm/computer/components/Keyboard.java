@@ -1,6 +1,6 @@
-package VM.Computer.Components;
+package vm.computer.components;
 
-import VM.Computer.ComponentBase;
+import vm.computer.ComponentBase;
 
 public class Keyboard extends ComponentBase {
     public Keyboard() {

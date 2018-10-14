@@ -1,9 +1,5 @@
-package VM;
+package vm;
 
-import VM.Computer.Glyph;
-import VM.Computer.KeyMap;
-import VM.Computer.Machine;
-import VM.Computer.Player;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,11 +10,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import vm.computer.Glyph;
+import vm.computer.KeyMap;
+import vm.computer.Machine;
+import vm.computer.Player;
 
 public class Main extends Application {
     public GridPane windowGridPane;
@@ -32,7 +27,7 @@ public class Main extends Application {
         Scene scene = new Scene(root);
 
         primaryStage.setScene(scene);
-        primaryStage.setTitle("OpenComputers VM");
+        primaryStage.setTitle("OpenComputers vm");
         primaryStage.show();
     }
 
@@ -52,16 +47,11 @@ public class Main extends Application {
     }
     
     public static void addStyleSheet(Region control, String styleName) {
-        control.getStylesheets().add(Main.class.getResource("../styles/" + styleName).toString());
+        control.getStylesheets().add(Main.class.getResource("styles/" + styleName).toString());
     }
     
     public void onGenerateButtonTouch() {
        new Machine();
-    }
-    
-    public static String loadFile(String path) throws IOException {
-        System.out.println("Trying to open file: " + path);
-        return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }
     
     public void onPowerButtonTouch() {
@@ -72,7 +62,7 @@ public class Main extends Application {
         }
         else {
             if (powerButton.isSelected()) {
-                Machine.current.shutdown();
+                Machine.current.shutdown(true);
             } else {
                 Machine.current.boot();
             }

@@ -1,6 +1,6 @@
-package VM.Computer;
+package vm.computer;
 
-import VM.Main;
+import vm.Main;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,7 +24,7 @@ public class Glyph {
                 map[i] = new Glyph(8);
             }
             
-            BufferedReader br = new BufferedReader(new InputStreamReader(Main.class.getClassLoader().getResourceAsStream("resources/font.hex")));
+            BufferedReader br = new BufferedReader(new InputStreamReader(Main.class.getClassLoader().getResourceAsStream("vm/resources/font.hex")));
             
             String line;
             while ((line = br.readLine()) != null) {
