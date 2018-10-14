@@ -37,8 +37,8 @@ public class Component extends LuaTable {
                 }
                 else {
                     for (int i = index; i < list.size(); i++) {
-                        ComponentBase component = list.get(index);
-                        
+                        ComponentBase component = list.get(i);
+
                         if (component.get("type").eq(filter).toboolean()) {
                             index = i + 1;
 

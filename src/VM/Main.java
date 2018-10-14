@@ -10,7 +10,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Main extends Application {
     public GridPane windowGridPane;
@@ -49,6 +53,18 @@ public class Main extends Application {
     
     public void onGenerateButtonTouch() {
        new Machine();
+    }
+    
+    public static String loadFile(String path) {
+        System.out.println("Trying to open file: " + path);
+        try {
+            return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        return null;
     }
     
     public void onPowerButtonTouch() {

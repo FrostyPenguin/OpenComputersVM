@@ -1,3 +1,4 @@
+
 local hookInterval = 10000
 local function calcHookInterval()
 	local bogomipsDivider = 0.05
@@ -33,7 +34,9 @@ local function calcHookInterval()
 	return ipsCount / bogomipsDivider
 end
 
+print(1)
 local ipsCount = calcHookInterval()
+print(2)
 -- Since our IPS might still be too generous (hookInterval needs to run at most
 -- every 0.05 seconds), we divide it further by 10 relative to that.
 hookInterval = (ipsCount * 0.005)
@@ -51,6 +54,8 @@ local function checkDeadline()
     error("too long without yielding", 0)
   end
 end
+
+print(3)
 
 -------------------------------------------------------------------------------
 
@@ -665,6 +670,8 @@ end
 
 -------------------------------------------------------------------------------
 
+print(4)
+
 local function spcall(...)
   local result = table.pack(pcall(...))
   if not result[1] then
@@ -705,6 +712,8 @@ local function sgc(self)
     error(reason, 0)
   end
 end
+
+print(5)
 
 --[[ This is the global environment we make available to userland programs. ]]
 -- You'll notice that we do a lot of wrapping of native functions and adding
@@ -1002,6 +1011,8 @@ sandbox = {
 }
 sandbox._G = sandbox
 
+print(6)
+
 -------------------------------------------------------------------------------
 -- Start of non-standard stuff.
 
@@ -1010,6 +1021,8 @@ sandbox._G = sandbox
 -- These functions provide the logic for wrapping and unwrapping (when
 -- pushed to user code and when pushed back to the host, respectively).
 local wrapUserdata, wrapSingleUserdata, unwrapUserdata, wrappedUserdataMeta
+
+print(7)
 
 wrappedUserdataMeta = {
   -- Weak keys, clean up once a proxy is no longer referenced anywhere.
@@ -1035,6 +1048,8 @@ local function processResult(result)
     return table.unpack(result, 2, result.n)
   end
 end
+
+print(8)
 
 local function invoke(target, direct, ...)
   local result
@@ -1068,6 +1083,8 @@ local function udinvoke(f, data, ...)
   args = nil -- clear upvalue, avoids trying to persist it
   return processResult(result)
 end
+
+print(9)
 
 -- Metatable for additional functionality on userdata.
 local userdataWrapper = {
@@ -1107,6 +1124,8 @@ local userdataWrapper = {
     return tostring(select(2, pcall(tostring, data)))
   end
 }
+
+print(10)
 
 local userdataCallback = {
   __call = function(self, ...)
@@ -1182,6 +1201,8 @@ end
 
 -------------------------------------------------------------------------------
 
+print(11)
+
 local libcomponent
 
 -- Caching proxy objects for lower memory use.
@@ -1249,6 +1270,8 @@ local componentCallback = {
     return libcomponent.doc(self.address, self.name) or "function"
   end
 }
+
+print(12)
 
 libcomponent = {
   doc = function(address, method)
@@ -1340,6 +1363,8 @@ libcomponent = {
 }
 sandbox.component = libcomponent
 
+print(13)
+
 local libcomputer = {
   isRobot = computer.isRobot,
   address = computer.address,
@@ -1409,6 +1434,8 @@ local libcomputer = {
 }
 sandbox.computer = libcomputer
 
+print(14)
+
 local libunicode = {
   char = function(...)
     return spcall(unicode.char, ...)
@@ -1446,10 +1473,14 @@ local libunicode = {
 }
 sandbox.unicode = libunicode
 
+print(15)
+
 -------------------------------------------------------------------------------
 
 local function bootstrap()
+  print("Meow")
   local eeprom = libcomponent.list("eeprom")()
+  print(type(eeprom))
   if eeprom then
     local code = libcomponent.invoke(eeprom, "get")
     if code and #code > 0 then
@@ -1465,13 +1496,20 @@ end
 
 -------------------------------------------------------------------------------
 
+print(16)
+
 local function main()
+  print(18)
   -- Yield once to get a memory baseline.
-  coroutine.yield()
+  --coroutine.yield()
+  
+  print(19)
 
   -- After memory footprint to avoid init.lua bumping the baseline.
   local co, args = bootstrap()
   local forceGC = 10
+
+  print(20)
 
   while true do
     deadline = computer.realTime() + system.timeout()
@@ -1501,6 +1539,10 @@ local function main()
   end
 end
 
+print(17)
+
 -- JNLua converts the coroutine to a string immediately, so we can't get the
 -- traceback later. Because of that we have to do the error handling here.
-return pcall(main)
+pcall(main)
+
+print("END")

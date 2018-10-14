@@ -19,14 +19,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 import org.luaj.vm2.*;
+import org.luaj.vm2.lib.DebugLib;
+import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.ZeroArgFunction;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -42,6 +40,7 @@ public class Machine {
     public boolean running = false;
     public long startTime;
     
+    private EEPROM eepromComponent;
     private GPU gpuComponent;
     private Screen screenComponent;
     private Keyboard keyboardComponent;
@@ -97,6 +96,7 @@ public class Machine {
         keyboardComponent = new Keyboard();
         screenComponent = new Screen();
         computerComponent = new Computer();
+        eepromComponent = new EEPROM();
     }
 
     public void focusScreenWidget(boolean force) {
@@ -122,19 +122,26 @@ public class Machine {
                 Globals globals = JsePlatform.standardGlobals();
                 
                 Component component = new Component();
+                
                 component.add(gpuComponent);
                 component.add(keyboardComponent);
                 component.add(screenComponent);
+                component.add(computerComponent);
+                component.add(eepromComponent);
 
+                globals.set("debug", new DebugLib().call(LuaValue.NIL, globals));
                 globals.set("component", component);
                 globals.set("computer", new ComputerAPI());
                 globals.set("unicode", new Unicode());
                 
-                globals.load(code).call();
+                Varargs varargs = globals.load(code).invoke();
+                System.out.println("Result: " + varargs.tojstring());
             }
             catch (LuaError e) {
-                gpuComponent.rawError("VM runtime error: " + e.getMessage());
-                gpuComponent.update();
+                String error = "VM runtime error: " + e.getMessage();
+                System.out.println(error);
+//                gpuComponent.rawError(error);
+//                gpuComponent.update();
             }
         }
     }
@@ -154,30 +161,30 @@ public class Machine {
             luaThread.stop();
         }
     }
+    
+    private String loadResource(String name) {
+        return Main.loadFile(Main.class.getResource("../resources/" + name).getFile());
+    }
 
     public void boot() {
         if (!running) {
-            try {
-                running = true;
-                startTime = System.currentTimeMillis();
+            running = true;
+            startTime = System.currentTimeMillis();
 
-                String code = new String(Files.readAllBytes(new File(StaticControls.EEPROMPathTextField.getText()).toPath()), StandardCharsets.UTF_8);
+            eepromComponent.code = loadResource("EEPROM.lua");
+            
+            computerRunningPlayer = new Player("computer_running.mp3");
+            computerRunningPlayer.setRepeating(true);
+            computerRunningPlayer.play();
 
-                computerRunningPlayer = new Player("computer_running.mp3");
-                computerRunningPlayer.setRepeating(true);
-                computerRunningPlayer.play();
+            // Стартуем листенер сигналов
+            signalThread = new SignalThread();
+            signalThread.start();
 
-                // Стартуем листенер сигналов
-                signalThread = new SignalThread();
-                signalThread.start();
-
-                // Запускаем луа-машину
-                luaThread = new LuaThread(code);
-                luaThread.start();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
+            // Запускаем луа-машину
+//            luaThread = new LuaThread(loadResource("Machine.lua"));
+            luaThread = new LuaThread(eepromComponent.code);
+            luaThread.start();
         }
     }
 
@@ -379,6 +386,10 @@ public class Machine {
         }
     }
     
+    private LuaValue uptime() {
+        return LuaValue.valueOf((System.currentTimeMillis() - startTime) / 1000.0d);
+    }
+    
     public class ComputerAPI extends LuaTable {
         public ComputerAPI() {
             set("isRobot", LuaValues.FALSE_FUNCTION);
@@ -394,13 +405,13 @@ public class Machine {
 
             set("realTime", new ZeroArgFunction() {
                 public LuaValue call() {
-                    return LuaValue.valueOf(System.currentTimeMillis() / 1000f);
+                    return uptime();
                 }
             });
 
             set("uptime", new ZeroArgFunction() {
                 public LuaValue call() {
-                    return LuaValue.valueOf((System.currentTimeMillis() - startTime) / 1000f);
+                    return uptime();
                 }
             });
 
@@ -464,6 +475,46 @@ public class Machine {
                 public LuaValue call() {
                     shutdown();
                     return LuaValue.NIL;
+                }
+            });
+        }
+    }
+    
+    public class EEPROM extends ComponentBase {
+        public String data, code;
+        
+        public EEPROM() {
+            super("eeprom");
+            
+            set("set", new OneArgFunction() {
+                public LuaValue call(LuaValue value) {
+                    value.checkstring();
+
+                    code = value.tojstring();
+
+                    return LuaValue.NIL;
+                }
+            });
+
+            set("get", new ZeroArgFunction() {
+                public LuaValue call() {
+                    return LuaValue.valueOf(code);
+                }
+            });
+            
+            set("setData", new OneArgFunction() {
+                public LuaValue call(LuaValue value) {
+                    value.checkstring();
+                    
+                    data = value.tojstring();
+                    
+                    return LuaValue.NIL;
+                }
+            });
+
+            set("getData", new ZeroArgFunction() {
+                public LuaValue call() {
+                    return LuaValue.valueOf(data);
                 }
             });
         }
