@@ -70,19 +70,19 @@ public class GPU extends ComponentBase {
         });
 
         set("fill", new VarArgFunction() {
-            public Varargs invoke(Varargs args) {
-                args.arg(1).checkint();
-                args.arg(2).checkint();
-                args.arg(3).checkint();
-                args.arg(4).checkint();
-                args.arg(5).checkjstring();
+            public Varargs invoke(Varargs varargs) {
+                varargs.checkint(1);
+                varargs.checkint(2);
+                varargs.checkint(3);
+                varargs.checkint(4);
+                varargs.checkjstring(5);
 
                 rawFill(
-                    args.arg(1).toint() - 1,
-                    args.arg(2).toint() - 1,
-                    args.arg(3).toint(),
-                    args.arg(4).toint(),
-                    args.arg(5).tojstring().codePointAt(0)
+                    varargs.toint(1) - 1,
+                    varargs.toint(2) - 1,
+                    varargs.toint(3),
+                    varargs.toint(4),
+                    varargs.tojstring(5).codePointAt(0)
                 );
 
                 update();

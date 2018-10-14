@@ -187,11 +187,11 @@ public class Machine {
                 Varargs varargs = globals.load(loadResource("machine.lua"), "machine").invoke();
                 
                 if (varargs.narg() > 0) {
-                    if (varargs.arg(1).toboolean()) {
+                    if (varargs.toboolean(1)) {
                         System.out.println("Result: " + varargs.tojstring());
                     }
                     else {
-                        error(varargs.arg(2).tojstring());
+                        error(varargs.tojstring(2));
                     }
                 }
                 else {
@@ -338,6 +338,9 @@ public class Machine {
             started = true;
             startTime = System.currentTimeMillis();
 
+            gpuComponent.flush();
+            gpuComponent.update();
+            
             try {
                 eepromComponent.code = loadFile(new File(StaticControls.EEPROMPathTextField.getText()).toURI());
             }
@@ -347,7 +350,7 @@ public class Machine {
 
             // Бесконечно играем звук компека)00
             computerRunningPlayer = new Player("computer_running.mp3");
-            computerRunningPlayer.setRepeating(true);
+            computerRunningPlayer.setRepeating();
             computerRunningPlayer.play();
             
             // Запускаем луа-машину
@@ -376,7 +379,7 @@ public class Machine {
             this.setId("eblo");
 
             // Эффектики
-//            imageView.setEffect(new Bloom(0.4));
+//            imageView.setEffect(new Bloom(0.8));
 
             // Добавляем говнище на экранчик
             getChildren().addAll(label, imageView);

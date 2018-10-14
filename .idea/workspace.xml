@@ -7,29 +7,60 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="aefaef">
-      <change afterPath="$PROJECT_DIR$/src/vm/computer/components/Filesystem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/luaj_jse_3_0_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/luaj_jse_3_0_1.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/Components/Computer$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/Components/Computer$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/Components/Computer$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/Components/Computer$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/Components/Computer$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/Components/Computer$3.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/Components/Computer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/Components/Computer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/LuaValues$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/LuaValues$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/LuaValues$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/LuaValues$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/LuaValues$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/LuaValues$3.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/LuaValues.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/LuaValues.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/Machine$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/Machine$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/API/Computer$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/API/Computer$3.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/API/Unicode$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/API/Unicode$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/API/Unicode.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/API/Unicode.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/Components/GPU$4.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/Components/GPU$4.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/Machine$LuaThread.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/Machine$LuaThread.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/Machine$ScreenWidget.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/Machine$ScreenWidget.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/Machine.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/Machine.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/VM.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/VM.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/resources/EEPROM.lua" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/resources/EEPROM.lua" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/resources/Machine.lua" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/resources/Machine.lua" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/VM.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/VM.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/computer/LuaValues.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/computer/LuaValues.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/Player.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/Computer/Player.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/computer/components/Filesystem$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/computer/components/Filesystem$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/computer/components/Filesystem$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/computer/components/Filesystem$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/computer/components/Filesystem$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/computer/components/Filesystem$3.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/computer/components/Filesystem$4.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/computer/components/Filesystem$4.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/computer/components/Filesystem.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/computer/components/Filesystem.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/resources/sounds/click.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/resources/sounds/computer_running.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/resources/sounds/floppy_access1.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/resources/sounds/floppy_access2.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/resources/sounds/floppy_access3.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/resources/sounds/floppy_access4.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/resources/sounds/floppy_access5.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/resources/sounds/floppy_access6.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/resources/sounds/floppy_eject.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/resources/sounds/floppy_insert.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/resources/sounds/hdd_access1.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/resources/sounds/hdd_access2.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/resources/sounds/hdd_access3.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/resources/sounds/hdd_access4.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/resources/sounds/hdd_access5.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/resources/sounds/hdd_access6.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OpenComputersVM/VM/resources/sounds/hdd_access7.ogg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/vm/computer/Machine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/computer/Machine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/computer/components/Computer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/computer/components/Computer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/resources/EEPROM.lua" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/resources/EEPROM.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/computer/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/computer/Player.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/computer/api/Computer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/computer/api/Computer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/computer/api/Unicode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/computer/api/Unicode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/computer/components/Filesystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/computer/components/Filesystem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/computer/components/GPU.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/computer/components/GPU.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/resources/sounds/click.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/resources/sounds/computer_running.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/resources/sounds/floppy_access1.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/resources/sounds/floppy_access2.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/resources/sounds/floppy_access3.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/resources/sounds/floppy_access4.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/resources/sounds/floppy_access5.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/resources/sounds/floppy_access6.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/resources/sounds/floppy_eject.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/resources/sounds/floppy_insert.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/resources/sounds/hdd_access1.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/resources/sounds/hdd_access2.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/resources/sounds/hdd_access3.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/resources/sounds/hdd_access4.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/resources/sounds/hdd_access5.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/resources/sounds/hdd_access6.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/resources/sounds/hdd_access7.ogg" beforeDir="false" />
     </list>
     <ignored path="JavaFxApplication.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -189,7 +220,7 @@
     <session id="232186380">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="16" />
+          <entry key="project.closed" value="17" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.10" value="3" />
           <entry key="project.open.time.11" value="2" />
@@ -209,34 +240,34 @@
         <counts>
           <entry key="css" value="161" />
           <entry key="dummy" value="26" />
-          <entry key="java" value="13119" />
-          <entry key="lua" value="1167" />
+          <entry key="java" value="14779" />
+          <entry key="lua" value="1168" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CSS" value="161" />
-          <entry key="JAVA" value="13119" />
-          <entry key="PLAIN_TEXT" value="1193" />
+          <entry key="JAVA" value="14779" />
+          <entry key="PLAIN_TEXT" value="1194" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="class" value="22" />
+          <entry key="class" value="29" />
           <entry key="css" value="8" />
           <entry key="fxml" value="2" />
           <entry key="hex" value="1" />
-          <entry key="java" value="91" />
-          <entry key="lua" value="7" />
+          <entry key="java" value="113" />
+          <entry key="lua" value="8" />
           <entry key="txt" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="CLASS" value="22" />
+          <entry key="CLASS" value="29" />
           <entry key="CSS" value="8" />
-          <entry key="JAVA" value="91" />
-          <entry key="PLAIN_TEXT" value="9" />
+          <entry key="JAVA" value="113" />
+          <entry key="PLAIN_TEXT" value="10" />
           <entry key="XML" value="2" />
         </counts>
       </usages-collector>
@@ -250,29 +281,103 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/vm/computer/components/Filesystem.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="305">
-              <caret line="28" column="5" lean-forward="true" selection-start-line="28" selection-start-column="5" selection-end-line="28" selection-end-column="5" />
+            <state relative-caret-position="203">
+              <caret line="30" column="8" lean-forward="true" selection-start-line="30" selection-start-column="8" selection-end-line="30" selection-end-column="8" />
               <folding>
-                <element signature="e#871#1003#0" expanded="true" />
-                <element signature="e#1002#1003#0" expanded="true" />
-                <element signature="e#1031#1290#0" expanded="true" />
-                <element signature="e#1289#1290#0" expanded="true" />
-                <element signature="e#1330#1793#0" expanded="true" />
-                <element signature="e#1792#1793#0" expanded="true" />
+                <element signature="e#1068#1229#0" expanded="true" />
+                <element signature="e#1228#1229#0" expanded="true" />
+                <element signature="e#2439#3352#0" expanded="true" />
+                <element signature="e#3351#3352#0" expanded="true" />
+                <element signature="e#3889#4025#0" expanded="true" />
+                <element signature="e#4024#4025#0" expanded="true" />
+                <element signature="e#4101#4238#0" expanded="true" />
+                <element signature="e#4237#4238#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/vm/computer/api/Unicode.java">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/vm/computer/components/Computer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="220">
-              <caret line="10" column="13" lean-forward="true" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+            <state relative-caret-position="270">
+              <caret line="17" column="31" selection-start-line="17" selection-start-column="31" selection-end-line="17" selection-end-column="31" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/vm/computer/api/Computer.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="510">
+              <caret line="59" column="105" selection-start-line="59" selection-start-column="40" selection-end-line="59" selection-end-column="105" />
               <folding>
-                <element signature="e#210#424#0" expanded="true" />
-                <element signature="e#423#424#0" expanded="true" />
+                <element signature="e#1835#2027#0" expanded="true" />
+                <element signature="e#2026#2027#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/vm/computer/Glyph.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="550">
+              <caret line="25" column="12" selection-start-line="25" selection-start-column="12" selection-end-line="25" selection-end-column="12" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/vm/computer/KeyMap.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="132">
+              <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/vm/computer/LuaValues.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="462">
+              <caret line="33" column="5" selection-start-line="33" selection-start-column="5" selection-end-line="33" selection-end-column="5" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/vm/computer/Machine.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="273">
+              <caret line="377" column="33" lean-forward="true" selection-start-line="377" selection-start-column="33" selection-end-line="377" selection-end-column="33" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/vm/resources/Machine.lua">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="412">
+              <caret line="26" column="25" lean-forward="true" selection-start-line="26" selection-start-column="25" selection-end-line="26" selection-end-column="25" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/vm/computer/Pixel.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="44">
+              <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/vm/computer/Player.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="331">
+              <caret line="28" column="15" selection-start-line="28" selection-start-column="15" selection-end-line="28" selection-end-column="15" />
             </state>
           </provider>
         </entry>
@@ -288,12 +393,8 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>luaErro</find>
-      <find>bios</find>
-      <find>var1</find>
       <find>debug</find>
       <find>//</find>
-      <find>boot</find>
       <find>realTIme</find>
       <find>uptime</find>
       <find>pullSIg</find>
@@ -318,6 +419,10 @@
       <find>shutdown</find>
       <find>new Files</find>
       <find>eeprom.lua</find>
+      <find>.arg(</find>
+      <find>free</find>
+      <find>bloo</find>
+      <find>boot</find>
     </findStrings>
     <replaceStrings>
       <replace>images/</replace>
@@ -337,9 +442,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/emulator/API/Computer.java" />
-        <option value="$PROJECT_DIR$/src/emulator/VorbisPlayer.java" />
-        <option value="$PROJECT_DIR$/src/emulator/Sound.java" />
         <option value="$PROJECT_DIR$/src/emulator/Player.java" />
         <option value="$PROJECT_DIR$/src/emulator/Machine.java" />
         <option value="$PROJECT_DIR$/src/emulator/Signal.java" />
@@ -379,15 +481,18 @@
         <option value="$PROJECT_DIR$/src/VM/Computer/Machine.java" />
         <option value="$PROJECT_DIR$/src/VM/computer/Machine.java" />
         <option value="$PROJECT_DIR$/src/vm/computer/Glyph.java" />
-        <option value="$PROJECT_DIR$/src/vm/computer/Player.java" />
         <option value="$PROJECT_DIR$/src/vm/Main.java" />
         <option value="$PROJECT_DIR$/src/vm/computer/components/Computer.java" />
-        <option value="$PROJECT_DIR$/src/vm/resources/Machine.lua" />
         <option value="$PROJECT_DIR$/src/vm/computer/api/Component.java" />
         <option value="$PROJECT_DIR$/src/vm/resources/EEPROM.lua" />
-        <option value="$PROJECT_DIR$/src/vm/computer/Machine.java" />
         <option value="$PROJECT_DIR$/src/vm/computer/LuaValues.java" />
+        <option value="$PROJECT_DIR$/src/vm/computer/api/Unicode.java" />
+        <option value="$PROJECT_DIR$/src/vm/computer/api/Computer.java" />
+        <option value="$PROJECT_DIR$/src/vm/computer/components/GPU.java" />
+        <option value="$PROJECT_DIR$/src/vm/computer/Player.java" />
         <option value="$PROJECT_DIR$/src/vm/computer/components/Filesystem.java" />
+        <option value="$PROJECT_DIR$/src/vm/resources/Machine.lua" />
+        <option value="$PROJECT_DIR$/src/vm/computer/Machine.java" />
       </list>
     </option>
   </component>
@@ -632,7 +737,7 @@
     <frame x="0" y="23" width="1920" height="979" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.6703755" visible="true" weight="0.22044729" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.6703755" visible="true" weight="0.19116081" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info id="Favorites" order="2" />
       <window_info id="Designer" order="3" />
@@ -660,13 +765,13 @@
       <window_info anchor="right" id="Palette&#9;" order="7" />
     </layout>
     <layout-to-restore>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.6703755" visible="true" weight="0.2140575" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.6703755" visible="true" weight="0.22044729" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info id="Favorites" order="2" />
       <window_info id="Designer" order="3" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.22322436" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.22660653" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.22660653" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -704,34 +809,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_162.jdk/Contents/Home/src.zip!/java/lang/Double.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="78" column="31" selection-start-line="78" selection-start-column="31" selection-end-line="78" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/styles/pathInput.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="176">
-          <caret line="8" column="1" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_162.jdk/Contents/Home/javafx-src.zip!/javafx/scene/image/ImageView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="145" column="11" selection-start-line="145" selection-start-column="11" selection-end-line="145" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_162.jdk/Contents/Home/src.zip!/java/net/URI.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="182">
-          <caret line="3038" column="13" selection-start-line="3038" selection-start-column="13" selection-end-line="3038" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_162.jdk/Contents/Home/javafx-src.zip!/javafx/scene/input/MouseEvent.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="331">
@@ -844,49 +921,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/api/Computer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="191">
-          <caret line="18" column="4" lean-forward="true" selection-start-line="18" selection-start-column="4" selection-end-line="18" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/components/Keyboard.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="88">
-          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/components/Screen.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="13" column="26" selection-start-line="13" selection-start-column="26" selection-end-line="13" selection-end-column="26" />
-          <folding>
-            <element signature="e#328#547#0" expanded="true" />
-            <element signature="e#546#547#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/ComponentBase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="132">
-          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/components/GPU.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="274">
-          <caret line="25" column="36" selection-start-line="25" selection-start-column="36" selection-end-line="25" selection-end-column="36" />
-          <folding>
-            <element signature="e#805#1386#0" expanded="true" />
-            <element signature="e#1385#1386#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/vm/StaticControls.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="242">
@@ -916,45 +950,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/resources/Machine.lua">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="14" column="3" selection-start-line="14" selection-start-column="3" selection-end-line="14" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/api/Component.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
-          <caret line="12" column="11" selection-start-line="12" selection-start-column="4" selection-end-line="12" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/Glyph.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="550">
-          <caret line="25" column="12" selection-start-line="25" selection-start-column="12" selection-end-line="25" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/Pixel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="44">
-          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/vm/Main.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="796">
           <caret line="64" column="37" selection-start-line="64" selection-start-column="37" selection-end-line="64" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/Player.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="528">
-          <caret line="24" column="13" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
         </state>
       </provider>
     </entry>
@@ -972,17 +971,105 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/src/vm/libraries/luaj-jse-3.0.1.jar!/org/luaj/vm2/Varargs.class">
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_162.jdk/Contents/Home/src.zip!/java/lang/StringBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="282">
-          <caret line="15" column="29" selection-start-line="15" selection-start-column="29" selection-end-line="15" selection-end-column="29" />
+        <state relative-caret-position="287">
+          <caret line="398" column="25" selection-start-line="398" selection-start-column="25" selection-end-line="398" selection-end-column="25" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/Machine.java">
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_162.jdk/Contents/Home/src.zip!/java/lang/String.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-73">
-          <caret line="331" column="40" selection-start-line="331" selection-start-column="40" selection-end-line="331" selection-end-column="40" />
+        <state relative-caret-position="282">
+          <caret line="621" column="15" selection-start-line="621" selection-start-column="15" selection-end-line="621" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/src/vm/libraries/luaj-jse-3.0.1.jar!/org/luaj/vm2/LuaValue.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="266">
+          <caret line="88" column="19" selection-start-line="88" selection-start-column="19" selection-end-line="88" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/src/vm/libraries/luaj-jse-3.0.1.jar!/org/luaj/vm2/Varargs.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="242">
+          <caret line="29" column="19" selection-start-line="29" selection-start-column="19" selection-end-line="29" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/api/Component.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="247">
+          <caret line="12" column="11" selection-start-line="12" selection-start-column="4" selection-end-line="12" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/api/Unicode.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="8" column="13" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
+          <folding>
+            <element signature="e#210#441#0" expanded="true" />
+            <element signature="e#440#441#0" expanded="true" />
+            <element signature="e#533#1798#0" expanded="true" />
+            <element signature="e#1797#1798#0" expanded="true" />
+            <element signature="e#1823#2058#0" expanded="true" />
+            <element signature="e#2057#2058#0" expanded="true" />
+            <element signature="e#2083#2302#0" expanded="true" />
+            <element signature="e#2301#2302#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/components/EEPROM.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="282">
+          <caret line="17" column="39" selection-start-line="17" selection-start-column="39" selection-end-line="17" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/components/GPU.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="77" column="40" lean-forward="true" selection-start-line="77" selection-start-column="40" selection-end-line="77" selection-end-column="40" />
+          <folding>
+            <element signature="e#2080#2724#0" expanded="true" />
+            <element signature="e#2723#2724#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/components/Keyboard.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="88">
+          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/components/Screen.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="13" column="26" selection-start-line="13" selection-start-column="26" selection-end-line="13" selection-end-column="26" />
+          <folding>
+            <element signature="e#346#565#0" expanded="true" />
+            <element signature="e#564#565#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/ComponentBase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/Glyph.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="550">
+          <caret line="25" column="12" selection-start-line="25" selection-start-column="12" selection-end-line="25" selection-end-column="12" />
         </state>
       </provider>
     </entry>
@@ -993,26 +1080,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/components/EEPROM.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="282">
-          <caret line="17" column="39" selection-start-line="17" selection-start-column="39" selection-end-line="17" selection-end-column="39" />
-          <folding>
-            <element signature="e#321#536#0" expanded="true" />
-            <element signature="e#535#536#0" expanded="true" />
-            <element signature="e#559#690#0" expanded="true" />
-            <element signature="e#689#690#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/components/Computer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="13" selection-start-line="13" selection-end-line="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/vm/computer/LuaValues.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="462">
@@ -1020,29 +1087,73 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/components/Filesystem.java">
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/Pixel.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="305">
-          <caret line="28" column="5" lean-forward="true" selection-start-line="28" selection-start-column="5" selection-end-line="28" selection-end-column="5" />
+        <state relative-caret-position="44">
+          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_162.jdk/Contents/Home/javafx-src.zip!/javafx/scene/media/MediaPlayer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="215">
+          <caret line="1901" column="22" selection-start-line="1901" selection-start-column="22" selection-end-line="1901" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/components/Computer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="17" column="31" selection-start-line="17" selection-start-column="31" selection-end-line="17" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/api/Computer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="59" column="105" selection-start-line="59" selection-start-column="40" selection-end-line="59" selection-end-column="105" />
           <folding>
-            <element signature="e#871#1003#0" expanded="true" />
-            <element signature="e#1002#1003#0" expanded="true" />
-            <element signature="e#1031#1290#0" expanded="true" />
-            <element signature="e#1289#1290#0" expanded="true" />
-            <element signature="e#1330#1793#0" expanded="true" />
-            <element signature="e#1792#1793#0" expanded="true" />
+            <element signature="e#1835#2027#0" expanded="true" />
+            <element signature="e#2026#2027#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/api/Unicode.java">
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/Player.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="10" column="13" lean-forward="true" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+        <state relative-caret-position="331">
+          <caret line="28" column="15" selection-start-line="28" selection-start-column="15" selection-end-line="28" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/components/Filesystem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="203">
+          <caret line="30" column="8" lean-forward="true" selection-start-line="30" selection-start-column="8" selection-end-line="30" selection-end-column="8" />
           <folding>
-            <element signature="e#210#424#0" expanded="true" />
-            <element signature="e#423#424#0" expanded="true" />
+            <element signature="e#1068#1229#0" expanded="true" />
+            <element signature="e#1228#1229#0" expanded="true" />
+            <element signature="e#2439#3352#0" expanded="true" />
+            <element signature="e#3351#3352#0" expanded="true" />
+            <element signature="e#3889#4025#0" expanded="true" />
+            <element signature="e#4024#4025#0" expanded="true" />
+            <element signature="e#4101#4238#0" expanded="true" />
+            <element signature="e#4237#4238#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/resources/Machine.lua">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="412">
+          <caret line="26" column="25" lean-forward="true" selection-start-line="26" selection-start-column="25" selection-end-line="26" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/Machine.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="273">
+          <caret line="377" column="33" lean-forward="true" selection-start-line="377" selection-start-column="33" selection-end-line="377" selection-end-column="33" />
         </state>
       </provider>
     </entry>

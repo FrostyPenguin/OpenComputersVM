@@ -8,8 +8,10 @@ import org.luaj.vm2.lib.VarArgFunction;
 import org.luaj.vm2.lib.ZeroArgFunction;
 import vm.computer.ComponentBase;
 import vm.computer.LuaValues;
+import vm.computer.Player;
 
 import java.io.File;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Filesystem extends ComponentBase {
     private static final int
@@ -20,21 +22,22 @@ public class Filesystem extends ComponentBase {
         realPath,
         label;
     
-    private File getFsFile(String path) {
-        return new File(realPath + path);
-    }
-
-    private File getFsFile(Varargs varargs) {
-        return getFsFile(varargs.arg1().tojstring());
-    }
+    private Player[] players = new Player[7];
     
     public Filesystem(String realPath) {
         super("filesystem");
         
         this.realPath = realPath;
+        
+        // Создаем дохуяллион плееров для воспроизведения наших прекрасных звуков харда
+        for (int i = 0; i < players.length; i++) {
+            players[i] = new Player("hdd_access" + i + ".mp3");
+        }
 
+        // Коммент-разделитель для методов-хуетодов
         set("getLabel", new ZeroArgFunction() {
             public LuaValue call() {
+                
                 return LuaValue.valueOf(label);
             }
         });
@@ -51,7 +54,9 @@ public class Filesystem extends ComponentBase {
         
         set("lastModified", new VarArgFunction() {
             public Varargs invoke(Varargs varargs) {
-                varargs.arg(1).checkjstring();
+                varargs.checkjstring(1);
+
+                playSound();
                 
                 File file = getFsFile(varargs);
                 if (file.exists()) {
@@ -65,7 +70,9 @@ public class Filesystem extends ComponentBase {
         
         set("size", new VarArgFunction() {
             public Varargs invoke(Varargs varargs) {
-                varargs.arg(1).checkjstring();
+                varargs.checkjstring(1);
+
+                playSound();
                 
                 File file = getFsFile(varargs);
                 if (file.exists()) {
@@ -79,7 +86,9 @@ public class Filesystem extends ComponentBase {
         
         set("exists", new VarArgFunction() {
             public Varargs invoke(Varargs varargs) {
-                varargs.arg(1).checkjstring();
+                varargs.checkjstring(1);
+
+                playSound();
                 
                 return LuaValue.valueOf(getFsFile(varargs).exists());
             }
@@ -87,8 +96,10 @@ public class Filesystem extends ComponentBase {
         
         set("list", new VarArgFunction() {
             public Varargs invoke(Varargs varargs) {
-                varargs.arg(1).checkjstring();
-                
+                varargs.checkjstring(1);
+
+                playSound();
+
                 File file = getFsFile(varargs);
                 if (file.exists()) {
                     if (file.isDirectory()) {
@@ -132,6 +143,20 @@ public class Filesystem extends ComponentBase {
 //        catch (FileNotFoundException e) {
 //            e.printStackTrace();
 //        }
+    }
+
+    private void playSound() {
+        Player player = players[ThreadLocalRandom.current().nextInt(0, players.length)];
+        player.reset();
+        player.play();
+    }
+
+    private File getFsFile(String path) {
+        return new File(realPath + path);
+    }
+
+    private File getFsFile(Varargs varargs) {
+        return getFsFile(varargs.arg1().tojstring());
     }
     
 //    private class Handle {

@@ -37,7 +37,7 @@ public class Computer extends LuaTable {
 
         set("pullSignal", new LuaFunction() {
             public Varargs invoke(Varargs timeout) {
-                return machine.luaThread.pullSignal(timeout.arg(1).isnil() ? -1 : timeout.arg(1).tofloat());
+                return machine.luaThread.pullSignal(timeout.isnil(1) ? -1 : timeout.tofloat(1));
             }
         });
 
