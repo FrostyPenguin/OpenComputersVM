@@ -18,6 +18,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
@@ -29,13 +31,8 @@ import vm.computer.api.Component;
 import vm.computer.api.Unicode;
 import vm.computer.components.*;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 
 public class Machine {
@@ -57,11 +54,14 @@ public class Machine {
     private ScreenWidget screenWidget;
     private double lastClickX, lastClickY;
 
-    public Machine() {
+    public Machine(JSONObject machineConfig) {
         // Добавляем новый экранчик в пиздюлину
-        screenWidget = new ScreenWidget();
-        screenWidget.setLayoutX(30);
-        screenWidget.setLayoutY(30);
+        screenWidget = new ScreenWidget(
+            machineConfig.getDouble("x"),
+            machineConfig.getDouble("y"),
+            machineConfig.getDouble("scale"),
+            machineConfig.getString("name")
+        );
 
         // Впездываем этой хуйне ебливой (ну, которая лейбл) всякие ивенты и прочую залупу
         screenWidget.label.setOnMousePressed(event -> {
@@ -85,16 +85,38 @@ public class Machine {
         Main.instance.screensPane.getChildren().add(screenWidget);
         focusScreenWidget(true);
 
-        // Инициализируем некоторые компоненты
-        gpuComponent = new GPU(screenWidget);
-        gpuComponent.rawSetResolution(80, 25);
-        gpuComponent.update();
+        // Инициализируем компоненты
+        JSONArray components = machineConfig.getJSONArray("components");
         
-        keyboardComponent = new Keyboard();
-        screenComponent = new Screen();
-        computerComponent = new Computer(this);
-        eepromComponent = new EEPROM();
-        filesystemComponent = new Filesystem(Main.instance.HDDPathTextField.getText());
+        JSONObject component;
+        String address;
+        for (int i = 0; i < components.length(); i++) {
+            component = components.getJSONObject(i);
+            address = component.getString("address");
+            
+            switch (component.getString("type")) {
+                case "gpu":
+                    gpuComponent = new GPU(address, screenWidget);
+                    gpuComponent.rawSetResolution(component.getInt("width"), component.getInt("height"));
+                    gpuComponent.update();
+                    break;
+                case "screen":
+                    screenComponent = new Screen(address, component.getBoolean("precise"));
+                    break;
+                case "keyboard":
+                    keyboardComponent = new Keyboard(address);
+                    break;
+                case "computer":
+                    computerComponent = new Computer(address, this);
+                    break;
+                case "eeprom":
+                    eepromComponent = new EEPROM(address, component.getString("path"), component.getString("data"));
+                    break;
+                case "filesystem":
+                    filesystemComponent = new Filesystem(address, component.getString("path"));
+                    break;
+            }
+        }
     }
 
     public void focusScreenWidget(boolean force) {
@@ -184,7 +206,7 @@ public class Machine {
                 globals.set("computer", new vm.computer.api.Computer(machine));
                 globals.set("unicode", new Unicode());
 
-                Varargs varargs = globals.load(loadResource("machine.lua"), "machine").invoke();
+                Varargs varargs = globals.load(Main.loadResource("machine.lua"), "machine").invoke();
                 
                 if (varargs.narg() > 0) {
                     if (varargs.toboolean(1)) {
@@ -324,14 +346,6 @@ public class Machine {
             luaThread.stop();
         }
     }
-    
-    private String loadFile(URI uri) throws IOException {
-        return new String(Files.readAllBytes(Paths.get(uri)), StandardCharsets.UTF_8);
-    }
-    
-    private String loadResource(String name) throws URISyntaxException, IOException {
-        return loadFile(Main.class.getResource("resources/" + name).toURI());
-    }
 
     public void boot() {
         if (!started) {
@@ -340,9 +354,9 @@ public class Machine {
 
             gpuComponent.flush();
             gpuComponent.update();
-            
+
             try {
-                eepromComponent.code = loadFile(new File(Main.instance.EEPROMPathTextField.getText()).toURI());
+                eepromComponent.loadCode();
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -370,11 +384,15 @@ public class Machine {
 
         private Timeline scaleTimeline;
 
-        public ScreenWidget() {
+        public ScreenWidget(double x, double y, double s, String name) {
+            scale = s;
+            
+            setLayoutX(x);
+            setLayoutY(y);
             Main.addStyleSheet(this, "screenWidget.css");
             getStyleClass().setAll("pane");
             
-            label = new Label("My cool machine");
+            label = new Label(name);
             label.setPrefHeight(22);
             label.setPadding(new Insets(0, 0, 0, 7));
             label.setAlignment(Pos.CENTER);
@@ -391,7 +409,7 @@ public class Machine {
                 remove();
             });
             
-            slider = new Slider(0.4, 1, 1);
+            slider = new Slider(0.4, 1, scale);
             slider.setLayoutX(21);
             slider.setLayoutY(4.5);
             slider.setPrefWidth(65);

@@ -1,14 +1,14 @@
 package vm.computer.components;
 
-import vm.computer.ComponentBase;
-import vm.computer.Glyph;
-import vm.computer.Machine;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import org.json.JSONObject;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.*;
+import vm.computer.Glyph;
+import vm.computer.Machine;
 
 public class GPU extends ComponentBase {
     public int
@@ -23,8 +23,9 @@ public class GPU extends ComponentBase {
     private PixelWriter pixelWriter;
     private int background, foreground;
     
-    public GPU(Machine.ScreenWidget screenWidget) {
-        super("gpu");
+    public GPU(String address, Machine.ScreenWidget screenWidget) {
+        super(address,"gpu");
+        
         this.screenWidget = screenWidget;
 
         set("set", new ThreeArgFunction() {
@@ -122,6 +123,14 @@ public class GPU extends ComponentBase {
                 return LuaValue.valueOf(foreground);
             }
         });
+    }
+    
+    @Override
+    public JSONObject toJSONObject() {
+        return super.toJSONObject().put(
+            "resolution",
+            new JSONObject().put("width", width).put("height", height)
+        );
     }
 
     class Pixel {

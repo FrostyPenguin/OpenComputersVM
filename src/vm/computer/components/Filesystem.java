@@ -1,12 +1,12 @@
 package vm.computer.components;
 
+import org.json.JSONObject;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
 import org.luaj.vm2.lib.ZeroArgFunction;
-import vm.computer.ComponentBase;
 import vm.computer.LuaValues;
 import vm.computer.Player;
 
@@ -24,8 +24,8 @@ public class Filesystem extends ComponentBase {
     
     private Player[] players = new Player[7];
     
-    public Filesystem(String realPath) {
-        super("filesystem");
+    public Filesystem(String address, String realPath) {
+        super(address, "filesystem");
         
         this.realPath = realPath;
         
@@ -135,14 +135,11 @@ public class Filesystem extends ComponentBase {
         });
         
         set("isReadOnly", LuaValues.FALSE_FUNCTION);
-        
-//        try {
-//            File file = new File("aefae");
-//            FileInputStream fileInputStream = new FileInputStream(file);
-//        }
-//        catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
+    }
+
+    @Override
+    public JSONObject toJSONObject() {
+        return super.toJSONObject().put("path", realPath);
     }
 
     private void playSound() {
@@ -158,8 +155,4 @@ public class Filesystem extends ComponentBase {
     private File getFsFile(Varargs varargs) {
         return getFsFile(varargs.arg1().tojstring());
     }
-    
-//    private class Handle {
-//        
-//    }
 }
