@@ -5,7 +5,7 @@ import javafx.scene.input.KeyCode;
 import java.util.HashMap;
 
 public class KeyMap {
-    private static HashMap<KeyCode, Integer> map = new HashMap<>();
+    private static final HashMap<KeyCode, Integer> map = new HashMap<>();
 
     public static int get(KeyCode keyCode) {
         if (map.containsKey(keyCode)) {

@@ -6,7 +6,10 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -22,7 +25,6 @@ import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.DebugLib;
 import org.luaj.vm2.lib.jse.JsePlatform;
 import vm.Main;
-import vm.StaticControls;
 import vm.computer.api.Component;
 import vm.computer.api.Unicode;
 import vm.computer.components.*;
@@ -75,17 +77,12 @@ public class Machine {
             lastClickY = event.getSceneY();
         });
 
-        screenWidget.label.setOnScroll(event -> {
-            screenWidget.scale += event.getDeltaY() > 0 ? 0.05 : -0.05;
-            screenWidget.applyScale();
-        });
-
         // Тута ивенты всего виджета экрана целиком для клавы и фокуса
         screenWidget.setOnMousePressed(event -> {
             focusScreenWidget(false);
         });
         
-        StaticControls.screensPane.getChildren().add(screenWidget);
+        Main.instance.screensPane.getChildren().add(screenWidget);
         focusScreenWidget(true);
 
         // Инициализируем некоторые компоненты
@@ -97,7 +94,7 @@ public class Machine {
         screenComponent = new Screen();
         computerComponent = new Computer(this);
         eepromComponent = new EEPROM();
-        filesystemComponent = new Filesystem(StaticControls.HDDPathTextField.getText());
+        filesystemComponent = new Filesystem(Main.instance.HDDPathTextField.getText());
     }
 
     public void focusScreenWidget(boolean force) {
@@ -106,7 +103,7 @@ public class Machine {
             screenWidget.requestFocus();
             Machine.current = this;
 
-            StaticControls.powerButton.setSelected(started);
+            Main.instance.powerButton.setSelected(started);
         }
     }
 
@@ -345,7 +342,7 @@ public class Machine {
             gpuComponent.update();
             
             try {
-                eepromComponent.code = loadFile(new File(StaticControls.EEPROMPathTextField.getText()).toURI());
+                eepromComponent.code = loadFile(new File(Main.instance.EEPROMPathTextField.getText()).toURI());
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -366,15 +363,46 @@ public class Machine {
         public ImageView imageView;
         public Label label;
         public Rectangle rectangle;
+        public Button closeButton;
+        public Slider slider;
         
         public double scale = 1;
 
+        private Timeline scaleTimeline;
+
         public ScreenWidget() {
+            Main.addStyleSheet(this, "screenWidget.css");
+            getStyleClass().setAll("pane");
+            
             label = new Label("My cool machine");
-            label.setPrefHeight(20);
+            label.setPrefHeight(22);
             label.setPadding(new Insets(0, 0, 0, 7));
             label.setAlignment(Pos.CENTER);
-            Main.addStyleSheet(label, "screenLabel.css");
+            label.getStyleClass().setAll("label");
+            
+            closeButton = new Button();
+            closeButton.setLayoutX(6);
+            closeButton.setLayoutY(6);
+            closeButton.setPrefSize(10, 10);
+            closeButton.setMinSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
+            closeButton.setMaxSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
+            closeButton.getStyleClass().setAll("actionButton", "closeButton");
+            closeButton.setOnMouseClicked(event -> {
+                remove();
+            });
+            
+            slider = new Slider(0.4, 1, 1);
+            slider.setLayoutX(21);
+            slider.setLayoutY(4.5);
+            slider.setPrefWidth(65);
+            slider.setOnMousePressed(event -> {
+                scale = slider.getValue();
+                applyScale(100);
+            });
+            slider.setOnMouseDragged(event -> {
+                scale = slider.getValue();
+                applyScale(10);
+            });
 
             rectangle = new Rectangle(0, 0, 1, 1);
             rectangle.setLayoutY(label.getPrefHeight());
@@ -385,23 +413,23 @@ public class Machine {
             imageView.setLayoutY(label.getPrefHeight() + 1);
             imageView.setPreserveRatio(false);
             imageView.setSmooth(false);
-
-            Main.addStyleSheet(this, "screenWidget.css");
-            this.setId("eblo");
+            imageView.getStyleClass().setAll("imageView");
 
             // Эффектики
 //            imageView.setEffect(new Bloom(0.8));
 
             // Добавляем говнище на экранчик
-            getChildren().addAll(label, imageView, rectangle);
+            getChildren().addAll(label, imageView, rectangle, closeButton, slider);
         }
 
-        public void applyScale() {
+        public void applyScale(int duration) {
             double
                 newWidth = gpuComponent.GlyphWIDTHMulWidth * scale,
                 newHeight = gpuComponent.GlyphHEIGHTMulHeight * scale + label.getPrefHeight() + 1;
 
-            new Timeline(
+            if (scaleTimeline != null)
+                scaleTimeline.stop();
+            scaleTimeline = new Timeline(
                 new KeyFrame(Duration.ZERO,
                     new KeyValue(prefWidthProperty(), getPrefWidth()),
                     new KeyValue(prefHeightProperty(), getPrefHeight()),
@@ -413,7 +441,7 @@ public class Machine {
                     
                     new KeyValue(rectangle.widthProperty(), rectangle.getWidth())
                 ),
-                new KeyFrame(new Duration(100),
+                new KeyFrame(new Duration(duration),
                     new KeyValue(prefWidthProperty(), newWidth),
                     new KeyValue(prefHeightProperty(), newHeight),
 
@@ -424,7 +452,33 @@ public class Machine {
 
                     new KeyValue(rectangle.widthProperty(), newWidth)
                 )
-            ).play();
+            );
+
+            scaleTimeline.play();
+        }
+        
+        public void remove() {
+            Timeline timeline = new Timeline(
+                new KeyFrame(Duration.ZERO,
+                    new KeyValue(scaleXProperty(), getScaleX()),
+                    new KeyValue(scaleYProperty(), getScaleY()),
+                    new KeyValue(opacityProperty(), getOpacity())
+                ),
+                new KeyFrame(new Duration(80),
+                    new KeyValue(opacityProperty(), 0)
+                ),
+                new KeyFrame(new Duration(90),
+                    new KeyValue(scaleXProperty(), 0.1),
+                    new KeyValue(scaleYProperty(), 0.1)
+                )
+            );
+
+            timeline.setOnFinished(event -> {
+                Main.instance.screensPane.getChildren().remove(this);
+                shutdown(false);
+            });
+
+            timeline.play();
         }
     }
 }

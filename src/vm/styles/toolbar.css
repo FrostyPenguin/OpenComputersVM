@@ -1,0 +1,56 @@
+.font {
+    -fx-font-family: "Minecraft";
+    -fx-font-size: 11;
+}
+
+.powerButton {
+    -fx-background-image: url("../resources/images/button_power_default.png");
+    -fx-background-repeat: no-repeat;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-background-color: transparent;
+    -fx-border: none;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+
+.powerButton:hover {
+     -fx-background-image: url("../resources/images/button_power_hovered.png");
+}
+
+.powerButton:selected {
+    -fx-background-image: url("../resources/images/button_power_on.png");
+}
+
+.powerButton:selected:hover {
+    -fx-background-image: url("../resources/images/button_power_on_hovered.png");
+}
+
+.pathInput {
+    -fx-background-color: #333;
+    -fx-text-fill: #CCC;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-border: none;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+
+.pathInputButton {
+    -fx-background-color: #444;
+    -fx-text-fill: #CCC;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+}
+
+.pathInputButton:hover {
+    -fx-background-color: #555;
+    -fx-text-fill: #EEE;
+}
+
+.pathInputButton:pressed, .button:selected {
+    -fx-background-color: #FFF;
+    -fx-text-fill: #222;
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 255, 255, 0.6), 10, 0.2, 0, 1);
+}

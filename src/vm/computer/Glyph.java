@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 
 public class Glyph {
     public static final int WIDTH = 8, HEIGHT = 16;
-    public static Glyph[] map = new Glyph[119639];
+    public static final Glyph[] map = new Glyph[119639];
     
     public int width;
     public boolean[] pixels;

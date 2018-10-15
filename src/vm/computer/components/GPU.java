@@ -150,7 +150,7 @@ public class GPU extends ComponentBase {
 
         flush();
         
-        screenWidget.applyScale();
+        screenWidget.applyScale(100);
     }
     
     public void flush() {
