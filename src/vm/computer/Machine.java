@@ -11,6 +11,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaError;
@@ -362,6 +364,8 @@ public class Machine {
     public class ScreenWidget extends Pane {
         public ImageView imageView;
         public Label label;
+        public Rectangle rectangle;
+        
         public double scale = 1;
 
         public ScreenWidget() {
@@ -369,9 +373,14 @@ public class Machine {
             label.setPrefHeight(20);
             label.setPadding(new Insets(0, 0, 0, 5));
             Main.addStyleSheet(label, "screenLabel.css");
+
+            rectangle = new Rectangle(0, 0, 1, 1);
+            rectangle.setLayoutY(label.getPrefHeight());
+            rectangle.setSmooth(false);
+            rectangle.setFill(Color.color(0.5, 0.5, 0.5));
             
             imageView = new ImageView();
-            imageView.setLayoutY(label.getPrefHeight());
+            imageView.setLayoutY(label.getPrefHeight() + 1);
             imageView.setPreserveRatio(false);
             imageView.setSmooth(false);
 
@@ -382,13 +391,13 @@ public class Machine {
 //            imageView.setEffect(new Bloom(0.8));
 
             // Добавляем говнище на экранчик
-            getChildren().addAll(label, imageView);
+            getChildren().addAll(label, imageView, rectangle);
         }
 
         public void applyScale() {
             double
                 newWidth = gpuComponent.GlyphWIDTHMulWidth * scale,
-                newHeight = gpuComponent.GlyphHEIGHTMulHeight * scale;
+                newHeight = gpuComponent.GlyphHEIGHTMulHeight * scale + label.getPrefHeight() + 1;
 
             new Timeline(
                 new KeyFrame(Duration.ZERO,
@@ -398,16 +407,20 @@ public class Machine {
                     new KeyValue(imageView.fitWidthProperty(), imageView.getFitWidth()),
                     new KeyValue(imageView.fitHeightProperty(), imageView.getFitHeight()),
 
-                    new KeyValue(label.prefWidthProperty(), label.getPrefWidth())
+                    new KeyValue(label.prefWidthProperty(), label.getPrefWidth()),
+                    
+                    new KeyValue(rectangle.widthProperty(), rectangle.getWidth())
                 ),
                 new KeyFrame(new Duration(100),
-                    new KeyValue(prefWidthProperty(), newWidth + label.getPrefHeight()),
+                    new KeyValue(prefWidthProperty(), newWidth),
                     new KeyValue(prefHeightProperty(), newHeight),
 
                     new KeyValue(imageView.fitWidthProperty(), newWidth),
-                    new KeyValue(imageView.fitHeightProperty(), newHeight),
+                    new KeyValue(imageView.fitHeightProperty(), newHeight - label.getPrefHeight() - 1),
 
-                    new KeyValue(label.prefWidthProperty(), newWidth)
+                    new KeyValue(label.prefWidthProperty(), newWidth),
+
+                    new KeyValue(rectangle.widthProperty(), newWidth)
                 )
             ).play();
         }

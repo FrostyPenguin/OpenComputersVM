@@ -6,7 +6,10 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="aefaef" />
+    <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="aefaef">
+      <change beforePath="$PROJECT_DIR$/src/vm/VM.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/VM.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/computer/Machine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/computer/Machine.java" afterDir="false" />
+    </list>
     <ignored path="JavaFxApplication.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path="$PROJECT_DIR$/out/" />
@@ -165,7 +168,7 @@
     <session id="232186380">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="17" />
+          <entry key="project.closed" value="18" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.10" value="3" />
           <entry key="project.open.time.11" value="2" />
@@ -186,14 +189,14 @@
         <counts>
           <entry key="css" value="161" />
           <entry key="dummy" value="26" />
-          <entry key="java" value="14779" />
+          <entry key="java" value="15203" />
           <entry key="lua" value="1168" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CSS" value="161" />
-          <entry key="JAVA" value="14779" />
+          <entry key="JAVA" value="15203" />
           <entry key="PLAIN_TEXT" value="1194" />
         </counts>
       </usages-collector>
@@ -203,7 +206,7 @@
           <entry key="css" value="8" />
           <entry key="fxml" value="2" />
           <entry key="hex" value="1" />
-          <entry key="java" value="113" />
+          <entry key="java" value="115" />
           <entry key="lua" value="8" />
           <entry key="txt" value="1" />
         </counts>
@@ -212,7 +215,7 @@
         <counts>
           <entry key="CLASS" value="29" />
           <entry key="CSS" value="8" />
-          <entry key="JAVA" value="113" />
+          <entry key="JAVA" value="115" />
           <entry key="PLAIN_TEXT" value="10" />
           <entry key="XML" value="2" />
         </counts>
@@ -225,15 +228,6 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/vm/computer/components/Filesystem.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="660">
-              <caret line="30" column="8" selection-start-line="30" selection-start-column="8" selection-end-line="30" selection-end-column="8" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/vm/computer/components/Computer.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="374">
@@ -245,7 +239,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/vm/computer/api/Computer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1298">
+            <state relative-caret-position="510">
               <caret line="59" column="105" selection-start-line="59" selection-start-column="40" selection-end-line="59" selection-end-column="105" />
             </state>
           </provider>
@@ -254,8 +248,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/vm/computer/Glyph.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="550">
-              <caret line="25" column="12" selection-start-line="25" selection-start-column="12" selection-end-line="25" selection-end-column="12" />
+            <state>
+              <caret column="20" lean-forward="true" selection-start-column="20" selection-end-column="20" />
             </state>
           </provider>
         </entry>
@@ -281,8 +275,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/vm/computer/Machine.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="449">
-              <caret line="385" column="9" lean-forward="true" selection-start-line="385" selection-start-column="9" selection-end-line="385" selection-end-column="9" />
+            <state relative-caret-position="358">
+              <caret line="377" column="23" lean-forward="true" selection-start-line="377" selection-start-column="23" selection-end-line="377" selection-end-column="23" />
             </state>
           </provider>
         </entry>
@@ -325,11 +319,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>debug</find>
-      <find>//</find>
-      <find>realTIme</find>
-      <find>uptime</find>
-      <find>pullSIg</find>
       <find>glob</find>
       <find>system</find>
       <find>system.</find>
@@ -355,6 +344,11 @@
       <find>free</find>
       <find>bloo</find>
       <find>boot</find>
+      <find>ScreenWidget.la</find>
+      <find>pushTou</find>
+      <find>setStr</find>
+      <find>rect</find>
+      <find>arcWi</find>
     </findStrings>
     <replaceStrings>
       <replace>images/</replace>
@@ -675,7 +669,7 @@
       <window_info id="Designer" order="3" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.22322436" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.22660653" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.22660653" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -741,20 +735,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_162.jdk/Contents/Home/javafx-src.zip!/javafx/scene/input/MouseEvent.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="331">
-          <caret line="528" column="5" lean-forward="true" selection-start-line="528" selection-start-column="5" selection-end-line="528" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_162.jdk/Contents/Home/javafx-src.zip!/javafx/scene/Scene.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="215">
-          <caret line="2042" column="9" selection-start-line="2042" selection-start-column="9" selection-end-line="2042" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_162.jdk/Contents/Home/javafx-src.zip!/javafx/scene/Parent.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="330">
@@ -1019,20 +999,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/api/Computer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1298">
-          <caret line="59" column="105" selection-start-line="59" selection-start-column="40" selection-end-line="59" selection-end-column="105" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/Glyph.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="550">
-          <caret line="25" column="12" selection-start-line="25" selection-start-column="12" selection-end-line="25" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/vm/computer/KeyMap.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="132">
@@ -1068,10 +1034,38 @@
         </state>
       </provider>
     </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_162.jdk/Contents/Home/javafx-src.zip!/javafx/scene/paint/Paint.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="116" column="24" selection-start-line="116" selection-start-column="24" selection-end-line="116" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/api/Computer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="59" column="105" selection-start-line="59" selection-start-column="40" selection-end-line="59" selection-end-column="105" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/Glyph.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="20" lean-forward="true" selection-start-column="20" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_162.jdk/Contents/Home/javafx-src.zip!/javafx/scene/shape/Rectangle.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="291">
+          <caret line="290" column="42" lean-forward="true" selection-start-line="290" selection-start-column="42" selection-end-line="290" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/vm/computer/Machine.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="449">
-          <caret line="385" column="9" lean-forward="true" selection-start-line="385" selection-start-column="9" selection-end-line="385" selection-end-column="9" />
+        <state relative-caret-position="358">
+          <caret line="377" column="23" lean-forward="true" selection-start-line="377" selection-start-column="23" selection-end-line="377" selection-end-column="23" />
         </state>
       </provider>
     </entry>
