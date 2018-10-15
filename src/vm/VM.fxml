@@ -166,7 +166,7 @@
                         <Image url="@resources/images/Computer.png" />
                      </image>
                   </ImageView>
-                  <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMousePressed="#onGenerateButtonTouch" stylesheets="@styles/pathButton.css" text="Create vm" GridPane.columnIndex="1">
+                  <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMousePressed="#onGenerateButtonTouch" stylesheets="@styles/pathButton.css" text="Create VM" GridPane.columnIndex="1">
                      <font>
                         <Font name="Courier" size="13.0" />
                      </font>

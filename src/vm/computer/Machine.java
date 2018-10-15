@@ -5,6 +5,7 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -371,13 +372,14 @@ public class Machine {
         public ScreenWidget() {
             label = new Label("My cool machine");
             label.setPrefHeight(20);
-            label.setPadding(new Insets(0, 0, 0, 5));
+            label.setPadding(new Insets(0, 0, 0, 7));
+            label.setAlignment(Pos.CENTER);
             Main.addStyleSheet(label, "screenLabel.css");
 
             rectangle = new Rectangle(0, 0, 1, 1);
             rectangle.setLayoutY(label.getPrefHeight());
             rectangle.setSmooth(false);
-            rectangle.setFill(Color.color(0.5, 0.5, 0.5));
+            rectangle.setFill(Color.color(0.6, 0.6, 0.6));
             
             imageView = new ImageView();
             imageView.setLayoutY(label.getPrefHeight() + 1);

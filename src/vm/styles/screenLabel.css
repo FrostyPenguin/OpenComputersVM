@@ -1,4 +1,4 @@
 .label {
-    -fx-background-color: #EEE;
-    -fx-text-fill: #333;
+    -fx-background-color: linear-gradient(#EEE 0%, #CCC 100%);
+    -fx-text-fill: #444;
 }
