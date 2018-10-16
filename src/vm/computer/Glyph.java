@@ -24,7 +24,7 @@ public class Glyph {
                 map[i] = new Glyph(8);
             }
             
-            BufferedReader br = new BufferedReader(new InputStreamReader(Main.class.getClassLoader().getResourceAsStream("vm/resources/font.hex")));
+            BufferedReader br = new BufferedReader(new InputStreamReader(Main.class.getClassLoader().getResourceAsStream("vm/resources/Font.hex")));
             
             String line;
             while ((line = br.readLine()) != null) {

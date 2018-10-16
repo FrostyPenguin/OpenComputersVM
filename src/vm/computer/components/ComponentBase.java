@@ -9,8 +9,6 @@ public class ComponentBase extends LuaTable {
     public ComponentBase(String address, String type) {
         this.type = type;
         this.address = address;
-
-//        UUID.randomUUID().toString()
         
         set("type", type);
         set("address", address);

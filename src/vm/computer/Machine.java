@@ -33,34 +33,42 @@ import vm.computer.components.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Machine {
     public static Machine current;
     
+    public String name;
     public boolean started = false;
     public long startTime;
-    
+
+    public Component componentAPI;
     public EEPROM eepromComponent;
     public GPU gpuComponent;
     public Screen screenComponent;
     public Keyboard keyboardComponent;
     public Computer computerComponent;
     public Filesystem filesystemComponent;
-    
+    public ScreenWidget screenWidget;
     public LuaThread luaThread;
-    
-    private Player computerRunningPlayer;
-    private ScreenWidget screenWidget;
-    private double lastClickX, lastClickY;
+    public static ArrayList<Machine> list = new ArrayList<>();
 
-    public Machine(JSONObject machineConfig) {
+    private Player computerRunningPlayer;
+    private double lastClickX, lastClickY;
+    
+    public static void add(JSONObject machineConfig) {
+        list.add(new Machine(machineConfig));
+    }
+    
+    private Machine(JSONObject machineConfig) {
+        name = machineConfig.getString("name");
+        
         // Добавляем новый экранчик в пиздюлину
         screenWidget = new ScreenWidget(
             machineConfig.getDouble("x"),
             machineConfig.getDouble("y"),
-            machineConfig.getDouble("scale"),
-            machineConfig.getString("name")
+            machineConfig.getDouble("scale")
         );
 
         // Впездываем этой хуйне ебливой (ну, которая лейбл) всякие ивенты и прочую залупу
@@ -87,7 +95,6 @@ public class Machine {
 
         // Инициализируем компоненты
         JSONArray components = machineConfig.getJSONArray("components");
-        
         JSONObject component;
         String address;
         for (int i = 0; i < components.length(); i++) {
@@ -117,6 +124,16 @@ public class Machine {
                     break;
             }
         }
+
+        // Инсертим компоненты в компонентное апи
+        componentAPI = new Component();
+        
+        componentAPI.list.add(gpuComponent);
+        componentAPI.list.add(keyboardComponent);
+        componentAPI.list.add(screenComponent);
+        componentAPI.list.add(computerComponent);
+        componentAPI.list.add(eepromComponent);
+        componentAPI.list.add(filesystemComponent);
     }
 
     public void focusScreenWidget(boolean force) {
@@ -191,18 +208,9 @@ public class Machine {
         public void run() {
             try {
                 Globals globals = JsePlatform.standardGlobals();
-
-                Component component = new Component();
-
-                component.add(gpuComponent);
-                component.add(keyboardComponent);
-                component.add(screenComponent);
-                component.add(computerComponent);
-                component.add(eepromComponent);
-                component.add(filesystemComponent);
-
+                
                 globals.set("debug", new DebugLib().call(LuaValue.NIL, globals));
-                globals.set("component", component);
+                globals.set("component", componentAPI);
                 globals.set("computer", new vm.computer.api.Computer(machine));
                 globals.set("unicode", new Unicode());
 
@@ -384,7 +392,7 @@ public class Machine {
 
         private Timeline scaleTimeline;
 
-        public ScreenWidget(double x, double y, double s, String name) {
+        public ScreenWidget(double x, double y, double s) {
             scale = s;
             
             setLayoutX(x);

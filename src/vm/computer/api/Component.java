@@ -1,21 +1,39 @@
 package vm.computer.api;
 
-import vm.computer.components.ComponentBase;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
+import vm.computer.components.ComponentBase;
 
 import java.util.ArrayList;
 
 public class Component extends LuaTable {
-    private ArrayList<ComponentBase> list = new ArrayList<>();
+    public ArrayList<ComponentBase> list = new ArrayList<>();
 
-    public void add(ComponentBase c) {
-        list.add(c);
+    public Component() {
+        set("list", new OneArgFunction() {
+            public LuaValue call(LuaValue value) {
+                return new ListIterator(value);
+            }
+        });
+
+        set("proxy", new OneArgFunction() {
+            public LuaValue call(LuaValue value) {
+                String requiredAddress = value.tojstring();
+
+                for (ComponentBase component : list) {
+                    if (component.get("address").tojstring().equals(requiredAddress)) {
+                        return component;
+                    }
+                }
+
+                return LuaValue.NIL;
+            }
+        });
     }
-
+    
     class ListIterator extends VarArgFunction {
         private int index = 0;
         private LuaValue filter;
@@ -56,27 +74,5 @@ public class Component extends LuaTable {
                 return LuaValue.NIL;
             }
         }
-    }
-
-    public Component() {
-        set("list", new OneArgFunction() {
-            public LuaValue call(LuaValue value) {
-                return new ListIterator(value);
-            }
-        });
-
-        set("proxy", new OneArgFunction() {
-            public LuaValue call(LuaValue value) {
-                String requiredAddress = value.tojstring();
-
-                for (ComponentBase component : list) {
-                    if (component.get("address").tojstring().equals(requiredAddress)) {
-                        return component;
-                    }
-                }
-
-                return LuaValue.NIL;
-            }
-        });
     }
 }

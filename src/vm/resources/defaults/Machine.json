@@ -1,0 +1,30 @@
+{
+  "name": "My machine",
+  "x": 3,
+  "y": 3,
+  "scale": 1,
+  "components": [
+    {
+      "type": "gpu",
+      "width": 80,
+      "height": 25
+    },
+    {
+      "type": "screen",
+      "precise": false
+    },
+    {
+      "type": "computer"
+    },
+    {
+      "type": "filesystem"
+    },
+    {
+      "type": "eeprom",
+      "data": "c1327ad7-a653-4e0b-b013-a5c1b2ff20eb"
+    },
+    {
+      "type": "keyboard"
+    }
+  ]
+}

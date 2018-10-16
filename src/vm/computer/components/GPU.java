@@ -127,10 +127,7 @@ public class GPU extends ComponentBase {
     
     @Override
     public JSONObject toJSONObject() {
-        return super.toJSONObject().put(
-            "resolution",
-            new JSONObject().put("width", width).put("height", height)
-        );
+        return super.toJSONObject().put("width", width).put("height", height);
     }
 
     class Pixel {
