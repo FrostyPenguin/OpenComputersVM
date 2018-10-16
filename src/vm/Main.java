@@ -35,7 +35,7 @@ public class Main extends Application {
     public TextField EEPROMPathTextField, HDDPathTextField;
 
     // Ну, а жсон - всему голова
-    private static final File configFile = new File(System.getProperty("user.home"), "Config.json");
+    private static final File configFile = new File(System.getProperty("user.home"), "OpenComputersVM.json");
 
     @Override
     public void start(Stage primaryStage) throws Exception{

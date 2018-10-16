@@ -20,11 +20,16 @@
       "type": "filesystem"
     },
     {
-      "type": "eeprom",
-      "data": "c1327ad7-a653-4e0b-b013-a5c1b2ff20eb"
+      "type": "eeprom"
     },
     {
       "type": "keyboard"
+    },
+    {
+      "type": "modem"
+    },
+    {
+      "type": "internet"
     }
   ]
 }

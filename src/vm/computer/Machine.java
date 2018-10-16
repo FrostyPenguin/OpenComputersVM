@@ -50,6 +50,8 @@ public class Machine {
     public Keyboard keyboardComponent;
     public Computer computerComponent;
     public Filesystem filesystemComponent;
+    public Internet internetComponent;
+    public Modem modemComponent;
     public ScreenWidget screenWidget;
     public LuaThread luaThread;
     public static ArrayList<Machine> list = new ArrayList<>();
@@ -94,6 +96,8 @@ public class Machine {
         focusScreenWidget(true);
 
         // Инициализируем компоненты
+        componentAPI = new Component();
+        
         JSONArray components = machineConfig.getJSONArray("components");
         JSONObject component;
         String address;
@@ -122,20 +126,26 @@ public class Machine {
                 case "filesystem":
                     filesystemComponent = new Filesystem(address, component.getString("path"));
                     break;
+                case "internet":
+                    internetComponent = new Internet(address);
+                    break;
+                case "modem":
+                    modemComponent = new Modem(address);
+                    break;
             }
         }
 
         // Инсертим компоненты в компонентное апи
-        componentAPI = new Component();
-        
         componentAPI.list.add(gpuComponent);
         componentAPI.list.add(keyboardComponent);
         componentAPI.list.add(screenComponent);
         componentAPI.list.add(computerComponent);
         componentAPI.list.add(eepromComponent);
         componentAPI.list.add(filesystemComponent);
+        componentAPI.list.add(internetComponent);
+        componentAPI.list.add(modemComponent);
     }
-
+    
     public void focusScreenWidget(boolean force) {
         if (force || !screenWidget.isFocused()) {
             screenWidget.toFront();
