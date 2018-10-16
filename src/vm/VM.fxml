@@ -226,7 +226,7 @@
                                     <Image url="@resources/images/HDD.png" />
                                  </image>
                               </ImageView>
-                              <TextField fx:id="HDDPathTextField" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Filesystem component path" text="/Users/igor/Documents/OpenComputersVM/HDD/" GridPane.columnIndex="1">
+                              <TextField fx:id="HDDPathTextField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Filesystem component path" text="/Users/igor/Documents/OpenComputersVM/HDD/" GridPane.columnIndex="1">
                                  <font>
                                     <Font name="Minecraft Regular" size="10.0" />
                                  </font>
@@ -256,7 +256,7 @@
                                     <Image url="@resources/images/EEPROM.png" />
                                  </image>
                               </ImageView>
-                              <TextField fx:id="EEPROMPathTextField" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Filesystem component path" text="/Users/igor/Documents/OpenComputersVM/EEPROM.lua" GridPane.columnIndex="1">
+                              <TextField fx:id="EEPROMPathTextField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Filesystem component path" text="/Users/igor/Documents/OpenComputersVM/EEPROM.lua" GridPane.columnIndex="1">
                                  <font>
                                     <Font name="Minecraft Regular" size="10.0" />
                                  </font>
