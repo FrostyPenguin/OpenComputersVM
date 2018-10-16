@@ -42,7 +42,6 @@ public class Machine {
     public String name;
     public boolean started = false;
     public long startTime;
-
     public Component componentAPI;
     public EEPROM eepromComponent;
     public GPU gpuComponent;
@@ -130,7 +129,7 @@ public class Machine {
                     internetComponent = new Internet(address);
                     break;
                 case "modem":
-                    modemComponent = new Modem(address);
+                    modemComponent = new Modem(address, component.getString("wakeMessage"), component.getBoolean("wakeMessageFuzzy"));
                     break;
             }
         }
@@ -144,6 +143,20 @@ public class Machine {
         componentAPI.list.add(filesystemComponent);
         componentAPI.list.add(internetComponent);
         componentAPI.list.add(modemComponent);
+    }
+    
+    public JSONObject toJSONObject() {
+        JSONArray components = new JSONArray();
+        for (int j = 0; j < componentAPI.list.size(); j++) {
+            components.put(componentAPI.list.get(j).toJSONObject());
+        }
+        
+        return new JSONObject()
+            .put("name", name)
+            .put("x", screenWidget.getLayoutX())
+            .put("y", screenWidget.getLayoutY())
+            .put("scale", screenWidget.scale)
+            .put("components", components);
     }
     
     public void focusScreenWidget(boolean force) {
@@ -252,7 +265,7 @@ public class Machine {
 
             pushSignal(LuaValue.varargsOf(new LuaValue[] {
                 LuaValue.valueOf(name),
-                keyboardComponent.get("address"),
+                LuaValue.valueOf(keyboardComponent.address),
                 LuaValue.valueOf(text.length() > 0 ? text.codePointAt(0) : OCKeyboardCode),
                 LuaValue.valueOf(OCKeyboardCode)
             }));
@@ -273,7 +286,7 @@ public class Machine {
 
             pushSignal(LuaValue.varargsOf(new LuaValue[] {
                 LuaValue.valueOf(name),
-                screenComponent.get("address"),
+                LuaValue.valueOf(screenComponent.address),
                 LuaValue.valueOf(screenComponent.precise ? x : (int) x),
                 LuaValue.valueOf(screenComponent.precise ? y : (int) y),
                 LuaValue.valueOf(state),

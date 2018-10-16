@@ -4,7 +4,7 @@ import org.json.JSONObject;
 import org.luaj.vm2.LuaTable;
 
 public class ComponentBase extends LuaTable {
-    public String type, address;
+    public final String type, address;
     
     public ComponentBase(String address, String type) {
         this.type = type;

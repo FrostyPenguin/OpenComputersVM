@@ -32,4 +32,12 @@ public class LuaValues {
             LuaValue.valueOf(reason)
         });
     }
+
+    public static LuaValue integerFunction(int value) {
+        return new ZeroArgFunction() {
+            public LuaValue call() {
+                return LuaValue.valueOf(value);
+            }
+        };
+    }
 }

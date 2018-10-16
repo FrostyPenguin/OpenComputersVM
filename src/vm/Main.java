@@ -84,19 +84,7 @@ public class Main extends Application {
 
             JSONArray JSONMachines = new JSONArray();
             for (Machine machine : Machine.list) {
-                JSONArray JSONComponents = new JSONArray();
-                for (int j = 0; j < machine.componentAPI.list.size(); j++) {
-                    JSONComponents.put(machine.componentAPI.list.get(j).toJSONObject());
-                }
-
-                JSONMachines.put(
-                    new JSONObject()
-                        .put("name", machine.name)
-                        .put("x", machine.screenWidget.getLayoutX())
-                        .put("y", machine.screenWidget.getLayoutY())
-                        .put("scale", machine.screenWidget.scale)
-                        .put("components", JSONComponents)
-                );
+                JSONMachines.put(machine.toJSONObject());
             }
             
             try {
@@ -157,6 +145,7 @@ public class Main extends Application {
                 }
             }
 
+            // Усе, уася, машинка готова
             Machine.add(generatedMachine);
         }
         catch (IOException e) {
