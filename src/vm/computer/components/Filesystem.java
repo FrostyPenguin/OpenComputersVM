@@ -18,7 +18,7 @@ public class Filesystem extends ComponentBase {
         spaceUsed = 0,
         spaceTotal = 12 * 1024 * 1024;
     
-    private String
+    public String
         realPath,
         label;
     

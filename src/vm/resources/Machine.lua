@@ -24,10 +24,10 @@ if eeprom then
     if result then
         result, reason = xpcall(result, debug.traceback)
         if not result then
-            error(reason)
+             error("Failed to call EEPROM code: " .. tostring(reason))
         end
     else
-        error(reason)
+        error("Failed to load EEPROM code: " .. tostring(reason))
     end
 else
     error("install configured EEPROM")

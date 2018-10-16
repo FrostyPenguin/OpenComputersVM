@@ -59,6 +59,10 @@ public class EEPROM extends ComponentBase {
     }
     
     public void loadCode() throws IOException {
+        System.out.println("Loading EEPROM source code from: " + realPath);
+        
         code = IO.loadFileAsString(new File(realPath).toURI());
+
+//        System.out.println("New code is: " + code);
     }
 }

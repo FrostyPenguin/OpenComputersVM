@@ -1,5 +1,6 @@
 package vm.computer.components;
 
+import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
@@ -8,7 +9,6 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.*;
 import vm.computer.Glyph;
-import vm.computer.Machine;
 
 public class GPU extends ComponentBase {
     public int
@@ -17,16 +17,17 @@ public class GPU extends ComponentBase {
         GlyphWIDTHMulWidth,
         GlyphHEIGHTMulHeight,
         GlyphHEIGHTMulWidthMulHeight;
+    
+    private ImageView screenImageView;
     private int[] buffer;
     private Pixel[][] pixels;
-    private Machine.ScreenWidget screenWidget;
     private PixelWriter pixelWriter;
     private int background, foreground;
-    
-    public GPU(String address, Machine.ScreenWidget screenWidget) {
+
+    public GPU(String address, ImageView screenImageView) {
         super(address,"gpu");
         
-        this.screenWidget = screenWidget;
+        this.screenImageView = screenImageView;
 
         set("set", new ThreeArgFunction() {
             public LuaValue call(LuaValue x, LuaValue y, LuaValue text) {
@@ -149,14 +150,12 @@ public class GPU extends ComponentBase {
         
         WritableImage writableImage = new WritableImage(GlyphWIDTHMulWidth, GlyphHEIGHTMulHeight);
         pixelWriter = writableImage.getPixelWriter();
-        screenWidget.imageView.setImage(writableImage);
+        screenImageView.setImage(writableImage);
 
         pixels = new Pixel[height][width];
         buffer = new int[width * height * Glyph.WIDTH * Glyph.HEIGHT];
 
         flush();
-        
-        screenWidget.applyScale(100);
     }
     
     public void flush() {

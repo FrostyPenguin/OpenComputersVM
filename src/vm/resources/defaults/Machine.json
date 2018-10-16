@@ -2,7 +2,8 @@
   "name": "My machine",
   "x": 3,
   "y": 3,
-  "scale": 1,
+  "width": 1200,
+  "height": 580,
   "components": [
     {
       "type": "gpu",

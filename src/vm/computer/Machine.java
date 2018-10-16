@@ -1,23 +1,18 @@
 package vm.computer;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Control;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.util.Duration;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.luaj.vm2.Globals;
@@ -27,7 +22,6 @@ import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.DebugLib;
 import org.luaj.vm2.lib.jse.JsePlatform;
 import vm.IO;
-import vm.Main;
 import vm.computer.api.Component;
 import vm.computer.api.Unicode;
 import vm.computer.components.*;
@@ -35,13 +29,23 @@ import vm.computer.components.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 
 public class Machine {
-    public static Machine current;
+    public static final ArrayList<Machine> list = new ArrayList<>();
     
-    public String name;
+    // Жабафыховские обжекты
+    public GridPane windowGridPane;
+    public GridPane screenGridPane;
+    public ImageView screenImageView;
+    public ToggleButton powerButton;
+    public TextField EEPROMPathTextField, HDDPathTextField, nameTextField;
+    public Button toolbarButton;
+    
+    // Машиновская поебистика
     public boolean started = false;
     public long startTime;
+    public LuaThread luaThread;
     public Component componentAPI;
     public EEPROM eepromComponent;
     public GPU gpuComponent;
@@ -51,98 +55,97 @@ public class Machine {
     public Filesystem filesystemComponent;
     public Internet internetComponent;
     public Modem modemComponent;
-    public ScreenWidget screenWidget;
-    public LuaThread luaThread;
-    public static ArrayList<Machine> list = new ArrayList<>();
 
+    private Stage stage;
     private Player computerRunningPlayer;
-    private double lastClickX, lastClickY;
+    private boolean toolbarHidden;
     
-    public static void add(JSONObject machineConfig) {
-        list.add(new Machine(machineConfig));
-    }
-    
-    private Machine(JSONObject machineConfig) {
-        name = machineConfig.getString("name");
-        
-        // Добавляем новый экранчик в пиздюлину
-        screenWidget = new ScreenWidget(
-            machineConfig.getDouble("x"),
-            machineConfig.getDouble("y"),
-            machineConfig.getDouble("scale")
-        );
-
-        // Впездываем этой хуйне ебливой (ну, которая лейбл) всякие ивенты и прочую залупу
-        screenWidget.label.setOnMousePressed(event -> {
-            lastClickX = event.getSceneX();
-            lastClickY = event.getSceneY();
-        });
-
-        screenWidget.label.setOnMouseDragged(event -> {
-            screenWidget.setLayoutX(screenWidget.getLayoutX() + event.getSceneX() - lastClickX);
-            screenWidget.setLayoutY(screenWidget.getLayoutY() + event.getSceneY() - lastClickY);
-
-            lastClickX = event.getSceneX();
-            lastClickY = event.getSceneY();
-        });
-
-        // Тута ивенты всего виджета экрана целиком для клавы и фокуса
-        screenWidget.setOnMousePressed(event -> {
-            focusScreenWidget(false);
-        });
-        
-        Main.instance.screensPane.getChildren().add(screenWidget);
-        focusScreenWidget(true);
-
-        // Инициализируем компоненты
-        componentAPI = new Component();
-        
-        JSONArray components = machineConfig.getJSONArray("components");
-        JSONObject component;
-        String address;
-        for (int i = 0; i < components.length(); i++) {
-            component = components.getJSONObject(i);
-            address = component.getString("address");
+    public static void fromJSONObject(JSONObject machineConfig) {
+        try {
+            // Ну че, создаем окошко, грузим фхмл-файл и ставим сцену окошку
+            Stage stage = new Stage();
+            FXMLLoader fxmlLoader = new FXMLLoader(Machine.class.getResource("Window.fxml"));
+            stage.setScene(new Scene(fxmlLoader.load()));
             
-            switch (component.getString("type")) {
-                case "gpu":
-                    gpuComponent = new GPU(address, screenWidget);
-                    gpuComponent.rawSetResolution(component.getInt("width"), component.getInt("height"));
-                    gpuComponent.update();
-                    break;
-                case "screen":
-                    screenComponent = new Screen(address, component.getBoolean("precise"));
-                    break;
-                case "keyboard":
-                    keyboardComponent = new Keyboard(address);
-                    break;
-                case "computer":
-                    computerComponent = new Computer(address, this);
-                    break;
-                case "eeprom":
-                    eepromComponent = new EEPROM(address, component.getString("path"), component.getString("data"));
-                    break;
-                case "filesystem":
-                    filesystemComponent = new Filesystem(address, component.getString("path"));
-                    break;
-                case "internet":
-                    internetComponent = new Internet(address);
-                    break;
-                case "modem":
-                    modemComponent = new Modem(address, component.getString("wakeMessage"), component.getBoolean("wakeMessageFuzzy"));
-                    break;
-            }
-        }
+            // Выдрачиваем машинку из фхмл-контроллера и запоминаем эту стейдж-залупу
+            Machine machine = fxmlLoader.getController();
+            machine.stage = stage;
+            
+            // Инициализируем компоненты из конфига МОШЫНЫ
+            machine.componentAPI = new Component();
 
-        // Инсертим компоненты в компонентное апи
-        componentAPI.list.add(gpuComponent);
-        componentAPI.list.add(keyboardComponent);
-        componentAPI.list.add(screenComponent);
-        componentAPI.list.add(computerComponent);
-        componentAPI.list.add(eepromComponent);
-        componentAPI.list.add(filesystemComponent);
-        componentAPI.list.add(internetComponent);
-        componentAPI.list.add(modemComponent);
+            JSONArray components = machineConfig.getJSONArray("components");
+            JSONObject component;
+            String address;
+            for (int i = 0; i < components.length(); i++) {
+                component = components.getJSONObject(i);
+                address = component.getString("address");
+
+                switch (component.getString("type")) {
+                    case "gpu":
+                        machine.gpuComponent = new GPU(address, machine.screenImageView);
+                        machine.gpuComponent.rawSetResolution(component.getInt("width"), component.getInt("height"));
+                        machine.gpuComponent.update();
+                        break;
+                    case "screen":
+                        machine.screenComponent = new Screen(address, component.getBoolean("precise"));
+                        break;
+                    case "keyboard":
+                        machine.keyboardComponent = new Keyboard(address);
+                        break;
+                    case "computer":
+                        machine.computerComponent = new Computer(address, machine);
+                        break;
+                    case "eeprom":
+                        machine.eepromComponent = new EEPROM(address, component.getString("path"), component.getString("data"));
+                        break;
+                    case "filesystem":
+                        machine.filesystemComponent = new Filesystem(address, component.getString("path"));
+                        break;
+                    case "internet":
+                        machine.internetComponent = new Internet(address);
+                        break;
+                    case "modem":
+                        machine.modemComponent = new Modem(address, component.getString("wakeMessage"), component.getBoolean("wakeMessageFuzzy"));
+                        break;
+                }
+            }
+
+            // Инсертим компоненты в компонентное апи
+            machine.componentAPI.list.add(machine.gpuComponent);
+            machine.componentAPI.list.add(machine.keyboardComponent);
+            machine.componentAPI.list.add(machine.screenComponent);
+            machine.componentAPI.list.add(machine.computerComponent);
+            machine.componentAPI.list.add(machine.eepromComponent);
+            machine.componentAPI.list.add(machine.filesystemComponent);
+            machine.componentAPI.list.add(machine.internetComponent);
+            machine.componentAPI.list.add(machine.modemComponent);
+
+            // Пидорасим главное йоба-окошечко так, как надо
+            machine.updateControls();
+            machine.nameTextField.setText(machineConfig.getString("name"));
+            machine.updateTitle();
+            machine.stage.setX(machineConfig.getDouble("x"));
+            machine.stage.setY(machineConfig.getDouble("y"));
+            machine.stage.setWidth(machineConfig.getDouble("width"));
+            machine.stage.setHeight(machineConfig.getDouble("height"));
+            machine.toolbarHidden = machineConfig.getBoolean("toolbarHidden");
+            machine.updateToolbar();
+
+            // При закрытии окошка машину над оффнуть, а то хуй проссыт, будет ли там поток дрочиться или плеер этот асинхронники свои сувать меж булок
+            machine.stage.setOnCloseRequest(event -> {
+                machine.shutdown(true);
+            });
+            
+            // Запоминаем мошынку в гулаг-перечне мошынок
+            list.add(machine);
+            
+            // Акошычко гатово
+            stage.show();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     
     public JSONObject toJSONObject() {
@@ -152,20 +155,85 @@ public class Machine {
         }
         
         return new JSONObject()
-            .put("name", name)
-            .put("x", screenWidget.getLayoutX())
-            .put("y", screenWidget.getLayoutY())
-            .put("scale", screenWidget.scale)
+            .put("name", nameTextField.getText())
+            .put("x", stage.getX())
+            .put("y", stage.getY())
+            .put("width", stage.getWidth())
+            .put("height", stage.getHeight())
+            .put("toolbarHidden", toolbarHidden)
             .put("components", components);
     }
     
-    public void focusScreenWidget(boolean force) {
-        if (force || !screenWidget.isFocused()) {
-            screenWidget.toFront();
-            screenWidget.requestFocus();
-            Machine.current = this;
+    private void updateControls() {
+        HDDPathTextField.setText(filesystemComponent.realPath);
+        EEPROMPathTextField.setText(eepromComponent.realPath);
+    }
 
-            Main.instance.powerButton.setSelected(started);
+    private void updateTitle() {
+        stage.setTitle(nameTextField.getText());
+    }
+    
+    private void updateToolbar() {
+        toolbarButton.setText(toolbarHidden ? "<" : ">");
+        windowGridPane.getColumnConstraints().set(1, new ColumnConstraints(toolbarHidden ? 0 : 294));
+    }
+    
+    public void onToolbarButtonPressed() {
+        toolbarHidden = !toolbarHidden;
+        updateToolbar();
+    }
+    
+    public void onGenerateButtonTouch() {
+        try {
+            System.out.println("Generating new machine...");
+
+            // Грузим дефолтный конфиг машины и создаем жсон на его основе
+            JSONObject generatedMachine = new JSONObject(IO.loadResourceAsString("defaults/Machine.json"));
+
+            // Продрачиваем дефолтные компоненты и рандомим им ууидшники
+            // Запоминаем адрес компонента файлосистемы, чтоб потом его в биос дату вхуячить
+            String filesystemAddress = null, address;
+            JSONObject component;
+            JSONArray components = generatedMachine.getJSONArray("components");
+            for (int i = 0; i < components.length(); i++) {
+                component = components.getJSONObject(i);
+
+                address = UUID.randomUUID().toString();
+                component.put("address", address);
+
+                // Попутно создаем директории харда
+                if (component.getString("type").equals("filesystem")) {
+                    filesystemAddress = address;
+                    component.put("path", HDDPathTextField.getText());
+                }
+            }
+
+            // А терь ищем еепром и сеттим ему полученный адрес харда
+            for (int i = 0; i < components.length(); i++) {
+                component = components.getJSONObject(i);
+
+                if (component.getString("type").equals("eeprom")) {
+                    component.put("data", filesystemAddress);
+                    component.put("path", EEPROMPathTextField.getText());
+                    break;
+                }
+            }
+
+            // Усе, уася, машинка готова
+            Machine.fromJSONObject(generatedMachine);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onPowerButtonTouch() {
+        new Player("click.mp3").play();
+
+        if (powerButton.isSelected()) {
+            shutdown(true);
+        } else {
+            boot();
         }
     }
 
@@ -173,6 +241,7 @@ public class Machine {
         private Varargs[] signalStack;
         private HashMap<KeyCode, Boolean> pressedKeyCodes = new HashMap<>();
         private Machine machine;
+        private double lastClickX, lastClickY;
 
         public LuaThread(Machine machine) {
             this.machine = machine;
@@ -180,8 +249,8 @@ public class Machine {
             signalStack = new Varargs[256];
 
             Platform.runLater(() -> {
-                // Ивенты клавиш всему скринвиджету
-                screenWidget.setOnKeyPressed(event -> {
+                // Ивенты клавиш всему окну
+                windowGridPane.setOnKeyPressed(event -> {
                     // Иначе оно спамит даунами
                     if (!isKeyPressed(event.getCode())) {
                         pressedKeyCodes.put(event.getCode(), true);
@@ -189,28 +258,35 @@ public class Machine {
                     }
                 });
 
-                screenWidget.setOnKeyReleased(event -> {
+                windowGridPane.setOnKeyReleased(event -> {
                     pressedKeyCodes.put(event.getCode(), false);
                     pushKeySignal(event, "key_up");
                 });
 
                 // А эт уже ивенты экранчика)0
-                screenWidget.imageView.setOnMousePressed(event -> {
+                screenImageView.setOnMousePressed(event -> {
                     pushTouchSignal(event.getSceneX(), event.getSceneY(), getOCButton(event), "touch");
                 });
 
-                screenWidget.imageView.setOnMouseDragged(event -> {
+                screenImageView.setOnMouseDragged(event -> {
                     double sceneX = event.getSceneX(), sceneY = event.getSceneY();
-                    if (screenComponent.precise || (Math.abs(sceneX - lastClickX) / screenWidget.scale >= Glyph.WIDTH || Math.abs(sceneY - lastClickY) / screenWidget.scale >= Glyph.HEIGHT )) {
+                    double p = screenImageView.getFitWidth() / screenImageView.getImage().getWidth();
+                    if (
+                        screenComponent.precise ||
+                        (
+                            Math.abs(sceneX - lastClickX) / p >= Glyph.WIDTH ||
+                            Math.abs(sceneY - lastClickY) / p >= Glyph.HEIGHT
+                        )
+                    ) {
                         pushTouchSignal(sceneX, sceneY, getOCButton(event), "drag");
                     }
                 });
 
-                screenWidget.imageView.setOnMouseReleased(event -> {
+                screenImageView.setOnMouseReleased(event -> {
                     pushTouchSignal(event.getSceneX(), event.getSceneY(), getOCButton(event), "drop");
                 });
 
-                screenWidget.imageView.setOnScroll(event -> {
+                screenImageView.setOnScroll(event -> {
                     pushTouchSignal(event.getSceneX(), event.getSceneY(), event.getDeltaY() > 0 ? 1 : -1, "scroll");
                 });
             });
@@ -280,9 +356,11 @@ public class Machine {
         }
 
         private void pushTouchSignal(double screenX, double screenY, int state, String name) {
+            double p = screenImageView.getFitWidth() / screenImageView.getImage().getWidth();
+
             double
-                x = (screenX - screenWidget.getLayoutX()) / Glyph.WIDTH / screenWidget.scale + 1,
-                y = (screenY - screenWidget.getLayoutY() - screenWidget.imageView.getLayoutY()) / Glyph.HEIGHT / screenWidget.scale + 1;
+                x = (screenX - screenImageView.getLayoutX()) / p / Glyph.WIDTH + 1,
+                y = (screenY - screenImageView.getLayoutY()) / p / Glyph.HEIGHT + 1;
 
             pushSignal(LuaValue.varargsOf(new LuaValue[] {
                 LuaValue.valueOf(name),
@@ -401,133 +479,6 @@ public class Machine {
             // Запускаем луа-машину
             luaThread = new LuaThread(this);
             luaThread.start();
-        }
-    }
-
-    public class ScreenWidget extends Pane {
-        public ImageView imageView;
-        public Label label;
-        public Rectangle rectangle;
-        public Button closeButton;
-        public Slider slider;
-        
-        public double scale = 1;
-
-        private Timeline scaleTimeline;
-
-        public ScreenWidget(double x, double y, double s) {
-            scale = s;
-            
-            setLayoutX(x);
-            setLayoutY(y);
-            getStylesheets().add(Main.class.getResource("styles/screenWidget.css").toString());
-            getStyleClass().setAll("pane");
-            
-            label = new Label(name);
-            label.setPrefHeight(22);
-            label.setPadding(new Insets(0, 0, 0, 7));
-            label.setAlignment(Pos.CENTER);
-            label.getStyleClass().setAll("label");
-            
-            closeButton = new Button();
-            closeButton.setLayoutX(6);
-            closeButton.setLayoutY(6);
-            closeButton.setPrefSize(10, 10);
-            closeButton.setMinSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
-            closeButton.setMaxSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
-            closeButton.getStyleClass().setAll("actionButton", "closeButton");
-            closeButton.setOnMouseClicked(event -> {
-                remove();
-            });
-            
-            slider = new Slider(0.4, 1, scale);
-            slider.setLayoutX(21);
-            slider.setLayoutY(4.5);
-            slider.setPrefWidth(65);
-            slider.setOnMousePressed(event -> {
-                scale = slider.getValue();
-                applyScale(100);
-            });
-            slider.setOnMouseDragged(event -> {
-                scale = slider.getValue();
-                applyScale(10);
-            });
-
-            rectangle = new Rectangle(0, 0, 1, 1);
-            rectangle.setLayoutY(label.getPrefHeight());
-            rectangle.setSmooth(false);
-            rectangle.setFill(Color.color(0.6, 0.6, 0.6));
-            
-            imageView = new ImageView();
-            imageView.setLayoutY(label.getPrefHeight() + 1);
-            imageView.setPreserveRatio(false);
-            imageView.setSmooth(false);
-            imageView.getStyleClass().setAll("imageView");
-
-            // Эффектики
-//            imageView.setEffect(new Bloom(0.8));
-
-            // Добавляем говнище на экранчик
-            getChildren().addAll(label, imageView, rectangle, closeButton, slider);
-        }
-
-        public void applyScale(int duration) {
-            double
-                newWidth = gpuComponent.GlyphWIDTHMulWidth * scale,
-                newHeight = gpuComponent.GlyphHEIGHTMulHeight * scale + label.getPrefHeight() + 1;
-
-            if (scaleTimeline != null)
-                scaleTimeline.stop();
-            scaleTimeline = new Timeline(
-                new KeyFrame(Duration.ZERO,
-                    new KeyValue(prefWidthProperty(), getPrefWidth()),
-                    new KeyValue(prefHeightProperty(), getPrefHeight()),
-                    
-                    new KeyValue(imageView.fitWidthProperty(), imageView.getFitWidth()),
-                    new KeyValue(imageView.fitHeightProperty(), imageView.getFitHeight()),
-
-                    new KeyValue(label.prefWidthProperty(), label.getPrefWidth()),
-                    
-                    new KeyValue(rectangle.widthProperty(), rectangle.getWidth())
-                ),
-                new KeyFrame(new Duration(duration),
-                    new KeyValue(prefWidthProperty(), newWidth),
-                    new KeyValue(prefHeightProperty(), newHeight),
-
-                    new KeyValue(imageView.fitWidthProperty(), newWidth),
-                    new KeyValue(imageView.fitHeightProperty(), newHeight - label.getPrefHeight() - 1),
-
-                    new KeyValue(label.prefWidthProperty(), newWidth),
-
-                    new KeyValue(rectangle.widthProperty(), newWidth)
-                )
-            );
-
-            scaleTimeline.play();
-        }
-        
-        public void remove() {
-            Timeline timeline = new Timeline(
-                new KeyFrame(Duration.ZERO,
-                    new KeyValue(scaleXProperty(), getScaleX()),
-                    new KeyValue(scaleYProperty(), getScaleY()),
-                    new KeyValue(opacityProperty(), getOpacity())
-                ),
-                new KeyFrame(new Duration(80),
-                    new KeyValue(opacityProperty(), 0)
-                ),
-                new KeyFrame(new Duration(90),
-                    new KeyValue(scaleXProperty(), 0.1),
-                    new KeyValue(scaleYProperty(), 0.1)
-                )
-            );
-
-            timeline.setOnFinished(event -> {
-                Main.instance.screensPane.getChildren().remove(this);
-                shutdown(false);
-            });
-
-            timeline.play();
         }
     }
 }
