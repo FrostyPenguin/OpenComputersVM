@@ -4,7 +4,7 @@ import org.json.JSONObject;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.ZeroArgFunction;
-import vm.Main;
+import vm.IO;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,6 +59,6 @@ public class EEPROM extends ComponentBase {
     }
     
     public void loadCode() throws IOException {
-        code = Main.loadFile(new File(realPath).toURI());
+        code = IO.loadFileAsString(new File(realPath).toURI());
     }
 }

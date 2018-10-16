@@ -26,13 +26,13 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.DebugLib;
 import org.luaj.vm2.lib.jse.JsePlatform;
+import vm.IO;
 import vm.Main;
 import vm.computer.api.Component;
 import vm.computer.api.Unicode;
 import vm.computer.components.*;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -214,7 +214,7 @@ public class Machine {
                 globals.set("computer", new vm.computer.api.Computer(machine));
                 globals.set("unicode", new Unicode());
 
-                Varargs varargs = globals.load(Main.loadResource("machine.lua"), "machine").invoke();
+                Varargs varargs = globals.load(IO.loadResourceAsString("machine.lua"), "machine").invoke();
                 
                 if (varargs.narg() > 0) {
                     if (varargs.toboolean(1)) {
@@ -231,7 +231,7 @@ public class Machine {
             catch (LuaError e) {
                 error(e.getMessage());
             }
-            catch (IOException | URISyntaxException e) {
+            catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -397,7 +397,7 @@ public class Machine {
             
             setLayoutX(x);
             setLayoutY(y);
-            Main.addStyleSheet(this, "screenWidget.css");
+            getStylesheets().add(Main.class.getResource("styles/screenWidget.css").toString());
             getStyleClass().setAll("pane");
             
             label = new Label(name);
