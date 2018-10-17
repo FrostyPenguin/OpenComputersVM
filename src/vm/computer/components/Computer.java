@@ -1,9 +1,6 @@
 package vm.computer.components;
 
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.TwoArgFunction;
-import org.luaj.vm2.lib.ZeroArgFunction;
-import vm.computer.LuaValues;
+import li.cil.repack.com.naef.jnlua.LuaState;
 import vm.computer.Machine;
 
 import javax.sound.midi.MidiChannel;
@@ -13,9 +10,12 @@ import javax.sound.midi.Synthesizer;
 
 public class Computer extends ComponentBase {
     private MidiChannel midiChannel;
+    private Machine machine;
     
-    public Computer(String address, Machine machine) {
-        super(address, "computer");
+    public Computer(LuaState lua, String address, Machine machine) {
+        super(lua, address, "computer");
+        
+        this.machine = machine;
 
         try {
             Synthesizer synthesizer = MidiSystem.getSynthesizer();
@@ -26,33 +26,42 @@ public class Computer extends ComponentBase {
         catch (MidiUnavailableException e) {
             e.printStackTrace();
         }
+    }
 
-        set("beep", new TwoArgFunction() {
-            public LuaValue call(LuaValue frequency, LuaValue duration) {
-                frequency.checkint();
-                duration.checkint();
+    @Override
+    public void pushProxy() {
+        super.pushProxy();
 
-                rawBeep(frequency.toint(), duration.todouble());
-                
-                return LuaValue.NIL;
-            }
+        lua.pushJavaFunction(args -> {
+            args.checkInteger(1);
+            args.checkInteger(2);
+
+            rawBeep(args.toInteger(1), args.toInteger(2));
+
+            return 0;
         });
+        lua.setField(-2,  "beep");
 
-        set("isRunning", LuaValues.TRUE_FUNCTION);
+        lua.pushJavaFunction(args -> {
+            machine.boot();
 
-        set("start", new ZeroArgFunction() {
-            public LuaValue call() {
-                machine.boot();
-                return LuaValue.NIL;
-            }
+            return 0;
         });
+        lua.setField(-2,  "start");
 
-        set("stop", new ZeroArgFunction() {
-            public LuaValue call() {
-                machine.shutdown(true);
-                return LuaValue.NIL;
-            }
+        lua.pushJavaFunction(args -> {
+            machine.shutdown(true);
+
+            return 0;
         });
+        lua.setField(-2,  "stop");
+
+        lua.pushJavaFunction(args -> {
+            lua.pushBoolean(true);
+
+            return 1;
+        });
+        lua.setField(-2,  "isRunning");
     }
 
     public void rawBeep(int frequency, double duration) {

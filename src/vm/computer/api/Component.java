@@ -1,78 +1,72 @@
 package vm.computer.api;
 
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Varargs;
-import org.luaj.vm2.lib.OneArgFunction;
-import org.luaj.vm2.lib.VarArgFunction;
+import li.cil.repack.com.naef.jnlua.LuaState;
 import vm.computer.components.ComponentBase;
 
 import java.util.ArrayList;
 
-public class Component extends LuaTable {
+public class Component {
     public ArrayList<ComponentBase> list = new ArrayList<>();
 
-    public Component() {
-        set("list", new OneArgFunction() {
-            public LuaValue call(LuaValue value) {
-                return new ListIterator(value);
-            }
-        });
+    public Component(LuaState lua) {
+        lua.pushJavaFunction(args -> {
+            args.checkString(1);
+            String address = args.toString(1);
 
-        set("proxy", new OneArgFunction() {
-            public LuaValue call(LuaValue value) {
-                String requiredAddress = value.tojstring();
+            for (ComponentBase component : list) {
+                if (component.address.equals(address)) {
+                    lua.rawGet(LuaState.REGISTRYINDEX, component.proxyReference);
 
-                for (ComponentBase component : list) {
-                    if (component.get("address").tojstring().equals(requiredAddress)) {
-                        return component;
-                    }
+                    return 1;
                 }
-
-                return LuaValue.NIL;
             }
+
+            return 0;
         });
-    }
-    
-    class ListIterator extends VarArgFunction {
-        private int index = 0;
-        private LuaValue filter;
+        lua.setField(-2, "proxy");
 
-        public ListIterator(LuaValue value) {
-            filter = value;
-        }
+        lua.pushJavaFunction(args -> {
+            final int[] index = {0};
 
-        public Varargs invoke(Varargs varargs) {
-            if (index < list.size()) {
-                if (filter.isnil()) {
-                    ComponentBase component = list.get(index);
-                    index++;
+            String filter = args.isString(1) ? args.toString(1) : null;
+            boolean exact = args.isBoolean(2) ? args.toBoolean(2) : true;
 
-                    return LuaValue.varargsOf(new LuaValue[] {
-                        component.get("address"),
-                        component.get("type")
-                    });
+            lua.pushJavaFunction(iteratorArgs -> {
+                if (index[0] < list.size()) {
+                    if (filter == null) {
+                        ComponentBase component = list.get(index[0]);
+
+                        lua.pushString(component.address);
+                        lua.pushString(component.type);
+
+                        index[0]++;
+
+                        return 2;
+                    }
+                    else {
+                        for (int i = index[0]; i < list.size(); i++) {
+                            ComponentBase component = list.get(i);
+
+                            if (exact ? component.type.equals(filter) : component.type.contains(filter)) {
+                                lua.pushString(component.address);
+                                lua.pushString(component.type);
+
+                                index[0] = i + 1;
+
+                                return 2;
+                            }
+                        }
+
+                        return 0;
+                    }
                 }
                 else {
-                    for (int i = index; i < list.size(); i++) {
-                        ComponentBase component = list.get(i);
-
-                        if (component.get("type").eq(filter).toboolean()) {
-                            index = i + 1;
-
-                            return LuaValue.varargsOf(new LuaValue[] {
-                                component.get("address"),
-                                component.get("type")
-                            });
-                        }
-                    }
-
-                    return LuaValue.NIL;
+                    return 0;
                 }
-            }
-            else {
-                return LuaValue.NIL;
-            }
-        }
+            });
+
+            return 1;
+        });
+        lua.setField(-2, "list");
     }
 }

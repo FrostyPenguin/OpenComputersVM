@@ -4,6 +4,7 @@
   "y": 3,
   "width": 1200,
   "height": 580,
+  "toolbarHidden": false,
   "components": [
     {
       "type": "gpu",

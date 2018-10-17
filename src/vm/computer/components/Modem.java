@@ -1,12 +1,8 @@
 package vm.computer.components;
 
+import li.cil.repack.com.naef.jnlua.LuaState;
 import org.json.JSONObject;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Varargs;
-import org.luaj.vm2.lib.OneArgFunction;
-import org.luaj.vm2.lib.VarArgFunction;
-import org.luaj.vm2.lib.ZeroArgFunction;
-import vm.computer.LuaValues;
+import vm.computer.LuaUtils;
 import vm.computer.Machine;
 
 import java.util.HashMap;
@@ -17,142 +13,154 @@ public class Modem extends ComponentBase {
     private int strength = 512;
     private HashMap<Integer, Boolean> openPorts = new HashMap<>();
 
-    public Modem(String address, String wm, boolean wmf) {
-        super(address, "modem");
-        
-        wakeMessage = wm;
-        wakeMessageFuzzy = wmf;
+    public Modem(LuaState lua, String address, String wakeMessage, boolean wakeMessageFuzzy) {
+        super(lua, address, "modem");
 
-        set("broadcast", new VarArgFunction() {
-            public Varargs invoke(Varargs varargs) {
-                varargs.checkint(1);
-                
-                int port = varargs.toint(1);
+        this.wakeMessage = wakeMessage;
+        this.wakeMessageFuzzy = wakeMessageFuzzy;
+    }
+
+    @Override
+    public void pushProxy() {
+        super.pushProxy();
+
+        lua.pushJavaFunction(args -> {
+            args.checkInteger(1);
+
+            int port = args.toInteger(1);
+            if (rawIsOpen(port)) {
+                // Тупо сендим всем машинкам наше йоба-сообщение
+                for (Machine machine : Machine.list) {
+                    // Нуачо, нах себе-то слать
+                    if (!machine.modemComponent.address.equals(address)) {
+                        pushMessageSignal(machine, port, args, 2);
+                    }
+                }
+
+                lua.pushBoolean(true);
+                return 1;
+            }
+            else {
+                lua.pushBoolean(false);
+                return 1;
+            }
+        });
+        lua.setField(-2, "broadcast");
+
+        lua.pushJavaFunction(args -> {
+            args.checkInteger(1);
+            args.checkString(2);
+
+            String remoteAddress = args.toString(1);
+            int port = args.toInteger(2);
+
+            if (rawIsOpen(port)) {
+                // Продрачиваем машинки и ищем нужную сетевуху
+                for (Machine machine : Machine.list) {
+                    // ОПАЧКИ СТОПЭ ПОЯСНИ ЗА АДРЕС
+                    if (machine.modemComponent.address.equals(remoteAddress)) {
+                        pushMessageSignal(machine, port, args, 3);
+
+                        lua.pushBoolean(true);
+                        return 1;
+                    }
+                }
+            }
+
+            lua.pushBoolean(false);
+            return 1;
+        });
+        lua.setField(-2, "send");
+
+        lua.pushJavaFunction(args -> {
+            args.checkInteger(1);
+
+            int port = args.toInteger(1);
+            boolean isClosed = !rawIsOpen(port);
+            if (isClosed)
+                openPorts.put(port, true);
+
+            lua.pushBoolean(isClosed);
+            return 1;
+        });
+        lua.setField(-2, "open");
+
+        lua.pushJavaFunction(args -> {
+            if (args.isNoneOrNil(1)) {
+                openPorts.clear();
+
+                lua.pushBoolean(true);
+                return 1;
+            }
+            else {
+                int port = args.toInteger(1);
                 if (rawIsOpen(port)) {
-                    // Тупо сендим всем машинкам наше йоба-сообщение
-                    for (Machine machine : Machine.list) {
-                        // Нуачо, нах себе-то слать
-                        if (!machine.modemComponent.address.equals(address)) {
-                            pushMessageSignal(machine, port, getMessageData(varargs, 2));
-                        }
-                    }
-                    
-                    return LuaValue.TRUE;
+                    openPorts.put(port, false);
+
+                    lua.pushBoolean(true);
+                    return 1;
                 }
-                else {
-                    return LuaValue.FALSE;
-                }
+
+                lua.pushBoolean(false);
+                return 1;
             }
         });
+        lua.setField(-2, "close");
 
-        set("send", new VarArgFunction() {
-            public Varargs invoke(Varargs varargs) {
-                varargs.checkstring(1);
-                varargs.checkint(2);
+        lua.pushJavaFunction(args -> {
+            args.checkInteger(1);
 
-                String remoteAddress = varargs.tojstring(1);
-                int port = varargs.toint(2);
-                
-                if (rawIsOpen(port)) {
-                    // Продрачиваем машинки и ищем нужную сетевуху
-                    for (Machine machine : Machine.list) {
-                        // ОПАЧКИ СТОПЭ ПОЯСНИ ЗА АДРЕС
-                        if (machine.modemComponent.address.equals(remoteAddress)) {
-                            pushMessageSignal(machine, port, getMessageData(varargs, 3));
-                            
-                            return LuaValue.TRUE;
-                        }
-                    }
-                }
-                
-                return LuaValue.FALSE;
-            }
+            strength = args.toInteger(1);
+
+            return 0;
         });
-        
-        set("open", new OneArgFunction() {
-            public LuaValue call(LuaValue value) {
-                value.checkint();
+        lua.setField(-2, "setStrength");
 
-                int port = value.toint();
-                boolean isClosed = !rawIsOpen(port);
-                if (isClosed)
-                    openPorts.put(port, true);
+        lua.pushJavaFunction(args -> {
+            lua.pushInteger(strength);
 
-                return LuaValue.valueOf(isClosed);
-            }
+            return 1;
         });
+        lua.setField(-2, "getStrength");
 
-        set("close", new OneArgFunction() {
-            public LuaValue call(LuaValue value) {
-                if (value.isnil()) {
-                    openPorts.clear();
-                    
-                    return LuaValue.TRUE;
-                }
-                else {
-                    int port = value.toint();
-                    if (rawIsOpen(port)) {
-                        openPorts.put(port, false);
-                        
-                        return LuaValue.TRUE;
-                    }
-                    
-                    return LuaValue.FALSE;
-                }
-            }
+        lua.pushJavaFunction(args -> {
+            lua.pushBoolean(true);
+
+            return 1;
         });
+        lua.setField(-2, "isWireless");
 
-        set("setStrength", new OneArgFunction() {
-            public LuaValue call(LuaValue value) {
-                value.checkint();
+        lua.pushJavaFunction(args -> {
+            lua.pushInteger(8192);
 
-                strength = value.toint();
-
-                return LuaValue.NIL;
-            }
+            return 1;
         });
-
-        set("getStrength", new ZeroArgFunction() {
-            public LuaValue call() {
-                return LuaValue.valueOf(strength);
-            }
-        });
-
-        set("isWireless", LuaValues.TRUE_FUNCTION);
-        set("maxPacketSize", LuaValues.integerFunction(8192));
+        lua.setField(-2, "maxPacketSize");
     }
 
     @Override
     public JSONObject toJSONObject() {
-        return super.toJSONObject().put("wakeMessage", wakeMessage).put("wakeMessageFuzzy", wakeMessageFuzzy);
+        return super.toJSONObject()
+            .put("wakeMessage", wakeMessage)
+            .put("wakeMessageFuzzy", wakeMessageFuzzy);
     }
 
-    private Varargs getMessageData(Varargs varargs, int fromIndex) {
-        LuaValue[] data = new LuaValue[varargs.narg() - fromIndex + 1];
-        for (int i = fromIndex; i <= varargs.narg(); i++)
-            data[i - fromIndex] = varargs.arg(i);
-
-        return LuaValue.varargsOf(data);
-    }
-    
-    private void pushMessageSignal(Machine machine, int port, Varargs message) {
+    private void pushMessageSignal(Machine machine, int port, LuaState message, int fromIndex) {
         // Если удаленный писюк порт открыл
         if (machine.modemComponent.rawIsOpen(port)) {
-            LuaValue[] data = new LuaValue[message.narg() + 5];
+            LuaState signal = new LuaState();
 
-            data[0] = LuaValue.valueOf("modem_message");
-            data[1] = LuaValue.valueOf(machine.modemComponent.address);
-            data[2] = LuaValue.valueOf(address);
-            data[3] = LuaValue.valueOf(port);
-            data[4] = LuaValue.valueOf(0);
+            signal.pushString("modem_message");
+            signal.pushString(machine.modemComponent.address);
+            signal.pushString(address);
+            signal.pushInteger(port);
+            signal.pushInteger(0);
+            LuaUtils.pushSignalData(signal, message, fromIndex, message.getTop());
 
-            for (int i = 1; i <= message.narg(); i++)
-                data[4 + i] = message.arg(i);
-
-            machine.luaThread.pushSignal(LuaValue.varargsOf(data));
+            machine.luaThread.pushSignal(signal);
         }
     }
-    
+
     public boolean rawIsOpen(int port) {
         return openPorts.getOrDefault(port, false);
     }

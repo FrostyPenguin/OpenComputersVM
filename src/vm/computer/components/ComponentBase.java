@@ -1,21 +1,37 @@
 package vm.computer.components;
 
+import li.cil.repack.com.naef.jnlua.LuaState;
 import org.json.JSONObject;
-import org.luaj.vm2.LuaTable;
 
-public class ComponentBase extends LuaTable {
-    public final String type, address;
+public class ComponentBase {
+    public int proxyReference;
+    public String address, type;
+    public LuaState lua;
     
-    public ComponentBase(String address, String type) {
+    public ComponentBase(LuaState lua, String address, String type) {
         this.type = type;
+        this.lua = lua;
         this.address = address;
         
-        set("type", type);
-        set("address", address);
-        set("slot", -1);
+        lua.newTable();
+        pushProxy();
+        proxyReference = lua.ref(LuaState.REGISTRYINDEX);
+    }
+    
+    public void pushProxy() {
+        lua.pushString(address);
+        lua.setField(-2, "address");
+
+        lua.pushString(type);
+        lua.setField(-2, "type");
+
+        lua.pushInteger(-1);
+        lua.setField(-2, "slot");
     }
 
     public JSONObject toJSONObject() {
-        return new JSONObject().put("type", type).put("address", address);
+        return new JSONObject()
+            .put("type", type)
+            .put("address", address);
     }
 }

@@ -4,10 +4,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import li.cil.repack.com.naef.jnlua.LuaState;
 import org.json.JSONObject;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Varargs;
-import org.luaj.vm2.lib.*;
 import vm.computer.Glyph;
 
 public class GPU extends ComponentBase {
@@ -17,115 +15,117 @@ public class GPU extends ComponentBase {
         GlyphWIDTHMulWidth,
         GlyphHEIGHTMulHeight,
         GlyphHEIGHTMulWidthMulHeight;
-    
+
     private ImageView screenImageView;
     private int[] buffer;
     private Pixel[][] pixels;
     private PixelWriter pixelWriter;
     private int background, foreground;
 
-    public GPU(String address, ImageView screenImageView) {
-        super(address,"gpu");
-        
+    public GPU(LuaState lua, String address, ImageView screenImageView) {
+        super(lua, address,"gpu");
+
         this.screenImageView = screenImageView;
-
-        set("set", new ThreeArgFunction() {
-            public LuaValue call(LuaValue x, LuaValue y, LuaValue text) {
-                x.checkint();
-                y.checkint();
-                text.checkjstring();
-
-                int javaX = x.toint() - 1, javaY = y.toint() - 1;
-                String javaText = text.tojstring();
-
-                for (int i = 0; i < javaText.length(); i++) {
-                    rawSet(javaX, javaY, javaText.codePointAt(i));
-
-                    javaX++;
-                }
-
-                update();
-
-                return LuaValue.NIL;
-            }
-        });
-
-        set("setResolution", new TwoArgFunction() {
-            public LuaValue call(LuaValue width, LuaValue height) {
-                width.checkint();
-                height.checkint();
-
-                rawSetResolution(width.toint(), height.toint());
-                update();
-
-                return LuaValue.NIL;
-            }
-        });
-
-        set("getResolution", new VarArgFunction() {
-            public Varargs invoke(Varargs args) {
-                return LuaValue.varargsOf(new LuaValue[] {
-                    LuaValue.valueOf(width),
-                    LuaValue.valueOf(height)
-                });
-            }
-        });
-
-        set("fill", new VarArgFunction() {
-            public Varargs invoke(Varargs varargs) {
-                varargs.checkint(1);
-                varargs.checkint(2);
-                varargs.checkint(3);
-                varargs.checkint(4);
-                varargs.checkjstring(5);
-
-                rawFill(
-                    varargs.toint(1) - 1,
-                    varargs.toint(2) - 1,
-                    varargs.toint(3),
-                    varargs.toint(4),
-                    varargs.tojstring(5).codePointAt(0)
-                );
-
-                update();
-
-                return LuaValue.NIL;
-            }
-        });
-
-        set("setBackground", new OneArgFunction() {
-            public LuaValue call(LuaValue color) {
-                color.checkint();
-
-                background = 0xFF000000 | color.toint();
-
-                return LuaValue.NIL;
-            }
-        });
-
-        set("setForeground", new OneArgFunction() {
-            public LuaValue call(LuaValue color) {
-                color.checkint();
-
-                foreground = 0xFF000000 | color.toint();
-
-                return LuaValue.NIL;
-            }
-        });
-
-        set("getBackground", new ZeroArgFunction() {
-            public LuaValue call() {
-                return LuaValue.valueOf(background);
-            }
-        });
-
-        set("getForeground", new ZeroArgFunction() {
-            public LuaValue call() {
-                return LuaValue.valueOf(foreground);
-            }
-        });
     }
-    
+
+    @Override
+    public void pushProxy() {
+        super.pushProxy();
+
+        lua.pushJavaFunction(args -> {
+            args.checkInteger(1);
+            args.checkInteger(2);
+            args.checkString(3);
+
+            int 
+                x = args.toInteger(1) - 1,
+                y = args.toInteger(2) - 1;
+            String text = args.toString(3);
+            
+            for (int i = 0; i < text.length(); i++) {
+                rawSet(x, y, text.codePointAt(i));
+                x++;
+            }
+            
+            update();
+            
+            return 0;
+        });
+        lua.setField(-2, "set");
+
+        lua.pushJavaFunction(args -> {
+            args.checkInteger(1);
+            args.checkInteger(2);
+            args.checkInteger(3);
+            args.checkInteger(4);
+            args.checkString(5);
+            
+            rawFill(
+                args.toInteger(1) - 1,
+                args.toInteger(2) - 1,
+                args.toInteger(3),
+                args.toInteger(4),
+                args.toString(5).codePointAt(0)
+            );
+
+            update();
+
+            return 0;
+        });
+        lua.setField(-2, "fill");
+
+        lua.pushJavaFunction(args -> {
+            args.checkInteger(1);
+            args.checkInteger(2);
+
+            rawSetResolution(args.toInteger(1), args.toInteger(2));
+            update();
+
+            return 0;
+        });
+        lua.setField(-2, "setResolution");
+
+        lua.pushJavaFunction(args -> {
+            args.checkInteger(1);
+
+            background = 0xFF000000 | args.toInteger(1);
+
+            return 0;
+        });
+        lua.setField(-2, "setBackground");
+
+        lua.pushJavaFunction(args -> {
+            args.checkInteger(1);
+
+            foreground = 0xFF000000 | args.toInteger(1);
+
+            return 0;
+        });
+        lua.setField(-2, "setForeground");
+        
+        lua.pushJavaFunction(args -> {
+            lua.pushInteger(width);
+            lua.pushInteger(height);
+
+            return 2;
+        });
+        lua.setField(-2, "getResolution");
+
+        lua.pushJavaFunction(args -> {
+            lua.pushInteger(background);
+
+            return 1;
+        });
+        lua.setField(-2, "getBackground");
+
+        lua.pushJavaFunction(args -> {
+            lua.pushInteger(foreground);
+
+            return 1;
+        });
+        lua.setField(-2, "getForeground");
+    }
+
     @Override
     public JSONObject toJSONObject() {
         return super.toJSONObject().put("width", width).put("height", height);
@@ -140,35 +140,38 @@ public class GPU extends ComponentBase {
             this.code = code;
         }
     }
-    
+
     public void rawSetResolution(int newWidth, int newHeight) {
         width = newWidth;
         height = newHeight;
         GlyphWIDTHMulWidth = width * Glyph.WIDTH;
         GlyphHEIGHTMulHeight = height * Glyph.HEIGHT;
         GlyphHEIGHTMulWidthMulHeight = GlyphWIDTHMulWidth * Glyph.HEIGHT;
-        
+
         WritableImage writableImage = new WritableImage(GlyphWIDTHMulWidth, GlyphHEIGHTMulHeight);
         pixelWriter = writableImage.getPixelWriter();
         screenImageView.setImage(writableImage);
+
+        screenImageView.setFitWidth(width * Glyph.WIDTH);
+        screenImageView.setFitHeight(height * Glyph.HEIGHT);
 
         pixels = new Pixel[height][width];
         buffer = new int[width * height * Glyph.WIDTH * Glyph.HEIGHT];
 
         flush();
     }
-    
+
     public void flush() {
         background = 0xFF000000;
         foreground = 0xFFFFFFFF;
-        
+
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 pixels[y][x] = new Pixel(background, foreground, 32);
             }
         }
     }
-    
+
     public void update() {
         int bufferIndex = 0, glyphIndex;
 
@@ -193,13 +196,13 @@ public class GPU extends ComponentBase {
         }
 
         pixelWriter.setPixels(
-            0, 
+            0,
             0,
             GlyphWIDTHMulWidth,
             GlyphHEIGHTMulHeight,
             PixelFormat.getIntArgbPreInstance(),
-            buffer, 
-            0, 
+            buffer,
+            0,
             GlyphWIDTHMulWidth
         );
     }
@@ -221,7 +224,7 @@ public class GPU extends ComponentBase {
             x++;
         }
     }
-    
+
     public void rawFill(int x, int y, int width, int height, int symbol) {
         for (int j = y; j < y + height; j++) {
             for (int i = x; i < x + width; i++) {
@@ -232,14 +235,14 @@ public class GPU extends ComponentBase {
 
     public void rawError(String text) {
         System.out.println(text);
-        
+
         String[] lines = text.split("\n");
-        
+
         background = 0xFF0000FF;
         foreground = 0xFFFFFFFF;
-        
+
         rawFill(0, 0, width, height, 32);
-        
+
         int y = height / 2 - lines.length / 2;
         for (int i = 0; i < lines.length; i++) {
             rawText(width / 2 - lines[i].length() / 2, y + i, lines[i]);

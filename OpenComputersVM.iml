@@ -9,5 +9,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="luaj-jse-3.0.1" level="project" />
     <orderEntry type="library" name="json-20180813" level="project" />
+    <orderEntry type="library" name="OpenComputers-JNLua" level="project" />
+    <orderEntry type="library" name="commons-lang3-3.8.1" level="project" />
   </component>
 </module>

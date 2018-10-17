@@ -1,37 +1,41 @@
 package vm.computer.components;
 
+import li.cil.repack.com.naef.jnlua.LuaState;
 import org.json.JSONObject;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.OneArgFunction;
-import org.luaj.vm2.lib.ZeroArgFunction;
 
 public class Screen extends ComponentBase {
-    public boolean precise = false;
+    public boolean precise;
     
-    public Screen(String address, boolean p) {
-        super(address, "screen");
+    public Screen(LuaState lua, String address, boolean precise) {
+        super(lua, address, "screen");
         
-        precise = p;
-        
-        set("setPrecise", new OneArgFunction() {
-            public LuaValue call(LuaValue value) {
-                value.checkboolean();
+        this.precise = precise;
+    }
 
-                precise = value.toboolean();
+    @Override
+    public void pushProxy() {
+        super.pushProxy();
 
-                return LuaValue.NIL;
-            }
+        lua.pushJavaFunction(args -> {
+            args.checkBoolean(1);
+
+            precise = args.toBoolean(1);
+            
+            return 0;
         });
+        lua.setField(-2, "setPrecise");
 
-        set("isPrecise", new ZeroArgFunction() {
-            public LuaValue call() {
-                return LuaValue.valueOf(precise);
-            }
+        lua.pushJavaFunction(args -> {
+            lua.pushBoolean(precise);
+
+            return 1;
         });
+        lua.setField(-2, "isPrecise");
     }
 
     @Override
     public JSONObject toJSONObject() {
-        return super.toJSONObject().put("precise", precise);
+        return super.toJSONObject()
+            .put("precise", precise);
     }
 }
