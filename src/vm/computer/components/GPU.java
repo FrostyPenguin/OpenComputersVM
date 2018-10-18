@@ -4,6 +4,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.GridPane;
 import li.cil.repack.com.naef.jnlua.LuaState;
 import org.json.JSONObject;
 import vm.computer.Glyph;
@@ -17,14 +18,16 @@ public class GPU extends ComponentBase {
         GlyphHEIGHTMulWidthMulHeight;
 
     private ImageView screenImageView;
+    private GridPane screenGridPane;
     private int[] buffer;
     private Pixel[][] pixels;
     private PixelWriter pixelWriter;
     private int background, foreground;
 
-    public GPU(LuaState lua, String address, ImageView screenImageView) {
+    public GPU(LuaState lua, String address, GridPane screenGridPane, ImageView screenImageView) {
         super(lua, address,"gpu");
-
+        
+        this.screenGridPane = screenGridPane;
         this.screenImageView = screenImageView;
     }
 
@@ -151,14 +154,29 @@ public class GPU extends ComponentBase {
         WritableImage writableImage = new WritableImage(GlyphWIDTHMulWidth, GlyphHEIGHTMulHeight);
         pixelWriter = writableImage.getPixelWriter();
         screenImageView.setImage(writableImage);
-
-        screenImageView.setFitWidth(width * Glyph.WIDTH);
-        screenImageView.setFitHeight(height * Glyph.HEIGHT);
-
+        
         pixels = new Pixel[height][width];
         buffer = new int[width * height * Glyph.WIDTH * Glyph.HEIGHT];
 
         flush();
+    }
+    
+    public void updateScreenImageSize() {
+        double w = width * Glyph.WIDTH;
+        double h = height * Glyph.HEIGHT;
+        
+        if (w >= h && w > screenGridPane.getWidth()) {
+            screenImageView.setFitWidth(screenGridPane.getWidth());
+            screenImageView.setFitHeight(screenGridPane.getHeight() * w / h);
+        }
+        else if (w < h && h > screenGridPane.getHeight()) {
+            screenImageView.setFitWidth(screenGridPane.getWidth() / w / h);
+            screenImageView.setFitHeight(screenGridPane.getHeight());
+        }
+        else {
+            screenImageView.setFitWidth(w);
+            screenImageView.setFitHeight(h);
+        }
     }
 
     public void flush() {

@@ -17,7 +17,9 @@ import java.nio.file.Paths;
 
 public class Main extends Application {
     // Жсон - всему голова
-    private static final File configFile = new File(System.getProperty("user.home"), "OpenComputersVM.json");
+    private static final File dataFile = new File(System.getProperty("user.home"), "OpenComputersVM");
+    private static final File configFile = new File(dataFile, "Config.json");
+    private static final File librariesFile = new File(dataFile, "Libraries");
 
     @Override
     public void start(Stage primaryStage) {

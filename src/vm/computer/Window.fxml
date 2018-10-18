@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.*?>
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -29,7 +30,7 @@
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <GridPane fx:id="screenGridPane">
+      <GridPane fx:id="screenGridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
          <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
          </columnConstraints>
@@ -41,6 +42,9 @@
                <image>
                   <Image url="@../../../../../../Pictures/Govnokod.png" />
                </image>
+               <effect>
+                  <DropShadow color="#0000007f" height="83.22999999999999" offsetY="5.0" radius="40.735" width="81.71" />
+               </effect>
             </ImageView>
             <Button fx:id="toolbarButton" mnemonicParsing="false" onMouseClicked="#onToolbarButtonPressed" prefHeight="132.0" prefWidth="40.0" stylesheets="@../styles/toolbarButton.css" text="&gt;" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
                <GridPane.margin>

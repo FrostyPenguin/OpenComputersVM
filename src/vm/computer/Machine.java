@@ -98,7 +98,6 @@ public class Machine {
                         case USERDATA: result.append("userdata"); result.append(separator); break;
                     }
                 }
-
                 System.out.println(result.toString());
 
                 return 0;
@@ -131,7 +130,7 @@ public class Machine {
 
                 switch (component.getString("type")) {
                     case "gpu":
-                        machine.gpuComponent = new GPU(machine.lua, address, machine.screenImageView);
+                        machine.gpuComponent = new GPU(machine.lua, address, machine.screenGridPane, machine.screenImageView);
                         machine.gpuComponent.rawSetResolution(component.getInt("width"), component.getInt("height"));
                         machine.gpuComponent.update();
                         break;
@@ -184,8 +183,19 @@ public class Machine {
             machine.updateToolbar();
 
             // При закрытии окошка машину над оффнуть, а то хуй проссыт, будет ли там поток дрочиться или плеер этот асинхронники свои сувать меж булок
-            machine.stage.setOnCloseRequest(event -> {
+            stage.setOnCloseRequest(event -> {
                 machine.shutdown(true);
+            });
+    
+            // Авторесайз пикчи, чтоб охуенно и пиздато все было
+            machine.screenGridPane.widthProperty().addListener((observable, oldValue, newValue) -> {
+                double cyka = newValue.doubleValue();
+                machine.screenImageView.setFitWidth(cyka > machine.gpuComponent.GlyphWIDTHMulWidth ? machine.gpuComponent.GlyphWIDTHMulWidth : cyka);
+            });
+
+            machine.screenGridPane.heightProperty().addListener((observable, oldValue, newValue) -> {
+                double cyka = newValue.doubleValue();
+                machine.screenImageView.setFitHeight(cyka > machine.gpuComponent.GlyphHEIGHTMulHeight ? machine.gpuComponent.GlyphHEIGHTMulHeight : cyka);
             });
             
             // Запоминаем мошынку в гулаг-перечне мошынок
@@ -290,7 +300,7 @@ public class Machine {
     }
 
     public void onPowerButtonTouch() {
-        new Player("click.mp3");
+        new Player("click.mp3").play();
         if (started) {
             shutdown(true);
         } else {
@@ -473,11 +483,12 @@ public class Machine {
         }
 
         private void pushTouchSignal(double screenX, double screenY, int state, String name) {
-            double p = screenImageView.getFitWidth() / screenImageView.getImage().getWidth();
-
+            double p1 = screenImageView.getFitWidth() / screenImageView.getImage().getWidth();
+//            double p2 = screenImageView.getFitHeight() / screenImageView.getImage().getHeight();
+            
             double
-                x = (screenX - screenImageView.getLayoutX()) / p / Glyph.WIDTH + 1,
-                y = (screenY - screenImageView.getLayoutY()) / p / Glyph.HEIGHT + 1;
+                x = (screenX - screenImageView.getLayoutX()) / p1 / Glyph.WIDTH + 1,
+                y = (screenY - screenImageView.getLayoutY()) / p1 / Glyph.HEIGHT + 1;
 
             LuaState luaState = new LuaState();
             
