@@ -14,41 +14,50 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.UUID;
 
 public class Main extends Application {
-    // Жсон - всему голова
-    private static final File dataFile = new File(System.getProperty("user.home"), "OpenComputersVM");
-    private static final File configFile = new File(dataFile, "Config.json");
-    private static final File librariesFile = new File(dataFile, "Libraries");
-
     @Override
     public void start(Stage primaryStage) {
+        // Грузим шрифт кубача
         System.out.println("Loading font: " + Font.loadFont(Main.class.getResource("resources/Minecraft.ttf").toString(), 10));
 
         // Парсим символьные глифы и коды OC-клавиш
         Glyph.initialize();
         KeyMap.initialize();
         
-        // Грузим конфиг
+        // Чекаем, имеется ли конфиг и грузим его, либо создаем новый из ресурсов
         JSONObject loadedConfig = null;
         try {
-            if (configFile.exists()) {
-                System.out.println("Loading config from: " + configFile.getAbsolutePath());
-                loadedConfig = new JSONObject(IO.loadFileAsString(configFile.toURI()));
+            if (IO.configFile.exists()) {
+                System.out.println("Loading config from: " + IO.configFile.toURI());
+                
+                loadedConfig = new JSONObject(IO.loadFileAsString(IO.configFile.toURI()));
+
+                // Ебурим наши машинки из конфига
+                JSONArray configMachines = loadedConfig.getJSONArray("machines");
+                for (int i = 0; i < configMachines.length(); i++) {
+                    Machine.fromJSONObject(configMachines.getJSONObject(i));
+                }
             }
             else {
-                System.out.println("Config doesn't exists, loading a blank one");
-                loadedConfig = new JSONObject(IO.loadResourceAsString("defaults/Config.json"));
+                System.out.println("Config doesn't exists, creating a blank one");
+                
+                // Генерим путь, в котором эта хуйня будет храниться
+                File machineFile = new File(IO.machinesFile, UUID.randomUUID().toString());
+                File HDDFile = new File(machineFile, "HDD");
+                HDDFile.mkdirs();
+                
+                // Копипиздим EEPROM.lua с ресурсов
+                File EEPROMFile = new File(machineFile, "EEPROM.lua");
+                IO.copyResourceToFile("resources/defaults/EEPROM.lua", EEPROMFile);
+                
+                // Генерим шаблонную машину
+                Machine.generate(EEPROMFile.getPath(), HDDFile.getPath());
             }
         }
         catch (IOException e) {
             e.printStackTrace();
-        }
-
-        // Ебурим наши машинки из конфига
-        JSONArray configMachines = loadedConfig.getJSONArray("machines");
-        for (int i = 0; i < configMachines.length(); i++) {
-            Machine.fromJSONObject(configMachines.getJSONObject(i));
         }
 
         // Сейвим конфиг при выходе из прожки
@@ -64,7 +73,7 @@ public class Main extends Application {
                 System.out.println("Saving config file...");
 
                 Files.write(
-                    Paths.get(configFile.toURI()),
+                    Paths.get(IO.configFile.toURI()),
                     new JSONObject()
                         .put("machines", JSONMachines)
                         .toString(2).getBytes(StandardCharsets.UTF_8)

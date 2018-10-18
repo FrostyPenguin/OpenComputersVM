@@ -54,3 +54,24 @@
     -fx-text-fill: #222;
     -fx-effect: dropshadow(three-pass-box, rgba(255, 255, 255, 0.6), 10, 0.2, 0, 1);
 }
+
+.slider .track {
+    -fx-background-color: #333;
+    -fx-background-radius: 2;
+    -fx-padding: 2;
+}
+
+.slider .thumb {
+    -fx-background-color: #FFF;
+    -fx-background-radius: 100;
+    -fx-padding: 7;
+}
+
+.slider .axis {
+    -fx-tick-label-font: 8 Minecraft; 
+    -fx-tick-label-fill: #FFFFFF88;
+}
+
+.axis-tick-mark, .axis-minor-tick-mark {
+    -fx-stroke: #333;
+}

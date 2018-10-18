@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.ImageView;
@@ -29,6 +30,7 @@ import vm.computer.api.Computer;
 import vm.computer.api.Unicode;
 import vm.computer.components.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,11 +40,12 @@ public class Machine {
     public static final ArrayList<Machine> list = new ArrayList<>();
     
     // Жабафыховские обжекты
+    public Slider RAMSlider;
     public GridPane windowGridPane;
     public GridPane screenGridPane;
     public ImageView screenImageView, boardImageView;
     public ToggleButton powerButton;
-    public TextField EEPROMPathTextField, HDDPathTextField, nameTextField;
+    public TextField EEPROMPathTextField, HDDPathTextField, nameTextField, linkedCardAddressTextField;
     public Button toolbarButton;
     
     // Машиновская поебистика
@@ -65,6 +68,7 @@ public class Machine {
     private Player computerRunningPlayer;
     private boolean toolbarHidden;
     private LuaState lua;
+    private int totalMemory;
     
     public static void fromJSONObject(JSONObject machineConfig) {
         try {
@@ -77,8 +81,11 @@ public class Machine {
             Machine machine = fxmlLoader.getController();
             machine.stage = stage;
 
+            // Вгондошиваем значение лимита оперативы
+            machine.RAMSlider.setValue(machineConfig.getDouble("totalMemory"));
+            
             // Инициализируем корректную Lua-машину
-            machine.lua = LuaStateFactory.load52(4 * 1024 * 1024);
+            machine.lua = LuaStateFactory.load52();
 
             // По дефолту принт будет выводить хуйню в консоль
             machine.lua.pushJavaFunction(args -> {
@@ -208,7 +215,51 @@ public class Machine {
             e.printStackTrace();
         }
     }
-    
+
+    public static void generate(String EEPROMPath, String HDDPath) {
+        try {
+            System.out.println("Generating new machine...");
+
+            // Грузим дефолтный конфиг машины и создаем жсон на его основе
+            JSONObject machineConfig = new JSONObject(IO.loadResourceAsString("resources/defaults/Machine.json"));
+
+            // Продрачиваем дефолтные компоненты и рандомим им ууидшники
+            // Запоминаем адрес компонента файлосистемы, чтоб потом его в биос дату вхуячить
+            String address, filesystemAddress = null;
+            JSONObject component;
+            JSONArray components = machineConfig.getJSONArray("components");
+            for (int i = 0; i < components.length(); i++) {
+                component = components.getJSONObject(i);
+
+                // Генерим адрес
+                address = UUID.randomUUID().toString();
+                component.put("address", address);
+
+                // Попутно создаем директории харда
+                if (component.getString("type").equals("filesystem")) {
+                    filesystemAddress = address;
+                    component.put("path", HDDPath);
+                }
+            }
+
+            // А терь ищем еепром и сеттим ему полученный адрес харда
+            for (int i = 0; i < components.length(); i++) {
+                component = components.getJSONObject(i);
+
+                if (component.getString("type").equals("eeprom")) {
+                    component.put("data", filesystemAddress);
+                    component.put("path", EEPROMPath);
+                    break;
+                }
+            }
+
+            // Усе, уася, готова машинка
+            Machine.fromJSONObject(machineConfig);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     
     public JSONObject toJSONObject() {
         JSONArray components = new JSONArray();
@@ -223,7 +274,8 @@ public class Machine {
             .put("width", stage.getWidth())
             .put("height", stage.getHeight())
             .put("toolbarHidden", toolbarHidden)
-            .put("components", components);
+            .put("components", components)
+            .put("totalMemory", RAMSlider.getValue());
     }
     
     private void updateControls() {
@@ -256,47 +308,7 @@ public class Machine {
     }
     
     public void onGenerateButtonTouch() {
-        try {
-            System.out.println("Generating new machine...");
-
-            // Грузим дефолтный конфиг машины и создаем жсон на его основе
-            JSONObject generatedMachine = new JSONObject(IO.loadResourceAsString("defaults/Machine.json"));
-
-            // Продрачиваем дефолтные компоненты и рандомим им ууидшники
-            // Запоминаем адрес компонента файлосистемы, чтоб потом его в биос дату вхуячить
-            String filesystemAddress = null, address;
-            JSONObject component;
-            JSONArray components = generatedMachine.getJSONArray("components");
-            for (int i = 0; i < components.length(); i++) {
-                component = components.getJSONObject(i);
-
-                address = UUID.randomUUID().toString();
-                component.put("address", address);
-
-                // Попутно создаем директории харда
-                if (component.getString("type").equals("filesystem")) {
-                    filesystemAddress = address;
-                    component.put("path", HDDPathTextField.getText());
-                }
-            }
-
-            // А терь ищем еепром и сеттим ему полученный адрес харда
-            for (int i = 0; i < components.length(); i++) {
-                component = components.getJSONObject(i);
-
-                if (component.getString("type").equals("eeprom")) {
-                    component.put("data", filesystemAddress);
-                    component.put("path", EEPROMPathTextField.getText());
-                    break;
-                }
-            }
-
-            // Усе, уася, машинка готова
-            Machine.fromJSONObject(generatedMachine);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        generate(EEPROMPathTextField.getText(), HDDPathTextField.getText());
     }
 
     public void onPowerButtonTouch() {
@@ -333,16 +345,33 @@ public class Machine {
                 else if (Architecture.IS_OS_X86) architecture = "32";
                 else if (Architecture.IS_OS_ARM) architecture = "32.arm";
 
-                String file = "/Users/igor/Documents/GitHub/OpenComputersVM/src/vm/libraries/lua" + (use53 ? "53" : "52") + "/native." + architecture + "." + extension;
-                System.out.println("Loading lua library: " + file);
-                System.load(file);
+                // Финальное, так сказать, название либсы-хуибсы
+                String libraryPath = "lua" + (use53 ? "53" : "52") + "/native." + architecture + "." + extension;
+                
+                // Копипиздим либу из ресурсов, если ее еще нет
+                File libraryFile = new File(IO.librariesFile, libraryPath);
+                if (!libraryFile.exists()) {
+                    try {
+                        System.out.println("Unpacking library: " + libraryPath);
+                        
+                        libraryFile.mkdirs();
+                        IO.copyResourceToFile("libraries/" + libraryPath, libraryFile);
+                    }
+                    catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                
+                // Грузим ее, НАКАНЕЦТА
+                System.out.println("Loading library: " + libraryFile.getPath());
+                System.load(libraryFile.getPath());
             });
         }
 
-        public static LuaState load52(int memory) {
+        public static LuaState load52() {
             prepareLoad(false);
 
-            LuaState lua = new LuaState(memory);
+            LuaState lua = new LuaState(4 * 1024 * 1024);
 
             lua.openLib(LuaState.Library.BASE);
             lua.openLib(LuaState.Library.BIT32);
@@ -357,10 +386,10 @@ public class Machine {
             return lua;
         }
 
-        public static LuaState load53(int memory) {
+        public static LuaState load53() {
             prepareLoad(true);
 
-            LuaState lua = new LuaStateFiveThree(memory);
+            LuaState lua = new LuaStateFiveThree(4 * 1024 * 1024);
 
             lua.openLibs();
             lua.openLib(LuaState.Library.BASE);
@@ -433,7 +462,8 @@ public class Machine {
         public void run() {
             try {
                 // Грузим машин-кодыч
-                lua.load(IO.loadResourceAsString("machine.lua"), "=machine");
+                lua.setTotalMemory((int) (RAMSlider.getValue() * 1024));
+                lua.load(IO.loadResourceAsString("resources/Machine.lua"), "=machine");
                 lua.call(0, 0);
 
                 error("computer halted");
@@ -582,6 +612,8 @@ public class Machine {
             
             computerRunningPlayer.stop();
             
+            RAMSlider.setDisable(false);
+            
             if (resetGPU) {
                 gpuComponent.flush();
                 gpuComponent.update();
@@ -594,27 +626,33 @@ public class Machine {
 
     public void boot() {
         if (!started) {
-            started = true;
-            startTime = System.currentTimeMillis();
-
-            gpuComponent.flush();
-            gpuComponent.update();
-
             try {
+                // Грузим биос-хуйню из файла
                 eepromComponent.loadCode();
+
+                // ПОДРУБАЛИТИ
+                started = true;
+                startTime = System.currentTimeMillis();
+
+                // Экранчик надо чистить, а то вдруг там бсод закрался
+                gpuComponent.flush();
+                gpuComponent.update();
+                
+                // Оффаем слайдер памяти, а то хуйня эта сангаровская ругается
+                RAMSlider.setDisable(true);
+
+                // Бесконечно играем звук компека)00
+                computerRunningPlayer = new Player("computer_running.mp3");
+                computerRunningPlayer.setRepeating();
+                computerRunningPlayer.play();
+
+                // Запускаем луа-машину
+                luaThread = new LuaThread();
+                luaThread.start();
             }
             catch (IOException e) {
                 e.printStackTrace();
             }
-
-            // Бесконечно играем звук компека)00
-            computerRunningPlayer = new Player("computer_running.mp3");
-            computerRunningPlayer.setRepeating();
-            computerRunningPlayer.play();
-            
-            // Запускаем луа-машину
-            luaThread = new LuaThread();
-            luaThread.start();
         }
     }
 }
