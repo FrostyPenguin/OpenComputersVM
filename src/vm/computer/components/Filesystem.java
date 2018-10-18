@@ -10,9 +10,7 @@ import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Filesystem extends ComponentBase {
-    public String
-        realPath,
-        label;
+    public String realPath, label;
 
     private static final int spaceUsed = 0, spaceTotal = 12 * 1024 * 1024;
     private Player[] players = new Player[7];
@@ -29,61 +27,30 @@ public class Filesystem extends ComponentBase {
         }
     }
     
-    private abstract class Handle {
-        public int id;
-
-        public Handle() {
-            do {
-                id = ThreadLocalRandom.current().nextInt();
-            } while(handles.containsKey(id));
-            
-            handles.put(id, this);
-        }
-        
-        public abstract int process(LuaState args);
-        public abstract void close();
-    }
-    
-    private class WriteHandle extends Handle {
-        public FileOutputStream out;
-        
-        public WriteHandle(File file, boolean binary, boolean append) {
-            super();
-            
-            try {
-                out = new FileOutputStream(file, append);
-            }
-            catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-
-        public int process(LuaState args) {
-            byte[] bytes = args.toString(2).getBytes(StandardCharsets.US_ASCII);
-
-            try {
-                out.write(bytes);
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return bytes.length;   
-        }
-
-        public void close() {
-            try {
-                out.close();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     @Override
     public void pushProxy() {
         super.pushProxy();
+
+        // Чтение из хендла
+        lua.pushJavaFunction(args -> {
+            args.checkInteger(1);
+            args.checkInteger(2);
+
+            int id = args.toInteger(1);
+            if (handles.containsKey(id)) {
+                playSound();
+                lua.pushString(handles.get(id).read(args));
+
+                return 1;
+            }
+            else {
+                lua.pushBoolean(false);
+                lua.pushString("handle id doesn't exists");
+
+                return 2;
+            }
+        });
+        lua.setField(-2, "read");
         
         // Запись в хендл
         lua.pushJavaFunction(args -> {
@@ -93,7 +60,7 @@ public class Filesystem extends ComponentBase {
             int id = args.toInteger(1);
             if (handles.containsKey(id)) {
                 playSound();
-                lua.pushInteger(handles.get(id).process(args));
+                lua.pushInteger(handles.get(id).write(args));
                 
                 return 1;
             }
@@ -124,22 +91,19 @@ public class Filesystem extends ComponentBase {
         lua.pushJavaFunction(args -> {
             args.checkString(1);
             
-            boolean binary, append;
-            if (args.isNoneOrNil(2)) {
-                binary = false;
-                append = false;
-            }
-            else {
+            boolean reading = false, binary = false, append = false;
+            if (!args.isNoneOrNil(2)){
                 lua.checkString(2);
 
                 String mode = lua.toString(2);
-                binary = mode.equals("wb") || mode.equals("ab");
-                append = mode.equals("a") || mode.equals("ab");
+                reading = mode.contains("r");
+                binary = mode.contains("b");
+                append = mode.contains("a");
             }
             
             File file = getFsFile(args);
             if (file.getParentFile().exists()) {
-                lua.pushInteger(new WriteHandle(file, binary, append).id);
+                lua.pushInteger(reading ? new ReadHandle(file, binary, append).id : new WriteHandle(file, binary, append).id);
                 
                 return 1;
             }
@@ -286,6 +250,105 @@ public class Filesystem extends ComponentBase {
         return super.toJSONObject().put("path", realPath);
     }
 
+    private abstract class Handle {
+        public int id;
+
+        public Handle() {
+            do {
+                id = ThreadLocalRandom.current().nextInt();
+            } while(handles.containsKey(id));
+
+            handles.put(id, this);
+        }
+
+        public abstract int write(LuaState args);
+        public abstract String read(LuaState args);
+        public abstract void close();
+    }
+
+    private class ReadHandle extends Handle {
+        public FileInputStream in;
+
+        public ReadHandle(File file, boolean binary, boolean append) {
+            super();
+
+            try {
+                in = new FileInputStream(file);
+            }
+            catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public int write(LuaState args) {
+            return 0;
+        }
+
+        public String read(LuaState args) {
+            try {
+                byte[] buffer = new byte[args.toInteger(2)];
+                int readCount = in.read(buffer);
+                
+                return new String(buffer, 0, readCount, StandardCharsets.US_ASCII);
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+            
+            return "";
+        }
+
+        public void close() {
+            try {
+                in.close();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    private class WriteHandle extends Handle {
+        public FileOutputStream out;
+
+        public WriteHandle(File file, boolean binary, boolean append) {
+            super();
+
+            try {
+                out = new FileOutputStream(file, append);
+            }
+            catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public int write(LuaState args) {
+            byte[] bytes = args.toString(2).getBytes(StandardCharsets.US_ASCII);
+
+            try {
+                out.write(bytes);
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return bytes.length;
+        }
+
+        public String read(LuaState args) {
+            return null;
+        }
+
+        public void close() {
+            try {
+                out.close();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
     private void playSound() {
         Player player = players[ThreadLocalRandom.current().nextInt(0, players.length)];
         player.reset();
