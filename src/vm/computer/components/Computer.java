@@ -1,6 +1,5 @@
 package vm.computer.components;
 
-import li.cil.repack.com.naef.jnlua.LuaState;
 import vm.computer.Machine;
 
 import javax.sound.midi.MidiChannel;
@@ -10,10 +9,9 @@ import javax.sound.midi.Synthesizer;
 
 public class Computer extends ComponentBase {
     private MidiChannel midiChannel;
-    private Machine machine;
     
-    public Computer(LuaState lua, String address, Machine machine) {
-        super(lua, address, "computer");
+    public Computer(Machine machine, String address) {
+        super(machine, address, "computer");
         
         this.machine = machine;
 
@@ -32,7 +30,7 @@ public class Computer extends ComponentBase {
     public void pushProxy() {
         super.pushProxy();
 
-        lua.pushJavaFunction(args -> {
+        machine.lua.pushJavaFunction(args -> {
             args.checkInteger(1);
             args.checkInteger(2);
 
@@ -40,28 +38,28 @@ public class Computer extends ComponentBase {
 
             return 0;
         });
-        lua.setField(-2,  "beep");
+        machine.lua.setField(-2,  "beep");
 
-        lua.pushJavaFunction(args -> {
+        machine.lua.pushJavaFunction(args -> {
             machine.boot();
 
             return 0;
         });
-        lua.setField(-2,  "start");
+        machine.lua.setField(-2,  "start");
 
-        lua.pushJavaFunction(args -> {
+        machine.lua.pushJavaFunction(args -> {
             machine.shutdown(true);
 
             return 0;
         });
-        lua.setField(-2,  "stop");
+        machine.lua.setField(-2,  "stop");
 
-        lua.pushJavaFunction(args -> {
-            lua.pushBoolean(true);
+        machine.lua.pushJavaFunction(args -> {
+            machine.lua.pushBoolean(true);
 
             return 1;
         });
-        lua.setField(-2,  "isRunning");
+        machine.lua.setField(-2,  "isRunning");
     }
 
     public void rawBeep(int frequency, double duration) {

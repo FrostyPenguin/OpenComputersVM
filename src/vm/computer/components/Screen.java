@@ -1,13 +1,13 @@
 package vm.computer.components;
 
-import li.cil.repack.com.naef.jnlua.LuaState;
 import org.json.JSONObject;
+import vm.computer.Machine;
 
 public class Screen extends ComponentBase {
     public boolean precise;
     
-    public Screen(LuaState lua, String address, boolean precise) {
-        super(lua, address, "screen");
+    public Screen(Machine machine, String address, boolean precise) {
+        super(machine, address, "screen");
         
         this.precise = precise;
     }
@@ -16,21 +16,21 @@ public class Screen extends ComponentBase {
     public void pushProxy() {
         super.pushProxy();
 
-        lua.pushJavaFunction(args -> {
+        machine.lua.pushJavaFunction(args -> {
             args.checkBoolean(1);
 
             precise = args.toBoolean(1);
             
             return 0;
         });
-        lua.setField(-2, "setPrecise");
+        machine.lua.setField(-2, "setPrecise");
 
-        lua.pushJavaFunction(args -> {
-            lua.pushBoolean(precise);
+        machine.lua.pushJavaFunction(args -> {
+            machine.lua.pushBoolean(precise);
 
             return 1;
         });
-        lua.setField(-2, "isPrecise");
+        machine.lua.setField(-2, "isPrecise");
     }
 
     @Override

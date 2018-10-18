@@ -1,8 +1,8 @@
 package vm.computer.components;
 
-import li.cil.repack.com.naef.jnlua.LuaState;
 import org.json.JSONObject;
 import vm.IO;
+import vm.computer.Machine;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,8 +12,8 @@ public class EEPROM extends ComponentBase {
 
     private String code;
     
-    public EEPROM(LuaState lua, String address, String realPath, String dataValue) {
-        super(lua, address, "eeprom");
+    public EEPROM(Machine machine, String address, String realPath, String dataValue) {
+        super(machine, address, "eeprom");
 
         this.realPath = realPath;
         this.data = dataValue;
@@ -23,37 +23,37 @@ public class EEPROM extends ComponentBase {
     public void pushProxy() {
         super.pushProxy();
 
-        lua.pushJavaFunction(args -> {
+        machine.lua.pushJavaFunction(args -> {
             args.checkString(1);
             
             code = args.toString(1);
             
             return 0;
         });
-        lua.setField(-2, "set");
+        machine.lua.setField(-2, "set");
 
-        lua.pushJavaFunction(args -> {
+        machine.lua.pushJavaFunction(args -> {
             args.checkString(1);
 
             data = args.toString(1);
 
             return 0;
         });
-        lua.setField(-2, "setData");
+        machine.lua.setField(-2, "setData");
 
-        lua.pushJavaFunction(args -> {
-            lua.pushString(code);
+        machine.lua.pushJavaFunction(args -> {
+            machine.lua.pushString(code);
 
             return 1;
         });
-        lua.setField(-2, "get");
+        machine.lua.setField(-2, "get");
         
-        lua.pushJavaFunction(args -> {
-            lua.pushString(data);
+        machine.lua.pushJavaFunction(args -> {
+            machine.lua.pushString(data);
             
             return 1;
         });
-        lua.setField(-2, "getData");
+        machine.lua.setField(-2, "getData");
     }
 
     @Override

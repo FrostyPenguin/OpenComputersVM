@@ -5,9 +5,9 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.GridPane;
-import li.cil.repack.com.naef.jnlua.LuaState;
 import org.json.JSONObject;
 import vm.computer.Glyph;
+import vm.computer.Machine;
 
 public class GPU extends ComponentBase {
     public int
@@ -24,8 +24,8 @@ public class GPU extends ComponentBase {
     private PixelWriter pixelWriter;
     private int background, foreground;
 
-    public GPU(LuaState lua, String address, GridPane screenGridPane, ImageView screenImageView) {
-        super(lua, address,"gpu");
+    public GPU(Machine machine, String address, GridPane screenGridPane, ImageView screenImageView) {
+        super(machine, address,"gpu");
         
         this.screenGridPane = screenGridPane;
         this.screenImageView = screenImageView;
@@ -35,7 +35,7 @@ public class GPU extends ComponentBase {
     public void pushProxy() {
         super.pushProxy();
 
-        lua.pushJavaFunction(args -> {
+        machine.lua.pushJavaFunction(args -> {
             args.checkInteger(1);
             args.checkInteger(2);
             args.checkString(3);
@@ -54,9 +54,9 @@ public class GPU extends ComponentBase {
             
             return 0;
         });
-        lua.setField(-2, "set");
+        machine.lua.setField(-2, "set");
 
-        lua.pushJavaFunction(args -> {
+        machine.lua.pushJavaFunction(args -> {
             args.checkInteger(1);
             args.checkInteger(2);
             args.checkInteger(3);
@@ -75,9 +75,9 @@ public class GPU extends ComponentBase {
 
             return 0;
         });
-        lua.setField(-2, "fill");
+        machine.lua.setField(-2, "fill");
 
-        lua.pushJavaFunction(args -> {
+        machine.lua.pushJavaFunction(args -> {
             args.checkInteger(1);
             args.checkInteger(2);
 
@@ -86,47 +86,47 @@ public class GPU extends ComponentBase {
 
             return 0;
         });
-        lua.setField(-2, "setResolution");
+        machine.lua.setField(-2, "setResolution");
 
-        lua.pushJavaFunction(args -> {
+        machine.lua.pushJavaFunction(args -> {
             args.checkInteger(1);
 
             background = 0xFF000000 | args.toInteger(1);
 
             return 0;
         });
-        lua.setField(-2, "setBackground");
+        machine.lua.setField(-2, "setBackground");
 
-        lua.pushJavaFunction(args -> {
+        machine.lua.pushJavaFunction(args -> {
             args.checkInteger(1);
 
             foreground = 0xFF000000 | args.toInteger(1);
 
             return 0;
         });
-        lua.setField(-2, "setForeground");
+        machine.lua.setField(-2, "setForeground");
         
-        lua.pushJavaFunction(args -> {
-            lua.pushInteger(width);
-            lua.pushInteger(height);
+        machine.lua.pushJavaFunction(args -> {
+            machine.lua.pushInteger(width);
+            machine.lua.pushInteger(height);
 
             return 2;
         });
-        lua.setField(-2, "getResolution");
+        machine.lua.setField(-2, "getResolution");
 
-        lua.pushJavaFunction(args -> {
-            lua.pushInteger(background);
-
-            return 1;
-        });
-        lua.setField(-2, "getBackground");
-
-        lua.pushJavaFunction(args -> {
-            lua.pushInteger(foreground);
+        machine.lua.pushJavaFunction(args -> {
+            machine.lua.pushInteger(background);
 
             return 1;
         });
-        lua.setField(-2, "getForeground");
+        machine.lua.setField(-2, "getBackground");
+
+        machine.lua.pushJavaFunction(args -> {
+            machine.lua.pushInteger(foreground);
+
+            return 1;
+        });
+        machine.lua.setField(-2, "getForeground");
     }
 
     @Override

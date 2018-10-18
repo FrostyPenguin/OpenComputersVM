@@ -2,8 +2,8 @@
   "name": "My machine",
   "x": 3,
   "y": 3,
-  "width": 1060,
-  "height": 626,
+  "width": 1053,
+  "height": 590,
   "toolbarHidden": false,
   "totalMemory": 4096,
   "components": [
@@ -30,6 +30,11 @@
     },
     {
       "type": "modem",
+      "wakeMessage": "",
+      "wakeMessageFuzzy": false
+    },
+    {
+      "type": "tunnel",
       "wakeMessage": "",
       "wakeMessageFuzzy": false
     },

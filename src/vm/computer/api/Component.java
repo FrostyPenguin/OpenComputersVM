@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Component {
     public ArrayList<ComponentBase> list = new ArrayList<>();
-
+        
     public Component(LuaState lua) {
         lua.pushJavaFunction(args -> {
             args.checkString(1);

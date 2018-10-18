@@ -43,17 +43,8 @@ public class Main extends Application {
             else {
                 System.out.println("Config doesn't exists, creating a blank one");
                 
-                // Генерим путь, в котором эта хуйня будет храниться
-                File machineFile = new File(IO.machinesFile, UUID.randomUUID().toString());
-                File HDDFile = new File(machineFile, "HDD");
-                HDDFile.mkdirs();
-                
-                // Копипиздим EEPROM.lua с ресурсов
-                File EEPROMFile = new File(machineFile, "EEPROM.lua");
-                IO.copyResourceToFile("resources/defaults/EEPROM.lua", EEPROMFile);
-                
                 // Генерим шаблонную машину
-                Machine.generate(EEPROMFile.getPath(), HDDFile.getPath());
+                Machine.generate();
             }
         }
         catch (IOException e) {

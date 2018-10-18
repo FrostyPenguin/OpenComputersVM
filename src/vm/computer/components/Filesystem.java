@@ -2,6 +2,7 @@ package vm.computer.components;
 
 import li.cil.repack.com.naef.jnlua.LuaState;
 import org.json.JSONObject;
+import vm.computer.Machine;
 import vm.computer.Player;
 
 import java.io.*;
@@ -16,8 +17,8 @@ public class Filesystem extends ComponentBase {
     private Player[] players = new Player[7];
     private HashMap<Integer, Handle> handles = new HashMap<>();
     
-    public Filesystem(LuaState lua, String address, String realPath) {
-        super(lua, address, "filesystem");
+    public Filesystem(Machine machine, String address, String realPath) {
+        super(machine, address, "filesystem");
 
         this.realPath = realPath;
 
@@ -32,49 +33,49 @@ public class Filesystem extends ComponentBase {
         super.pushProxy();
 
         // Чтение из хендла
-        lua.pushJavaFunction(args -> {
+        machine.lua.pushJavaFunction(args -> {
             args.checkInteger(1);
             args.checkInteger(2);
 
             int id = args.toInteger(1);
             if (handles.containsKey(id)) {
                 playSound();
-                lua.pushString(handles.get(id).read(args));
+                machine.lua.pushString(handles.get(id).read(args));
 
                 return 1;
             }
             else {
-                lua.pushBoolean(false);
-                lua.pushString("handle id doesn't exists");
+                machine.lua.pushBoolean(false);
+                machine.lua.pushString("handle id doesn't exists");
 
                 return 2;
             }
         });
-        lua.setField(-2, "read");
+        machine.lua.setField(-2, "read");
         
         // Запись в хендл
-        lua.pushJavaFunction(args -> {
+        machine.lua.pushJavaFunction(args -> {
             args.checkInteger(1);
             args.checkString(2);
 
             int id = args.toInteger(1);
             if (handles.containsKey(id)) {
                 playSound();
-                lua.pushInteger(handles.get(id).write(args));
+                machine.lua.pushInteger(handles.get(id).write(args));
                 
                 return 1;
             }
             else {
-                lua.pushBoolean(false);
-                lua.pushString("handle id doesn't exists");
+                machine.lua.pushBoolean(false);
+                machine.lua.pushString("handle id doesn't exists");
 
                 return 2;
             }
         });
-        lua.setField(-2, "write");
+        machine.lua.setField(-2, "write");
 
         // Закрытие хендлов
-        lua.pushJavaFunction(args -> {
+        machine.lua.pushJavaFunction(args -> {
             args.checkInteger(1);
 
             int id = args.toInteger(1);
@@ -85,17 +86,17 @@ public class Filesystem extends ComponentBase {
             
             return 0;
         });
-        lua.setField(-2, "close");
+        machine.lua.setField(-2, "close");
         
         // Открытие хендля для чтения/записи
-        lua.pushJavaFunction(args -> {
+        machine.lua.pushJavaFunction(args -> {
             args.checkString(1);
             
             boolean reading = false, binary = false, append = false;
             if (!args.isNoneOrNil(2)){
-                lua.checkString(2);
+                machine.lua.checkString(2);
 
-                String mode = lua.toString(2);
+                String mode = machine.lua.toString(2);
                 reading = mode.contains("r");
                 binary = mode.contains("b");
                 append = mode.contains("a");
@@ -103,94 +104,94 @@ public class Filesystem extends ComponentBase {
             
             File file = getFsFile(args);
             if (file.getParentFile().exists()) {
-                lua.pushInteger(reading ? new ReadHandle(file, binary, append).id : new WriteHandle(file, binary, append).id);
+                machine.lua.pushInteger(reading ? new ReadHandle(file, binary, append).id : new WriteHandle(file, binary, append).id);
                 
                 return 1;
             }
             else {
-                lua.pushBoolean(false);
-                lua.pushString("parent directory doesn't exists");
+                machine.lua.pushBoolean(false);
+                machine.lua.pushString("parent directory doesn't exists");
                 
                 return 2;
             }
         });
-        lua.setField(-2, "open");
+        machine.lua.setField(-2, "open");
         
         // Получение лейбла
-        lua.pushJavaFunction(args -> {
-            lua.pushString(label);
+        machine.lua.pushJavaFunction(args -> {
+            machine.lua.pushString(label);
             
             return 1;
         });
-        lua.setField(-2, "getLabel");
+        machine.lua.setField(-2, "getLabel");
 
         // Установка лейбла
-        lua.pushJavaFunction(args -> {
+        machine.lua.pushJavaFunction(args -> {
             args.checkString(1);
             
             label = args.toString(1);
             
-            lua.pushBoolean(true);
+            machine.lua.pushBoolean(true);
             return 1;
         });
-        lua.setField(-2, "setLabel");
+        machine.lua.setField(-2, "setLabel");
 
         // Таймштамп изменения файла
-        lua.pushJavaFunction(args -> {
+        machine.lua.pushJavaFunction(args -> {
             args.checkString(1);
 
             playSound();
 
             File file = getFsFile(args);
             if (file.exists()) {
-                lua.pushInteger((int) file.lastModified());
+                machine.lua.pushInteger((int) file.lastModified());
                 
                 return 1;
             }
             else {
-                lua.pushBoolean(false);
-                lua.pushString("file doesn't exists");
+                machine.lua.pushBoolean(false);
+                machine.lua.pushString("file doesn't exists");
                 
                 return 2;
             }
         });
-        lua.setField(-2, "lastModified");
+        machine.lua.setField(-2, "lastModified");
 
         // Размер файла
-        lua.pushJavaFunction(args -> {
+        machine.lua.pushJavaFunction(args -> {
             args.checkString(1);
 
             playSound();
 
             File file = getFsFile(args);
             if (file.exists()) {
-                lua.pushInteger((int) file.length());
+                machine.lua.pushInteger((int) file.length());
 
                 return 1;
             }
             else {
-                lua.pushBoolean(false);
-                lua.pushString("file doesn't exists");
+                machine.lua.pushBoolean(false);
+                machine.lua.pushString("file doesn't exists");
                 
                 return 2;
             }
         });
-        lua.setField(-2, "size");
+        machine.lua.setField(-2, "size");
 
         // Существование файла
-        lua.pushJavaFunction(args -> {
+        machine.lua.pushJavaFunction(args -> {
             args.checkString(1);
 
             playSound();
 
-            lua.pushBoolean(getFsFile(args).exists());
+            machine.lua.pushBoolean(getFsFile(args).exists());
             
             return 1;
         });
-        lua.setField(-2, "exists");
+        machine.lua.setField(-2, "exists");
     
         // Список файлов в директории
-        lua.pushJavaFunction(args -> {
+        machine.lua.pushJavaFunction(args -> {
             args.checkString(1);
 
             playSound();
@@ -200,54 +201,54 @@ public class Filesystem extends ComponentBase {
                 if (file.isDirectory()) {
                     File[] list = file.listFiles();
 
-                    lua.newTable();
-                    int tableIndex = lua.getTop();
+                    machine.lua.newTable();
+                    int tableIndex = machine.lua.getTop();
                     
                     for (int i = 0; i < list.length; i++) {
-                        lua.pushInteger(i + 1);
-                        lua.pushString(list[i].getName());
-                        lua.setTable(tableIndex);
+                        machine.lua.pushInteger(i + 1);
+                        machine.lua.pushString(list[i].getName());
+                        machine.lua.setTable(tableIndex);
                     }
                     
                     return 1;
                 }
                 else {
-                    lua.pushBoolean(false);
-                    lua.pushString("path is not a directory");
+                    machine.lua.pushBoolean(false);
+                    machine.lua.pushString("path is not a directory");
 
                     return 2;
                 }
             }
             else {
-                lua.pushBoolean(false);
-                lua.pushString("path doesn't exists");
+                machine.lua.pushBoolean(false);
+                machine.lua.pushString("path doesn't exists");
 
                 return 2;
             }
         });
-        lua.setField(-2, "list");
+        machine.lua.setField(-2, "list");
     
         // Заюзаное пространство
-        lua.pushJavaFunction(args -> {
-            lua.pushInteger(spaceUsed);
+        machine.lua.pushJavaFunction(args -> {
+            machine.lua.pushInteger(spaceUsed);
             return 1;
         });
-        lua.setField(-2, "spaceUsed");
+        machine.lua.setField(-2, "spaceUsed");
     
         // Кол-во юзабельного пространства
-        lua.pushJavaFunction(args -> {
-            lua.pushInteger(spaceTotal);
+        machine.lua.pushJavaFunction(args -> {
+            machine.lua.pushInteger(spaceTotal);
             return 1;
         });
-        lua.setField(-2, "spaceTotal");
+        machine.lua.setField(-2, "spaceTotal");
 
         // ))000
-        lua.pushJavaFunction(args -> {
-            lua.pushBoolean(false);
+        machine.lua.pushJavaFunction(args -> {
+            machine.lua.pushBoolean(false);
 
             return 1;
         });
-        lua.setField(-2, "isReadOnly");
+        machine.lua.setField(-2, "isReadOnly");
     }
 
     @Override
@@ -361,7 +362,7 @@ public class Filesystem extends ComponentBase {
     }
 
     private File getFsFile(String path) {
-        return new File(realPath + path);
+        return new File(realPath, path);
     }
 
     private File getFsFile(LuaState args) {

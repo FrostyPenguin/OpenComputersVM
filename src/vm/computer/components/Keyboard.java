@@ -1,9 +1,9 @@
 package vm.computer.components;
 
-import li.cil.repack.com.naef.jnlua.LuaState;
+import vm.computer.Machine;
 
 public class Keyboard extends ComponentBase {
-    public Keyboard(LuaState lua, String address) {
-        super(lua, address, "keyboard");
+    public Keyboard(Machine machine, String address) {
+        super(machine, address, "keyboard");
     }
 }

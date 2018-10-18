@@ -21,7 +21,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<GridPane fx:id="windowGridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="626.0" prefWidth="1060.0" style="-fx-background-color: #1E1E1E;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vm.computer.Machine">
+<GridPane fx:id="windowGridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="590.0" prefWidth="1053.0" style="-fx-background-color: #1E1E1E;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vm.computer.Machine">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="294.0" />
@@ -207,38 +207,10 @@
                      <children>
                         <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
                            <image>
-                              <Image url="@../resources/images/Computer.png" />
-                           </image>
-                        </ImageView>
-                        <TextField fx:id="nameTextField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Computer name" GridPane.columnIndex="1">
-                           <font>
-                              <Font name="Minecraft Regular" size="10.0" />
-                           </font>
-                           <styleClass>
-                              <String fx:value="pathInput" />
-                              <String fx:value="font" />
-                           </styleClass>
-                        </TextField>
-                     </children>
-                     <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" />
-                     </columnConstraints>
-                     <padding>
-                        <Insets right="5.0" />
-                     </padding>
-                     <rowConstraints>
-                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="48.0" vgrow="SOMETIMES" />
-                     </rowConstraints>
-                  </GridPane>
-                  <GridPane>
-                     <children>
-                        <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
-                           <image>
                               <Image url="@../resources/images/LinkedCard.png" />
                            </image>
                         </ImageView>
-                        <TextField fx:id="LinkedCardAddressTextField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Linked card address" GridPane.columnIndex="1">
+                        <TextField fx:id="tunnelChannelTextField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Linked card channel" GridPane.columnIndex="1">
                            <font>
                               <Font name="Minecraft Regular" size="10.0" />
                            </font>

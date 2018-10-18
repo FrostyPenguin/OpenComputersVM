@@ -2,31 +2,34 @@ package vm.computer.components;
 
 import li.cil.repack.com.naef.jnlua.LuaState;
 import org.json.JSONObject;
+import vm.computer.Machine;
 
 public class ComponentBase {
     public int proxyReference;
     public String address, type;
-    public LuaState lua;
+    public Machine machine;
     
-    public ComponentBase(LuaState lua, String address, String type) {
+    public ComponentBase(Machine machine, String address, String type) {
+        this.machine = machine;
         this.type = type;
-        this.lua = lua;
         this.address = address;
-        
-        lua.newTable();
+
+        machine.lua.newTable();
         pushProxy();
-        proxyReference = lua.ref(LuaState.REGISTRYINDEX);
+        proxyReference = machine.lua.ref(LuaState.REGISTRYINDEX);
+
+        machine.componentAPI.list.add(this);
     }
     
     public void pushProxy() {
-        lua.pushString(address);
-        lua.setField(-2, "address");
+        machine.lua.pushString(address);
+        machine.lua.setField(-2, "address");
 
-        lua.pushString(type);
-        lua.setField(-2, "type");
+        machine.lua.pushString(type);
+        machine.lua.setField(-2, "type");
 
-        lua.pushInteger(-1);
-        lua.setField(-2, "slot");
+        machine.lua.pushInteger(-1);
+        machine.lua.setField(-2, "slot");
     }
 
     public JSONObject toJSONObject() {

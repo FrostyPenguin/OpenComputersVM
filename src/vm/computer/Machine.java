@@ -29,6 +29,8 @@ import vm.computer.api.Component;
 import vm.computer.api.Computer;
 import vm.computer.api.Unicode;
 import vm.computer.components.*;
+import vm.computer.components.Modem;
+import vm.computer.components.Tunnel;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,12 +47,13 @@ public class Machine {
     public GridPane screenGridPane;
     public ImageView screenImageView, boardImageView;
     public ToggleButton powerButton;
-    public TextField EEPROMPathTextField, HDDPathTextField, nameTextField, linkedCardAddressTextField;
+    public TextField EEPROMPathTextField, HDDPathTextField, tunnelChannelTextField;
     public Button toolbarButton;
     
     // Машиновская поебистика
     public boolean started = false;
     public long startTime;
+    public LuaState lua;
     public LuaThread luaThread;
     public Component componentAPI;
     public Computer computerAPI;
@@ -62,14 +65,18 @@ public class Machine {
     public vm.computer.components.Computer computerComponent;
     public Filesystem filesystemComponent;
     public Modem modemComponent;
+    public Tunnel tunnelComponent;
 //    public Internet internetComponent;
 
     private Stage stage;
     private Player computerRunningPlayer;
     private boolean toolbarHidden;
-    private LuaState lua;
-    private int totalMemory;
-    
+
+    public Machine() {
+        computerRunningPlayer = new Player("computer_running.mp3");
+        computerRunningPlayer.setRepeating();
+    }
+
     public static void fromJSONObject(JSONObject machineConfig) {
         try {
             // Ну че, создаем окошко, грузим фхмл-файл и ставим сцену окошку
@@ -137,43 +144,35 @@ public class Machine {
 
                 switch (component.getString("type")) {
                     case "gpu":
-                        machine.gpuComponent = new GPU(machine.lua, address, machine.screenGridPane, machine.screenImageView);
+                        machine.gpuComponent = new GPU(machine, address, machine.screenGridPane, machine.screenImageView);
                         machine.gpuComponent.rawSetResolution(component.getInt("width"), component.getInt("height"));
                         machine.gpuComponent.update();
                         break;
                     case "screen":
-                        machine.screenComponent = new Screen(machine.lua, address, component.getBoolean("precise"));
+                        machine.screenComponent = new Screen(machine, address, component.getBoolean("precise"));
                         break;
                     case "keyboard":
-                        machine.keyboardComponent = new Keyboard(machine.lua, address);
+                        machine.keyboardComponent = new Keyboard(machine, address);
                         break;
                     case "computer":
-                        machine.computerComponent = new vm.computer.components.Computer(machine.lua, address, machine);
+                        machine.computerComponent = new vm.computer.components.Computer(machine, address);
                         break;
                     case "eeprom":
-                        machine.eepromComponent = new EEPROM(machine.lua, address, component.getString("path"), component.getString("data"));
+                        machine.eepromComponent = new EEPROM(machine, address, component.getString("path"), component.getString("data"));
                         break;
                     case "filesystem":
-                        machine.filesystemComponent = new Filesystem(machine.lua, address, component.getString("path"));
+                        machine.filesystemComponent = new Filesystem(machine, address, component.getString("path"));
                         break;
                     case "modem":
-                        machine.modemComponent = new Modem(machine.lua, address, component.getString("wakeMessage"), component.getBoolean("wakeMessageFuzzy"));
+                        machine.modemComponent = new Modem(machine, address, component.getString("wakeMessage"), component.getBoolean("wakeMessageFuzzy"));
                         break;
+                    case "tunnel":
+                        machine.tunnelComponent = new Tunnel(machine, address, component.getString("channel"), component.getString("wakeMessage"), component.getBoolean("wakeMessageFuzzy"));
                     case "internet":
-//                        machine.internetComponent = new Internet(address);
+//                        machine.internetComponent = new Internet(machine, address);
                         break;
                 }
             }
-
-            // Инсертим компоненты в компонентное апи
-            machine.componentAPI.list.add(machine.gpuComponent);
-            machine.componentAPI.list.add(machine.eepromComponent);
-            machine.componentAPI.list.add(machine.keyboardComponent);
-            machine.componentAPI.list.add(machine.screenComponent);
-            machine.componentAPI.list.add(machine.computerComponent);
-            machine.componentAPI.list.add(machine.filesystemComponent);
-            machine.componentAPI.list.add(machine.modemComponent);
-//            machine.componentAPI.list.add(machine.internetComponent);
 
             // Пидорасим главное йоба-окошечко так, как надо
             machine.updateControls();
@@ -182,9 +181,6 @@ public class Machine {
             machine.stage.setY(machineConfig.getDouble("y"));
             machine.stage.setWidth(machineConfig.getDouble("width"));
             machine.stage.setHeight(machineConfig.getDouble("height"));
-            
-            machine.nameTextField.setText(machineConfig.getString("name"));
-            machine.updateTitle();
             
             machine.toolbarHidden = machineConfig.getBoolean("toolbarHidden");
             machine.updateToolbar();
@@ -216,16 +212,19 @@ public class Machine {
         }
     }
 
-    public static void generate(String EEPROMPath, String HDDPath) {
+    public static void generate() {
         try {
             System.out.println("Generating new machine...");
-
+            
             // Грузим дефолтный конфиг машины и создаем жсон на его основе
             JSONObject machineConfig = new JSONObject(IO.loadResourceAsString("resources/defaults/Machine.json"));
 
+            // Тута будут пути для всякой ебалы
+            File machineFile = null, HDDFile = null, EEPROMFile = null;
+            
             // Продрачиваем дефолтные компоненты и рандомим им ууидшники
             // Запоминаем адрес компонента файлосистемы, чтоб потом его в биос дату вхуячить
-            String address, filesystemAddress = null;
+            String address, type, filesystemAddress = null;
             JSONObject component;
             JSONArray components = machineConfig.getJSONArray("components");
             for (int i = 0; i < components.length(); i++) {
@@ -235,10 +234,19 @@ public class Machine {
                 address = UUID.randomUUID().toString();
                 component.put("address", address);
 
+                type = component.getString("type");
                 // Попутно создаем директории харда
-                if (component.getString("type").equals("filesystem")) {
+                if (type.equals("filesystem")) {
                     filesystemAddress = address;
-                    component.put("path", HDDPath);
+                    
+                    machineFile = new File(IO.machinesFile, filesystemAddress);
+                    HDDFile = new File(machineFile, "HDD/");
+                    
+                    component.put("path", HDDFile.getPath());
+                }
+                // И рандомный канал компонента линкед карты
+                else if (type.equals("tunnel")) {
+                    component.put("channel", UUID.randomUUID().toString());
                 }
             }
 
@@ -247,11 +255,19 @@ public class Machine {
                 component = components.getJSONObject(i);
 
                 if (component.getString("type").equals("eeprom")) {
+                    EEPROMFile = new File(machineFile, "EEPROM.lua");
+                    
                     component.put("data", filesystemAddress);
-                    component.put("path", EEPROMPath);
+                    component.put("path", EEPROMFile.getPath());
                     break;
                 }
             }
+
+            // Готовим директорию харда
+            HDDFile.mkdirs();
+            
+            // Копипиздим EEPROM.lua с ресурсов
+            IO.copyResourceToFile("resources/defaults/EEPROM.lua", EEPROMFile);
 
             // Усе, уася, готова машинка
             Machine.fromJSONObject(machineConfig);
@@ -268,7 +284,6 @@ public class Machine {
         }
         
         return new JSONObject()
-            .put("name", nameTextField.getText())
             .put("x", stage.getX())
             .put("y", stage.getY())
             .put("width", stage.getWidth())
@@ -281,10 +296,7 @@ public class Machine {
     private void updateControls() {
         HDDPathTextField.setText(filesystemComponent.realPath);
         EEPROMPathTextField.setText(eepromComponent.realPath);
-    }
-
-    private void updateTitle() {
-        stage.setTitle(nameTextField.getText());
+        tunnelChannelTextField.setText(tunnelComponent.channel);
     }
     
     private void updateToolbar() {
@@ -309,7 +321,7 @@ public class Machine {
     }
     
     public void onGenerateButtonTouch() {
-        generate(EEPROMPathTextField.getText(), HDDPathTextField.getText());
+        generate();
     }
 
     public void onPowerButtonTouch() {
@@ -646,13 +658,9 @@ public class Machine {
                 
                 // Оффаем слайдер памяти, а то хуйня эта сангаровская ругается
                 RAMSlider.setDisable(true);
-                
-                // Фокусим экран сразу
                 screenImageView.requestFocus();
 
-                // Бесконечно играем звук компека)00
-                computerRunningPlayer = new Player("computer_running.mp3");
-                computerRunningPlayer.setRepeating();
+                // Играем звук компека)00
                 computerRunningPlayer.play();
 
                 // Запускаем луа-машину
