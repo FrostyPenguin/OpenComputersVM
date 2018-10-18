@@ -305,6 +305,7 @@ public class Machine {
     public void onToolbarButtonPressed() {
         toolbarHidden = !toolbarHidden;
         updateToolbar();
+        screenImageView.requestFocus();
     }
     
     public void onGenerateButtonTouch() {
@@ -415,6 +416,11 @@ public class Machine {
             signalStack = new LuaState[256];
 
             Platform.runLater(() -> {
+                // Фокусирование экрана при клике на эту злоебучую область
+                windowGridPane.setOnMousePressed(event -> {
+                    screenImageView.requestFocus();
+                });
+
                 // Ивенты клавиш всему окну
                 windowGridPane.setOnKeyPressed(event -> {
                     // Иначе оно спамит даунами
@@ -429,7 +435,7 @@ public class Machine {
                     pushKeySignal(event, "key_up");
                 });
 
-                // А эт уже ивенты экранчика)0
+                // А эт уже ивенты тача, драга и прочего конкретно на экранной хуйне этой
                 screenImageView.setOnMousePressed(event -> {
                     pushTouchSignal(event.getSceneX(), event.getSceneY(), getOCButton(event), "touch");
                 });
@@ -640,6 +646,9 @@ public class Machine {
                 
                 // Оффаем слайдер памяти, а то хуйня эта сангаровская ругается
                 RAMSlider.setDisable(true);
+                
+                // Фокусим экран сразу
+                screenImageView.requestFocus();
 
                 // Бесконечно играем звук компека)00
                 computerRunningPlayer = new Player("computer_running.mp3");
