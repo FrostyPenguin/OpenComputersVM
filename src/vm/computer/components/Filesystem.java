@@ -116,7 +116,7 @@ public class Filesystem extends ComponentBase {
         });
         lua.setField(-2, "open");
         
-        // Лейбл
+        // Получение лейбла
         lua.pushJavaFunction(args -> {
             lua.pushString(label);
             
@@ -124,6 +124,7 @@ public class Filesystem extends ComponentBase {
         });
         lua.setField(-2, "getLabel");
 
+        // Установка лейбла
         lua.pushJavaFunction(args -> {
             args.checkString(1);
             
@@ -134,7 +135,7 @@ public class Filesystem extends ComponentBase {
         });
         lua.setField(-2, "setLabel");
 
-        // Данные о файле - размер, таймштамп
+        // Таймштамп изменения файла
         lua.pushJavaFunction(args -> {
             args.checkString(1);
 
@@ -155,6 +156,7 @@ public class Filesystem extends ComponentBase {
         });
         lua.setField(-2, "lastModified");
 
+        // Размер файла
         lua.pushJavaFunction(args -> {
             args.checkString(1);
 
@@ -175,6 +177,7 @@ public class Filesystem extends ComponentBase {
         });
         lua.setField(-2, "size");
 
+        // Существование файла
         lua.pushJavaFunction(args -> {
             args.checkString(1);
 
@@ -185,7 +188,8 @@ public class Filesystem extends ComponentBase {
             return 1;
         });
         lua.setField(-2, "exists");
-
+    
+        // Список файлов в директории
         lua.pushJavaFunction(args -> {
             args.checkString(1);
 
@@ -222,21 +226,22 @@ public class Filesystem extends ComponentBase {
             }
         });
         lua.setField(-2, "list");
-
+    
+        // Заюзаное пространство
         lua.pushJavaFunction(args -> {
             lua.pushInteger(spaceUsed);
-
             return 1;
         });
         lua.setField(-2, "spaceUsed");
-
+    
+        // Кол-во юзабельного пространства
         lua.pushJavaFunction(args -> {
             lua.pushInteger(spaceTotal);
-
             return 1;
         });
         lua.setField(-2, "spaceTotal");
 
+        // ))000
         lua.pushJavaFunction(args -> {
             lua.pushBoolean(false);
 
