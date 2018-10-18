@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<GridPane fx:id="windowGridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="626.0" prefWidth="1060.0" style="-fx-background-color: #1E1E1E;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vm.computer.Machine">
+  <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="294.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <GridPane fx:id="screenGridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <ImageView fx:id="screenImageView" fitHeight="407.0" fitWidth="662.0" pickOnBounds="true" preserveRatio="true" smooth="false" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+               <image>
+                  <Image url="@../../../../../../Pictures/Govnokod.png" />
+               </image>
+               <effect>
+                  <DropShadow color="#0000007f" height="83.22999999999999" offsetY="5.0" radius="40.735" width="81.71" />
+               </effect>
+            </ImageView>
+            <Button fx:id="toolbarButton" mnemonicParsing="false" onMouseClicked="#onToolbarButtonPressed" prefHeight="132.0" prefWidth="40.0" stylesheets="@../styles/toolbarButton.css" text="&gt;" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+               <GridPane.margin>
+                  <Insets right="-20.0" />
+               </GridPane.margin>
+               <padding>
+                  <Insets right="16.0" />
+               </padding>
+            </Button>
+         </children>
+      </GridPane>
+      <GridPane style="-fx-background-color: #282828;" stylesheets="@../styles/toolbar.css" GridPane.columnIndex="1">
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+               <children>
+                  <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="228.0" prefWidth="294.0">
+                     <children>
+                        <ImageView fx:id="boardImageView" fitHeight="228.0" fitWidth="294.0" pickOnBounds="true">
+                           <image>
+                              <Image url="@../resources/images/plata.png" />
+                           </image>
+                        </ImageView>
+                        <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="228.0" prefWidth="294.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints percentHeight="33.0" vgrow="SOMETIMES" />
+                            <RowConstraints percentHeight="33.0" vgrow="SOMETIMES" />
+                            <RowConstraints percentHeight="33.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="54.0" prefWidth="54.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                                 <children>
+                                    <ImageView fitHeight="54.0" fitWidth="54.0" pickOnBounds="true" smooth="false">
+                                       <image>
+                                          <Image url="@../resources/images/slot.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="3.0" layoutY="3.0" pickOnBounds="true" smooth="false">
+                                       <image>
+                                          <Image url="@../resources/images/CPU.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </Pane>
+                              <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="54.0" prefWidth="54.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                                 <children>
+                                    <ImageView fitHeight="54.0" fitWidth="54.0" pickOnBounds="true" smooth="false">
+                                       <image>
+                                          <Image url="@../resources/images/slot.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="3.0" layoutY="3.0" pickOnBounds="true" smooth="false">
+                                       <image>
+                                          <Image url="@../resources/images/GPU.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </Pane>
+                              <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="54.0" prefWidth="54.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                                 <children>
+                                    <ImageView fitHeight="54.0" fitWidth="54.0" pickOnBounds="true" smooth="false">
+                                       <image>
+                                          <Image url="@../resources/images/slot.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="3.0" layoutY="3.0" pickOnBounds="true" smooth="false">
+                                       <image>
+                                          <Image url="@../resources/images/INET.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </Pane>
+                              <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="54.0" prefWidth="54.0" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                                 <children>
+                                    <ImageView fitHeight="54.0" fitWidth="54.0" pickOnBounds="true" smooth="false">
+                                       <image>
+                                          <Image url="@../resources/images/slot.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="3.0" layoutY="3.0" pickOnBounds="true" smooth="false">
+                                       <image>
+                                          <Image url="@../resources/images/WLAN.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </Pane>
+                              <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="54.0" prefWidth="54.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                                 <children>
+                                    <ImageView fitHeight="54.0" fitWidth="54.0" pickOnBounds="true" smooth="false">
+                                       <image>
+                                          <Image url="@../resources/images/slot.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="3.0" layoutY="3.0" pickOnBounds="true" smooth="false">
+                                       <image>
+                                          <Image url="@../resources/images/LinkedCard.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </Pane>
+                              <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="54.0" prefWidth="54.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                                 <children>
+                                    <ImageView fitHeight="54.0" fitWidth="54.0" pickOnBounds="true" smooth="false">
+                                       <image>
+                                          <Image url="@../resources/images/slot.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="3.0" layoutY="3.0" pickOnBounds="true" smooth="false">
+                                       <image>
+                                          <Image url="@../resources/images/RAM.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </Pane>
+                              <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="54.0" prefWidth="54.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                                 <children>
+                                    <ImageView fitHeight="54.0" fitWidth="54.0" pickOnBounds="true" smooth="false">
+                                       <image>
+                                          <Image url="@../resources/images/slot.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="3.0" layoutY="3.0" pickOnBounds="true" smooth="false">
+                                       <image>
+                                          <Image url="@../resources/images/RAM.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </Pane>
+                              <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="54.0" prefWidth="54.0" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                                 <children>
+                                    <ImageView fitHeight="54.0" fitWidth="54.0" pickOnBounds="true" smooth="false">
+                                       <image>
+                                          <Image url="@../resources/images/slot.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="3.0" layoutY="3.0" pickOnBounds="true" smooth="false">
+                                       <image>
+                                          <Image url="@../resources/images/RAM.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </Pane>
+                           </children>
+                        </GridPane>
+                        <ToggleButton fx:id="powerButton" layoutX="120.0" layoutY="156.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onMousePressed="#onPowerButtonTouch" prefHeight="54.0" prefWidth="54.0" styleClass="powerButton" />
+                     </children>
+                  </Pane>
+                  <GridPane>
+                     <children>
+                        <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
+                           <image>
+                              <Image url="@../resources/images/Computer.png" />
+                           </image>
+                        </ImageView>
+                        <TextField fx:id="nameTextField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Computer name" GridPane.columnIndex="1">
+                           <font>
+                              <Font name="Minecraft Regular" size="10.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="pathInput" />
+                              <String fx:value="font" />
+                           </styleClass>
+                        </TextField>
+                     </children>
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" />
+                     </columnConstraints>
+                     <padding>
+                        <Insets right="5.0" />
+                     </padding>
+                     <rowConstraints>
+                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="48.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                  </GridPane>
+                  <GridPane>
+                     <children>
+                        <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
+                           <image>
+                              <Image url="@../resources/images/LinkedCard.png" />
+                           </image>
+                        </ImageView>
+                        <TextField fx:id="LinkedCardAddressTextField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Linked card address" GridPane.columnIndex="1">
+                           <font>
+                              <Font name="Minecraft Regular" size="10.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="pathInput" />
+                              <String fx:value="font" />
+                           </styleClass>
+                        </TextField>
+                     </children>
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" />
+                     </columnConstraints>
+                     <padding>
+                        <Insets right="5.0" />
+                     </padding>
+                     <rowConstraints>
+                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="48.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                  </GridPane>
+                  <GridPane>
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="48.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
+                           <image>
+                              <Image url="@../resources/images/HDD.png" />
+                           </image>
+                        </ImageView>
+                        <TextField fx:id="HDDPathTextField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="HDD path" GridPane.columnIndex="1">
+                           <font>
+                              <Font name="Minecraft Regular" size="10.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="pathInput" />
+                              <String fx:value="font" />
+                           </styleClass>
+                        </TextField>
+                        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="..." GridPane.columnIndex="2">
+                           <font>
+                              <Font name="Minecraft Regular" size="10.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="pathInputButton" />
+                              <String fx:value="font" />
+                           </styleClass>
+                        </Button>
+                     </children>
+                     <padding>
+                        <Insets right="5.0" />
+                     </padding>
+                  </GridPane>
+                  <GridPane>
+                     <children>
+                        <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
+                           <image>
+                              <Image url="@../resources/images/EEPROM.png" />
+                           </image>
+                        </ImageView>
+                        <TextField fx:id="EEPROMPathTextField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="EEPROM path" GridPane.columnIndex="1">
+                           <font>
+                              <Font name="Minecraft Regular" size="10.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="pathInput" />
+                              <String fx:value="font" />
+                           </styleClass>
+                        </TextField>
+                        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="..." GridPane.columnIndex="2">
+                           <font>
+                              <Font name="Minecraft Regular" size="10.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="pathInputButton" />
+                              <String fx:value="font" />
+                           </styleClass>
+                        </Button>
+                     </children>
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                     </columnConstraints>
+                     <padding>
+                        <Insets right="5.0" />
+                     </padding>
+                     <rowConstraints>
+                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="48.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                  </GridPane>
+                  <GridPane>
+                     <children>
+                        <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
+                           <image>
+                              <Image url="@../resources/images/RAM.png" />
+                           </image>
+                        </ImageView>
+                        <Slider fx:id="RAMSlider" majorTickUnit="992.0" max="4096.0" min="128.0" minorTickCount="2" showTickLabels="true" showTickMarks="true" value="4096.0" GridPane.columnIndex="1">
+                           <GridPane.margin>
+                              <Insets right="5.0" />
+                           </GridPane.margin>
+                        </Slider>
+                     </children>
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" />
+                     </columnConstraints>
+                     <padding>
+                        <Insets right="5.0" />
+                     </padding>
+                     <rowConstraints>
+                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="48.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                  </GridPane>
+               </children>
+            </VBox>
+            <Button maxHeight="-Infinity" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseReleased="#onGenerateButtonTouch" prefHeight="48.0" text="New  virtual  machine" GridPane.halignment="LEFT" GridPane.valignment="BOTTOM">
+               <font>
+                  <Font name="Minecraft Regular" size="11.0" />
+               </font>
+               <styleClass>
+                  <String fx:value="pathInputButton" />
+                  <String fx:value="font" />
+               </styleClass>
+            </Button>
+         </children>
+      </GridPane>
+   </children>
+</GridPane>

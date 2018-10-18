@@ -1,0 +1,74 @@
+.pane {
+    -fx-background-radius: 5 5 5 5;
+    -fx-background-color: #333;
+}
+
+.pane:focused {
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 255, 255, 0.3), 20, 0, 0, 1);
+}
+
+.label {
+    -fx-background-radius: 5 5 0 0;
+    -fx-background-color: linear-gradient(#EEE 0%, #CCC 100%);
+    -fx-text-fill: #444;
+}
+
+.imageView {
+    -fx-background-radius: 0 0 5 5;
+}
+
+.actionButton {
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.closeButton {
+    -fx-background-color: #fa5e5b;
+    -fx-border-color: #db4343;
+}
+
+.closeButton:hover {
+    -fx-background-color: #d3504e;
+}
+
+.closeButton:pressed {
+    -fx-background-color: #b64542;
+}
+
+.minimizeButton {
+    -fx-background-color: #fbbc45;
+    -fx-border-color: #dc9f39;
+}
+
+.minimizeButton:hover {
+    -fx-background-color: #e4ab3f;
+}
+
+.minimizeButton:pressed {
+    -fx-background-color: #bd8d33;
+}
+
+.maximizeButton {
+    -fx-background-color: #3cc84f;
+    -fx-border-color: #31ac3d;
+}
+
+.maximizeButton:hover {
+    -fx-background-color: #35b146;
+}
+
+.maximizeButton:pressed {
+    -fx-background-color: #2d983c;
+}
+
+.slider .track {
+    -fx-background-color: #c0c0c0;
+    -fx-background-radius: 2;
+    -fx-padding: 2;
+}
+
+.slider .thumb {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 10;
+    -fx-padding: 6;
+}

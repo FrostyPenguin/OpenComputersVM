@@ -1,0 +1,40 @@
+{
+  "name": "My machine",
+  "x": 3,
+  "y": 3,
+  "width": 1060,
+  "height": 626,
+  "toolbarHidden": false,
+  "totalMemory": 4096,
+  "components": [
+    {
+      "type": "gpu",
+      "width": 80,
+      "height": 25
+    },
+    {
+      "type": "screen",
+      "precise": false
+    },
+    {
+      "type": "computer"
+    },
+    {
+      "type": "filesystem"
+    },
+    {
+      "type": "eeprom"
+    },
+    {
+      "type": "keyboard"
+    },
+    {
+      "type": "modem",
+      "wakeMessage": "",
+      "wakeMessageFuzzy": false
+    },
+    {
+      "type": "internet"
+    }
+  ]
+}
