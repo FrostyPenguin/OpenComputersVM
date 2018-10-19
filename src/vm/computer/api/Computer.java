@@ -7,6 +7,12 @@ import vm.computer.Machine;
 public class Computer {
     public Computer(Machine machine) {
         machine.lua.pushJavaFunction(args -> {
+            machine.lua.newTable();
+            return 1;
+        });
+        machine.lua.setField(-2,"getProgramLocations");
+        
+        machine.lua.pushJavaFunction(args -> {
             machine.lua.pushString(machine.temporaryFilesystemComponent.address);
 
             return 1;
