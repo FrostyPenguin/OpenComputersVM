@@ -5,42 +5,70 @@ import vm.computer.LuaUtils;
 import vm.computer.Machine;
 
 public class Computer {
-    public Computer(LuaState lua, Machine machine) {
-        lua.pushJavaFunction(args -> {
-            LuaState signal = machine.luaThread.pullSignal(args.isNoneOrNil(1) ? -1 : args.toNumber(1));
+    public Computer(Machine machine) {
+        machine.lua.pushJavaFunction(args -> {
+            machine.lua.pushString(machine.temporaryFilesystemComponent.address);
 
-            return LuaUtils.pushSignalData(lua, signal, 1, signal.getTop());
+            return 1;
         });
-        lua.setField(-2,"pullSignal");
+        machine.lua.setField(-2,  "tmpAddress");
         
-        lua.pushJavaFunction(args -> {
-            lua.newTable();
+        machine.lua.pushJavaFunction(args -> {
+            machine.lua.pushNumber((System.currentTimeMillis() - machine.startTime) / 1000d);
             return 1;
         });
-        lua.setField(-2,"users");
+        machine.lua.setField(-2,"uptime");
 
-        lua.pushJavaFunction(args -> {
-            lua.pushInteger(lua.getFreeMemory());
-            return 1;
+        machine.lua.pushJavaFunction(args -> {
+            LuaState signal = new LuaState();
+            LuaUtils.pushSignalData(signal, args, 1, args.getTop());
+            machine.luaThread.pushSignal(signal);
+            
+            return 0;
         });
-        lua.setField(-2,"freeMemory");
+        machine.lua.setField(-2,"pushSignal");
+        
+        machine.lua.pushJavaFunction(args -> {
+            LuaState signal = machine.luaThread.pullSignal(args.isNoneOrNil(1) ? Double.POSITIVE_INFINITY : args.checkNumber(1));
 
-        lua.pushJavaFunction(args -> {
-            lua.pushBoolean(false);
+            return LuaUtils.pushSignalData(machine.lua, signal, 1, signal.getTop());
+        });
+        machine.lua.setField(-2,"pullSignal");
+        
+        machine.lua.pushJavaFunction(args -> {
+            machine.lua.newTable();
             return 1;
         });
-        lua.setField(-2,"isRobot");
+        machine.lua.setField(-2,"users");
 
-        lua.pushJavaFunction(args -> {
-            lua.pushBoolean(true);
+        machine.lua.pushJavaFunction(args -> {
+            machine.lua.pushInteger(machine.lua.getTotalMemory());
             return 1;
         });
-        lua.setField(-2,"addUser");
+        machine.lua.setField(-2,"totalMemory");
+        
+        machine.lua.pushJavaFunction(args -> {
+            machine.lua.pushInteger(machine.lua.getFreeMemory());
+            return 1;
+        });
+        machine.lua.setField(-2,"freeMemory");
 
-        lua.pushJavaFunction(args -> {
-            lua.pushBoolean(true);
+        machine.lua.pushJavaFunction(args -> {
+            machine.lua.pushBoolean(false);
             return 1;
         });
-        lua.setField(-2,"removeUser");
+        machine.lua.setField(-2,"isRobot");
+
+        machine.lua.pushJavaFunction(args -> {
+            machine.lua.pushBoolean(true);
+            return 1;
+        });
+        machine.lua.setField(-2,"addUser");
+
+        machine.lua.pushJavaFunction(args -> {
+            machine.lua.pushBoolean(true);
+            return 1;
+        });
+        machine.lua.setField(-2,"removeUser");
     }
 }

@@ -29,8 +29,6 @@ import vm.computer.api.Component;
 import vm.computer.api.Computer;
 import vm.computer.api.Unicode;
 import vm.computer.components.*;
-import vm.computer.components.Modem;
-import vm.computer.components.Tunnel;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +45,7 @@ public class Machine {
     public GridPane screenGridPane;
     public ImageView screenImageView, boardImageView;
     public ToggleButton powerButton;
-    public TextField EEPROMPathTextField, HDDPathTextField, tunnelChannelTextField;
+    public TextField EEPROMPathTextField, HDDPathTextField, tunnelChannelTextField, screensHorizontallyTextField, screensVerticallyTextField;
     public Button toolbarButton;
     
     // Машиновская поебистика
@@ -58,12 +56,13 @@ public class Machine {
     public Component componentAPI;
     public Computer computerAPI;
     public Unicode unicodeAPI;
+//    public OS osAPI;
     public GPU gpuComponent;
     public EEPROM eepromComponent;
     public Keyboard keyboardComponent;
     public Screen screenComponent;
     public vm.computer.components.Computer computerComponent;
-    public Filesystem filesystemComponent;
+    public Filesystem filesystemComponent, temporaryFilesystemComponent;
     public Modem modemComponent;
     public Tunnel tunnelComponent;
 //    public Internet internetComponent;
@@ -116,12 +115,17 @@ public class Machine {
 
                 return 0;
             });
-            machine.lua.setGlobal("print");
+            machine.lua.setGlobal("LOG");
 
             // Компудахтерное апи
             machine.lua.newTable();
-            machine.computerAPI = new Computer(machine.lua, machine);
+            machine.computerAPI = new Computer(machine);
             machine.lua.setGlobal("computer");
+
+//            // Осевое апи
+//            machine.lua.newTable();
+//            machine.osAPI = new OS(machine);
+//            machine.lua.setGlobal("os");
 
             // Компонентное апи
             machine.lua.newTable();
@@ -149,7 +153,7 @@ public class Machine {
                         machine.gpuComponent.update();
                         break;
                     case "screen":
-                        machine.screenComponent = new Screen(machine, address, component.getBoolean("precise"));
+                        machine.screenComponent = new Screen(machine, address, component.getBoolean("precise"), component.getInt("blocksHorizontally"), component.getInt("blocksVertically"));
                         break;
                     case "keyboard":
                         machine.keyboardComponent = new Keyboard(machine, address);
@@ -161,7 +165,15 @@ public class Machine {
                         machine.eepromComponent = new EEPROM(machine, address, component.getString("path"), component.getString("data"));
                         break;
                     case "filesystem":
-                        machine.filesystemComponent = new Filesystem(machine, address, component.getString("path"));
+                        boolean temporary = component.getBoolean("temporary");
+                        Filesystem filesystem = new Filesystem(machine, address, component.getString("label"), component.getString("path"), temporary);
+                       
+                        if (temporary) {
+                            machine.temporaryFilesystemComponent = filesystem;
+                        }
+                        else {
+                            machine.filesystemComponent = filesystem;
+                        }
                         break;
                     case "modem":
                         machine.modemComponent = new Modem(machine, address, component.getString("wakeMessage"), component.getBoolean("wakeMessageFuzzy"));
@@ -175,13 +187,13 @@ public class Machine {
             }
 
             // Пидорасим главное йоба-окошечко так, как надо
-            machine.updateControls();
-        
             machine.stage.setX(machineConfig.getDouble("x"));
             machine.stage.setY(machineConfig.getDouble("y"));
             machine.stage.setWidth(machineConfig.getDouble("width"));
             machine.stage.setHeight(machineConfig.getDouble("height"));
-            
+
+            machine.updateControls();
+
             machine.toolbarHidden = machineConfig.getBoolean("toolbarHidden");
             machine.updateToolbar();
 
@@ -218,31 +230,39 @@ public class Machine {
             
             // Грузим дефолтный конфиг машины и создаем жсон на его основе
             JSONObject machineConfig = new JSONObject(IO.loadResourceAsString("resources/defaults/Machine.json"));
-
-            // Тута будут пути для всякой ебалы
-            File machineFile = null, HDDFile = null, EEPROMFile = null;
             
-            // Продрачиваем дефолтные компоненты и рандомим им ууидшники
-            // Запоминаем адрес компонента файлосистемы, чтоб потом его в биос дату вхуячить
+            // Продрачиваем дефолтные компоненты
             String address, type, filesystemAddress = null;
             JSONObject component;
+            File machineFile = null;
             JSONArray components = machineConfig.getJSONArray("components");
             for (int i = 0; i < components.length(); i++) {
                 component = components.getJSONObject(i);
-
-                // Генерим адрес
+                type = component.getString("type");
+                
+                // Генерим рандомный адрес
                 address = UUID.randomUUID().toString();
                 component.put("address", address);
 
-                type = component.getString("type");
-                // Попутно создаем директории харда
+                // Вот тута стопэ.
                 if (type.equals("filesystem")) {
-                    filesystemAddress = address;
-                    
-                    machineFile = new File(IO.machinesFile, filesystemAddress);
-                    HDDFile = new File(machineFile, "HDD/");
-                    
-                    component.put("path", HDDFile.getPath());
+                    // Если это временная файлосистема, то въебываем ей соответствующий реальный путь
+                    if (component.getBoolean("temporary")) {
+                        File temporaryFile = new File(IO.temporaryFile, address);
+                        temporaryFile.mkdirs();
+                        component.put("path", temporaryFile.getPath());
+                    }
+                    // А если это обычный хард, то запоминаем его адрес, чтоб потом его в биос дату вхуячить
+                    else {
+                        filesystemAddress = address;
+                        
+                        // Заодно создаем основной путь всей вирт. машины
+                        machineFile = new File(IO.machinesFile, address);
+                        
+                        File HDDFile = new File(machineFile, "HDD/");
+                        HDDFile.mkdirs();
+                        component.put("path", HDDFile.getPath());
+                    }
                 }
                 // И рандомный канал компонента линкед карты
                 else if (type.equals("tunnel")) {
@@ -255,19 +275,17 @@ public class Machine {
                 component = components.getJSONObject(i);
 
                 if (component.getString("type").equals("eeprom")) {
-                    EEPROMFile = new File(machineFile, "EEPROM.lua");
-                    
+                    File EEPROMFile = new File(machineFile, "EEPROM.lua");
+
+                    // Сейвим инфу с загрузочным адресом еепрома
                     component.put("data", filesystemAddress);
                     component.put("path", EEPROMFile.getPath());
+                    
+                    // Копипиздим EEPROM.lua с ресурсов
+                    IO.copyResourceToFile("resources/defaults/EEPROM.lua", EEPROMFile);
                     break;
                 }
             }
-
-            // Готовим директорию харда
-            HDDFile.mkdirs();
-            
-            // Копипиздим EEPROM.lua с ресурсов
-            IO.copyResourceToFile("resources/defaults/EEPROM.lua", EEPROMFile);
 
             // Усе, уася, готова машинка
             Machine.fromJSONObject(machineConfig);
@@ -297,6 +315,8 @@ public class Machine {
         HDDPathTextField.setText(filesystemComponent.realPath);
         EEPROMPathTextField.setText(eepromComponent.realPath);
         tunnelChannelTextField.setText(tunnelComponent.channel);
+        screensHorizontallyTextField.setText(String.valueOf(screenComponent.blocksHorizontally));
+        screensVerticallyTextField.setText(String.valueOf(screenComponent.blocksVertically));
     }
     
     private void updateToolbar() {
@@ -394,6 +414,7 @@ public class Machine {
             lua.openLib(LuaState.Library.MATH);
             lua.openLib(LuaState.Library.STRING);
             lua.openLib(LuaState.Library.TABLE);
+            lua.openLib(LuaState.Library.OS);
             lua.pop(8);
 
             return lua;
@@ -420,13 +441,11 @@ public class Machine {
     }
 
     public class LuaThread extends Thread {
-        private LuaState[] signalStack;
+        private ArrayList<LuaState> signalStack = new ArrayList<>();
         private HashMap<KeyCode, Boolean> pressedKeyCodes = new HashMap<>();
         private double lastClickX, lastClickY;
 
         public LuaThread() {
-            signalStack = new LuaState[256];
-
             Platform.runLater(() -> {
                 // Фокусирование экрана при клике на эту злоебучую область
                 windowGridPane.setOnMousePressed(event -> {
@@ -500,9 +519,9 @@ public class Machine {
             gpuComponent.rawError("Unrecoverable error\n\n" + text);
             gpuComponent.update();
 
-            for (int i = 0; i < 2; i++) {
-                computerComponent.rawBeep(1400, 0.3);
-            }
+//            for (int i = 0; i < 2; i++) {
+//                computerComponent.rawBeep(1400, 0.3);
+//            }
 
             powerButton.setSelected(false);
             shutdown(false);
@@ -560,18 +579,7 @@ public class Machine {
         }
 
         public void pushSignal(LuaState signal) {
-            int nullIndex = -1;
-
-            for (int i = 0; i < signalStack.length; i++) {
-                if (signalStack[i] == null) {
-                    nullIndex = i;
-                    break;
-                }
-            }
-
-            if (nullIndex >= 0) {
-                signalStack[nullIndex] = signal;
-            }
+            signalStack.add(signal);
 
             synchronized (this) {
                 notify();
@@ -580,41 +588,29 @@ public class Machine {
 
         public LuaState pullSignal(double timeout) {
             synchronized (this) {
-                boolean infinite = timeout < 0;
-                long deadline = infinite ? 0 : System.currentTimeMillis() + (long) (timeout * 1000);
+                long deadline = timeout == Double.POSITIVE_INFINITY ? Long.MAX_VALUE : System.currentTimeMillis() + (long) (timeout * 1000);
 
-                while (infinite || System.currentTimeMillis() <= deadline) {
-                    if (signalStack[0] != null) {
-                        LuaState result = signalStack[0];
+//                System.out.println("Pulling signal infinite: " + (timeout == Double.POSITIVE_INFINITY) + ", timeout:" + timeout + ", deadline: " + deadline + ", delta: " + (deadline - System.currentTimeMillis()));
+                
+                while (System.currentTimeMillis() <= deadline) {
+                    if (signalStack.size() > 0) {
+                        LuaState result = signalStack.get(0);
 
                         // Шифтим
-                        boolean needClearEnd = signalStack[signalStack.length - 1] != null;
-
-                        for (int i = 1; i < signalStack.length; i++) {
-                            signalStack[i - 1] = signalStack[i];
-                        }
-
-                        if (needClearEnd) {
-                            signalStack[signalStack.length - 1] = null;
-                        }
+                        signalStack.remove(0);
 
                         return result;
                     }
 
                     try {
-//                    System.out.println("Waiting");
-                        if (infinite) {
-                            wait();
-                        }
-                        else {
-                            wait(deadline - System.currentTimeMillis());
-                        }
+                        // Ждем на 1 мскек больше, т.к. wait(0) ждет бисканечна))00
+                        wait(deadline - System.currentTimeMillis() + 1);
                     }
                     catch (InterruptedException e) {
                         System.out.println("computer thread was interrupted");
                     }
                 }
-
+                
                 return new LuaState();
             }
         }

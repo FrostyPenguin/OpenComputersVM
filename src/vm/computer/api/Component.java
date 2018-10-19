@@ -26,45 +26,20 @@ public class Component {
         lua.setField(-2, "proxy");
 
         lua.pushJavaFunction(args -> {
-            final int[] index = {0};
-
             String filter = args.isString(1) ? args.toString(1) : null;
             boolean exact = args.isBoolean(2) ? args.toBoolean(2) : true;
 
-            lua.pushJavaFunction(iteratorArgs -> {
-                if (index[0] < list.size()) {
-                    if (filter == null) {
-                        ComponentBase component = list.get(index[0]);
-
-                        lua.pushString(component.address);
-                        lua.pushString(component.type);
-
-                        index[0]++;
-
-                        return 2;
-                    }
-                    else {
-                        for (int i = index[0]; i < list.size(); i++) {
-                            ComponentBase component = list.get(i);
-
-                            if (exact ? component.type.equals(filter) : component.type.contains(filter)) {
-                                lua.pushString(component.address);
-                                lua.pushString(component.type);
-
-                                index[0] = i + 1;
-
-                                return 2;
-                            }
-                        }
-
-                        return 0;
-                    }
+            lua.newTable();
+            int tableIndex = lua.getTop();
+            
+            for (ComponentBase component : list) {
+                if (filter == null || (exact ? component.type.equals(filter) : component.type.contains(filter))) {
+                    lua.pushString(component.address);
+                    lua.pushString(component.type);
+                    lua.setTable(tableIndex);
                 }
-                else {
-                    return 0;
-                }
-            });
-
+            }
+           
             return 1;
         });
         lua.setField(-2, "list");

@@ -21,7 +21,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<GridPane fx:id="windowGridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="590.0" prefWidth="1053.0" style="-fx-background-color: #1E1E1E;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vm.computer.Machine">
+<GridPane fx:id="windowGridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="620.0" prefWidth="1068.0" style="-fx-background-color: #1E1E1E;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vm.computer.Machine">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="294.0" />
@@ -207,6 +207,46 @@
                      <children>
                         <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
                            <image>
+                              <Image url="@../resources/images/Screen.png" />
+                           </image>
+                        </ImageView>
+                        <TextField fx:id="screensHorizontallyTextField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="0.0" promptText="Linked card channel" text="Screens horizontally" GridPane.columnIndex="1">
+                           <font>
+                              <Font name="Minecraft Regular" size="10.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="pathInput" />
+                              <String fx:value="font" />
+                           </styleClass>
+                        </TextField>
+                        <TextField fx:id="screensVerticallyTextField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="0.0" promptText="Linked card channel" text="Screens vertically" GridPane.columnIndex="3">
+                           <font>
+                              <Font name="Minecraft Regular" size="10.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="pathInput" />
+                              <String fx:value="font" />
+                           </styleClass>
+                        </TextField>
+                        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="font" text="x" textFill="#656363" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                     </children>
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="20.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" />
+                     </columnConstraints>
+                     <padding>
+                        <Insets right="6.0" />
+                     </padding>
+                     <rowConstraints>
+                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="48.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                  </GridPane>
+                  <GridPane>
+                     <children>
+                        <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
+                           <image>
                               <Image url="@../resources/images/LinkedCard.png" />
                            </image>
                         </ImageView>
@@ -225,7 +265,7 @@
                         <ColumnConstraints hgrow="SOMETIMES" />
                      </columnConstraints>
                      <padding>
-                        <Insets right="5.0" />
+                        <Insets right="6.0" />
                      </padding>
                      <rowConstraints>
                         <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="48.0" vgrow="SOMETIMES" />
@@ -266,7 +306,7 @@
                         </Button>
                      </children>
                      <padding>
-                        <Insets right="5.0" />
+                        <Insets right="6.0" />
                      </padding>
                   </GridPane>
                   <GridPane>
@@ -301,7 +341,7 @@
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
                      </columnConstraints>
                      <padding>
-                        <Insets right="5.0" />
+                        <Insets right="6.0" />
                      </padding>
                      <rowConstraints>
                         <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="48.0" vgrow="SOMETIMES" />

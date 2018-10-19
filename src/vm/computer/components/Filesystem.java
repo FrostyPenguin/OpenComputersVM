@@ -11,16 +11,23 @@ import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Filesystem extends ComponentBase {
-    public String realPath, label;
+    private static final int
+        readBufferSize = 4096,
+        spaceUsed = 0,
+        spaceTotal = 12 * 1024 * 1024;
 
-    private static final int spaceUsed = 0, spaceTotal = 12 * 1024 * 1024;
+    public String realPath, label;
+    public boolean temporary;
+
     private Player[] players = new Player[7];
     private HashMap<Integer, Handle> handles = new HashMap<>();
     
-    public Filesystem(Machine machine, String address, String realPath) {
+    public Filesystem(Machine machine, String address, String label, String realPath, boolean temporary) {
         super(machine, address, "filesystem");
 
         this.realPath = realPath;
+        this.label = label;
+        this.temporary = temporary;
 
         // Создаем дохуяллион плееров для воспроизведения наших прекрасных звуков харда
         for (int i = 0; i < players.length; i++) {
@@ -32,6 +39,48 @@ public class Filesystem extends ComponentBase {
     public void pushProxy() {
         super.pushProxy();
 
+        // Продрачивание по хендлу бладсикером
+        machine.lua.pushJavaFunction(args -> {
+            args.checkInteger(1);
+            args.checkString(2);
+            args.checkInteger(3);
+            
+            int id = args.toInteger(1);
+            if (handles.containsKey(id)) {
+                playSound();
+
+                try {
+                    RandomAccessFile randomAccessFile = handles.get(id).randomAccessFile;
+                    long value = args.toInteger(3);
+                    
+                    switch (args.toString(2)) {
+                        case "cur":
+                            randomAccessFile.seek(randomAccessFile.getFilePointer() + value);
+                            break;
+                        case "end":
+                            randomAccessFile.seek(randomAccessFile.length());
+                            break;
+                        default:
+                            randomAccessFile.seek(value);
+                            break;
+                    }
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                machine.lua.pushBoolean(true);
+                return 1;
+            }
+            else {
+                machine.lua.pushNil();
+                machine.lua.pushString("handle id doesn't exists");
+
+                return 2;
+            }
+        });
+        machine.lua.setField(-2, "seek");
+        
         // Чтение из хендла
         machine.lua.pushJavaFunction(args -> {
             args.checkInteger(1);
@@ -40,12 +89,19 @@ public class Filesystem extends ComponentBase {
             int id = args.toInteger(1);
             if (handles.containsKey(id)) {
                 playSound();
-                machine.lua.pushString(handles.get(id).read(args));
-
-                return 1;
+                
+                String result = handles.get(id).read(args);
+                if (result.length() > 0) {
+                    machine.lua.pushString(result);
+                    return 1;
+                }
+                else {
+                    machine.lua.pushNil();
+                    return 1;
+                }
             }
             else {
-                machine.lua.pushBoolean(false);
+                machine.lua.pushNil();
                 machine.lua.pushString("handle id doesn't exists");
 
                 return 2;
@@ -66,7 +122,7 @@ public class Filesystem extends ComponentBase {
                 return 1;
             }
             else {
-                machine.lua.pushBoolean(false);
+                machine.lua.pushNil();
                 machine.lua.pushString("handle id doesn't exists");
 
                 return 2;
@@ -92,7 +148,7 @@ public class Filesystem extends ComponentBase {
         machine.lua.pushJavaFunction(args -> {
             args.checkString(1);
             
-            boolean reading = false, binary = false, append = false;
+            boolean reading = true, binary = false, append = false;
             if (!args.isNoneOrNil(2)){
                 machine.lua.checkString(2);
 
@@ -104,12 +160,25 @@ public class Filesystem extends ComponentBase {
             
             File file = getFsFile(args);
             if (file.getParentFile().exists()) {
-                machine.lua.pushInteger(reading ? new ReadHandle(file, binary, append).id : new WriteHandle(file, binary, append).id);
+                if (!reading || file.exists()) {
+                    machine.lua.pushInteger(
+                        reading ?
+                        new ReadHandle(file, binary).id :
+                        new WriteHandle(file, binary, append).id
+                    );
+                    
+                    return 1;
+                }
+                else {
+                    machine.lua.pushNil();
+                    machine.lua.pushString("file doesn't exists");
+                    
+                    return 2;
+                }
                 
-                return 1;
             }
             else {
-                machine.lua.pushBoolean(false);
+                machine.lua.pushNil();
                 machine.lua.pushString("parent directory doesn't exists");
                 
                 return 2;
@@ -149,7 +218,7 @@ public class Filesystem extends ComponentBase {
                 return 1;
             }
             else {
-                machine.lua.pushBoolean(false);
+                machine.lua.pushNil();
                 machine.lua.pushString("file doesn't exists");
                 
                 return 2;
@@ -170,7 +239,7 @@ public class Filesystem extends ComponentBase {
                 return 1;
             }
             else {
-                machine.lua.pushBoolean(false);
+                machine.lua.pushNil();
                 machine.lua.pushString("file doesn't exists");
                 
                 return 2;
@@ -178,6 +247,18 @@ public class Filesystem extends ComponentBase {
         });
         machine.lua.setField(-2, "size");
 
+        // Директория ли
+        machine.lua.pushJavaFunction(args -> {
+            args.checkString(1);
+
+            playSound();
+
+            machine.lua.pushBoolean(getFsFile(args).isDirectory());
+
+            return 1;
+        });
+        machine.lua.setField(-2, "isDirectory");
+        
         // Существование файла
         machine.lua.pushJavaFunction(args -> {
             args.checkString(1);
@@ -213,14 +294,14 @@ public class Filesystem extends ComponentBase {
                     return 1;
                 }
                 else {
-                    machine.lua.pushBoolean(false);
+                    machine.lua.pushNil();
                     machine.lua.pushString("path is not a directory");
 
                     return 2;
                 }
             }
             else {
-                machine.lua.pushBoolean(false);
+                machine.lua.pushNil();
                 machine.lua.pushString("path doesn't exists");
 
                 return 2;
@@ -253,49 +334,74 @@ public class Filesystem extends ComponentBase {
 
     @Override
     public JSONObject toJSONObject() {
-        return super.toJSONObject().put("path", realPath);
+        return super.toJSONObject()
+            .put("path", realPath)
+            .put("temporary", temporary)
+            .put("label", label);
     }
 
     private abstract class Handle {
         public int id;
-
-        public Handle() {
-            do {
-                id = ThreadLocalRandom.current().nextInt();
-            } while(handles.containsKey(id));
-
-            handles.put(id, this);
-        }
-
-        public abstract int write(LuaState args);
-        public abstract String read(LuaState args);
-        public abstract void close();
-    }
-
-    private class ReadHandle extends Handle {
-        public FileInputStream in;
-
-        public ReadHandle(File file, boolean binary, boolean append) {
-            super();
-
+        public RandomAccessFile randomAccessFile;
+        
+        public Handle(File file) {
             try {
-                in = new FileInputStream(file);
+                randomAccessFile = new RandomAccessFile(file, "rw");
+               
+                do {
+                    id = ThreadLocalRandom.current().nextInt();
+                } while(handles.containsKey(id));
+                
+                handles.put(id, this);
             }
             catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
 
-        public int write(LuaState args) {
-            return 0;
+        public abstract int write(LuaState args);
+        public abstract String read(LuaState args);
+        
+        public void close() {
+            try {
+                randomAccessFile.close();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        };
+    }
+
+    private class ReadHandle extends Handle {
+        public ReadHandle(File file, boolean binary) {
+            super(file);
+//            System.out.println("Opening file for reading: " + file.getPath());
         }
 
         public String read(LuaState args) {
             try {
-                byte[] buffer = new byte[args.toInteger(2)];
-                int readCount = in.read(buffer);
+                double needToRead = args.toNumber(2);
+                int readCount;
+                byte[] buffer;
+                StringBuilder stringBuilder = new StringBuilder();
                 
-                return new String(buffer, 0, readCount, StandardCharsets.US_ASCII);
+                while (needToRead > 0) {
+                    buffer = new byte[(int) Math.min(readBufferSize, needToRead)];
+                    readCount = randomAccessFile.read(buffer);
+                    
+                    if (readCount > 0) {
+                        stringBuilder.append(new String(buffer, 0, readCount, StandardCharsets.UTF_8));
+                        needToRead = needToRead - buffer.length;
+
+//                        System.out.println("readCount > 0: " + readCount + ", needToRead: " + needToRead);
+                    }
+                    else {
+//                        System.out.println("readCount <= 0: " + readCount + ", needToRead: " + needToRead);
+                        break;
+                    }
+                }
+                
+                return stringBuilder.toString();
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -304,61 +410,50 @@ public class Filesystem extends ComponentBase {
             return "";
         }
 
-        public void close() {
-            try {
-                in.close();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
+        public int write(LuaState args) {
+            return 0;
         }
     }
     
     private class WriteHandle extends Handle {
-        public FileOutputStream out;
-
         public WriteHandle(File file, boolean binary, boolean append) {
-            super();
+            super(file);
 
-            try {
-                out = new FileOutputStream(file, append);
-            }
-            catch (FileNotFoundException e) {
-                e.printStackTrace();
+            //            System.out.println("Opening file for writing: " + file.getPath());
+            
+            if (append) {
+                try {
+                    randomAccessFile.seek(randomAccessFile.length());
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
         public int write(LuaState args) {
-            byte[] bytes = args.toString(2).getBytes(StandardCharsets.US_ASCII);
-
             try {
-                out.write(bytes);
+                byte[] bytes = args.toString(2).getBytes(StandardCharsets.US_ASCII);
+                randomAccessFile.write(bytes);
+                
+                return bytes.length;
             }
             catch (IOException e) {
                 e.printStackTrace();
+                
+                return 0;
             }
-
-            return bytes.length;
         }
 
         public String read(LuaState args) {
             return null;
         }
-
-        public void close() {
-            try {
-                out.close();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
     
     private void playSound() {
-        Player player = players[ThreadLocalRandom.current().nextInt(0, players.length)];
-        player.reset();
-        player.play();
+//        Player player = players[ThreadLocalRandom.current().nextInt(0, players.length)];
+//        player.reset();
+//        player.play();
     }
 
     private File getFsFile(String path) {

@@ -14,13 +14,22 @@
     },
     {
       "type": "screen",
-      "precise": false
+      "precise": false,
+      "blocksHorizontally": 3,
+      "blocksVertically": 2
     },
     {
       "type": "computer"
     },
     {
-      "type": "filesystem"
+      "type": "filesystem",
+      "label": "Hard disk (Tier 3)",
+      "temporary": false
+    },
+    {
+      "type": "filesystem",
+      "label": "tmpfs",
+      "temporary": true
     },
     {
       "type": "eeprom"

@@ -29,7 +29,7 @@ public class Computer extends ComponentBase {
     @Override
     public void pushProxy() {
         super.pushProxy();
-
+        
         machine.lua.pushJavaFunction(args -> {
             args.checkInteger(1);
             args.checkInteger(2);

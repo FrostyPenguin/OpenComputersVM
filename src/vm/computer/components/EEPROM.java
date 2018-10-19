@@ -12,11 +12,11 @@ public class EEPROM extends ComponentBase {
 
     private String code;
     
-    public EEPROM(Machine machine, String address, String realPath, String dataValue) {
+    public EEPROM(Machine machine, String address, String realPath, String data) {
         super(machine, address, "eeprom");
 
         this.realPath = realPath;
-        this.data = dataValue;
+        this.data = data;
     }
 
     @Override

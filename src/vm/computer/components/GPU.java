@@ -1,12 +1,15 @@
 package vm.computer.components;
 
+import javafx.application.Platform;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.GridPane;
+import li.cil.repack.com.naef.jnlua.LuaRuntimeException;
 import org.json.JSONObject;
 import vm.computer.Glyph;
+import vm.computer.LuaUtils;
 import vm.computer.Machine;
 
 public class GPU extends ComponentBase {
@@ -17,13 +20,39 @@ public class GPU extends ComponentBase {
         GlyphHEIGHTMulHeight,
         GlyphHEIGHTMulWidthMulHeight;
 
-    private ImageView screenImageView;
-    private GridPane screenGridPane;
+    private Color background, foreground;
+    private int[] palette = new int[16];
     private int[] buffer;
     private Pixel[][] pixels;
+    private ImageView screenImageView;
+    private GridPane screenGridPane;
     private PixelWriter pixelWriter;
-    private int background, foreground;
 
+    class Color {
+        int value;
+        boolean isPaletteIndex;
+
+        public Color(int value) {
+            this.value = 0xFF000000 | value;
+        }
+
+        public Color(int value, boolean isPaletteIndex) {
+            this(value);
+            this.isPaletteIndex = isPaletteIndex;
+        }
+    }
+    
+    class Pixel {
+        Color background, foreground;
+        int code;
+
+        Pixel(Color background, Color foreground, int code) {
+            this.background = background;
+            this.foreground = foreground;
+            this.code = code;
+        }
+    }
+    
     public GPU(Machine machine, String address, GridPane screenGridPane, ImageView screenImageView) {
         super(machine, address,"gpu");
         
@@ -36,22 +65,55 @@ public class GPU extends ComponentBase {
         super.pushProxy();
 
         machine.lua.pushJavaFunction(args -> {
+            machine.lua.pushBoolean(rawCopy(
+                args.checkInteger(1),
+                args.checkInteger(2),
+                args.checkInteger(3),
+                args.checkInteger(4),
+                args.checkInteger(5),
+                args.checkInteger(6)
+            ));
+
+            return 1;
+        });
+        machine.lua.setField(-2, "copy");
+
+        machine.lua.pushJavaFunction(args -> {
+            machine.lua.pushInteger(160);
+            machine.lua.pushInteger(50);
+
+            return 2;
+        });
+        machine.lua.setField(-2, "maxResolution");
+
+        machine.lua.pushJavaFunction(args -> {
+            args.checkInteger(1);
+            args.checkInteger(2);
+
+            rawSetResolution(args.toInteger(1), args.toInteger(2));
+            update();
+
+            return 0;
+        });
+        machine.lua.setField(-2, "setResolution");
+
+        machine.lua.pushJavaFunction(args -> {
             args.checkInteger(1);
             args.checkInteger(2);
             args.checkString(3);
 
-            int 
+            int
                 x = args.toInteger(1) - 1,
                 y = args.toInteger(2) - 1;
             String text = args.toString(3);
-            
+
             for (int i = 0; i < text.length(); i++) {
                 rawSet(x, y, text.codePointAt(i));
                 x++;
             }
-            
+
             update();
-            
+
             return 0;
         });
         machine.lua.setField(-2, "set");
@@ -62,7 +124,7 @@ public class GPU extends ComponentBase {
             args.checkInteger(3);
             args.checkInteger(4);
             args.checkString(5);
-            
+
             rawFill(
                 args.toInteger(1) - 1,
                 args.toInteger(2) - 1,
@@ -78,34 +140,47 @@ public class GPU extends ComponentBase {
         machine.lua.setField(-2, "fill");
 
         machine.lua.pushJavaFunction(args -> {
-            args.checkInteger(1);
-            args.checkInteger(2);
+            int color = args.checkInteger(1);
+            
+            if (args.isNoneOrNil(2) || !args.checkBoolean(2)) {
+                background = 0xFF000000 | color;
+                backgroundPaletteIndex = -1;
+            }
+            else {
+                backgroundPaletteIndex = checkPaletteIndex(color);
+                background = palette[backgroundPaletteIndex];
+            }
 
-            rawSetResolution(args.toInteger(1), args.toInteger(2));
-            update();
-
-            return 0;
-        });
-        machine.lua.setField(-2, "setResolution");
-
-        machine.lua.pushJavaFunction(args -> {
-            args.checkInteger(1);
-
-            background = 0xFF000000 | args.toInteger(1);
-
-            return 0;
+            return pushColor(background, backgroundPaletteIndex);
         });
         machine.lua.setField(-2, "setBackground");
 
         machine.lua.pushJavaFunction(args -> {
-            args.checkInteger(1);
+            int color = args.checkInteger(1);
 
-            foreground = 0xFF000000 | args.toInteger(1);
+            if (args.isNoneOrNil(2) || !args.checkBoolean(2)) {
+                foreground = 0xFF000000 | color;
+                foregroundPaletteIndex = -1;
+            }
+            else {
+                foregroundPaletteIndex = checkPaletteIndex(color);
+                foreground = palette[foregroundPaletteIndex];
+            }
 
-            return 0;
+            return pushColor(foreground, foregroundPaletteIndex);
         });
         machine.lua.setField(-2, "setForeground");
-        
+
+        machine.lua.pushJavaFunction(args -> {
+            return pushColor(background, backgroundPaletteIndex);
+        });
+        machine.lua.setField(-2, "getBackground");
+
+        machine.lua.pushJavaFunction(args -> {
+            return pushColor(foreground, foregroundPaletteIndex);
+        });
+        machine.lua.setField(-2, "getForeground");
+
         machine.lua.pushJavaFunction(args -> {
             machine.lua.pushInteger(width);
             machine.lua.pushInteger(height);
@@ -115,32 +190,91 @@ public class GPU extends ComponentBase {
         machine.lua.setField(-2, "getResolution");
 
         machine.lua.pushJavaFunction(args -> {
-            machine.lua.pushInteger(background);
+            machine.lua.pushInteger(width);
+            machine.lua.pushInteger(height);
 
-            return 1;
+            return 2;
         });
-        machine.lua.setField(-2, "getBackground");
+        machine.lua.setField(-2, "getViewport");
 
         machine.lua.pushJavaFunction(args -> {
-            machine.lua.pushInteger(foreground);
-
+            machine.lua.pushString(machine.screenComponent.address);
             return 1;
         });
-        machine.lua.setField(-2, "getForeground");
+        machine.lua.setField(-2, "getScreen");
+
+        machine.lua.pushJavaFunction(args -> {
+            machine.lua.pushInteger(8);
+            return 1;
+        });
+        machine.lua.setField(-2, "getDepth");
+
+        LuaUtils.pushBooleanFunction(machine.lua, "setViewport", true);
+        LuaUtils.pushBooleanFunction(machine.lua, "setDepth", true);
+        LuaUtils.pushBooleanFunction(machine.lua, "bind", true);
     }
 
     @Override
     public JSONObject toJSONObject() {
         return super.toJSONObject().put("width", width).put("height", height);
     }
+    
+    private int pushColor(int color, int index) {
+        machine.lua.pushInteger(color);
+        if (index >= 0) {
+            machine.lua.pushInteger(index);
+            return 2;
+        }
+        
+        return 1;
+    }
+    
+    private int checkPaletteIndex(int index) {
+        if (index < 0 || index > 15)
+            throw new LuaRuntimeException("palette index is out of range [0; 15]");
+        
+        return index;
+    }
+    
+    public boolean rawCopy(int x, int y, int w, int h, int tx, int ty) {
+        if (x >= 0 && y >= 0 && x + w < width && y + h < height) {
+            Pixel[][] buffer = new Pixel[h][w];
+            
+            // Копипиздим
+            int newX = 0, newY = 0;
+            for (int j = y; j < y + h; j++) {
+                for (int i = x; i < x + w; i++) {
+                    buffer[newY][newX] = pixels[j][i];
+                    
+                    newX++;
+                }
+                
+                newX = 0;
+                newY++;
+            }
+            
+            // Вставляем страпон
+            newX = 0;
+            newY = 0;
+            for (int j = y + ty; j <= y + ty + h; j++) {
+                for (int i = x + tx; i <= x + tx + w; i++) {
+                    if (checkCoordinates(i, j)) {
+                        pixels[i][j] = buffer[newY][newX];
+                    }
 
-    class Pixel {
-        int code, background, foreground;
-
-        Pixel(int background, int foreground, int code) {
-            this.background = background;
-            this.foreground = foreground;
-            this.code = code;
+                    newX++;
+                }
+                
+                newX = 0;
+                newY++;
+            }
+            
+            update(); 
+            
+            return true;
+        }
+        else {
+            return false;
         }
     }
 
@@ -180,26 +314,32 @@ public class GPU extends ComponentBase {
     }
 
     public void flush() {
-        background = 0xFF000000;
-        foreground = 0xFFFFFFFF;
+        background = new Color(0x000000);
+        foreground = new Color(0xFFFFFF);
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 pixels[y][x] = new Pixel(background, foreground, 32);
             }
         }
+
+        for (int i = 0; i < palette.length; i++) {
+            palette[i] = 0xFF000000;
+        }
     }
 
     public void update() {
-        int bufferIndex = 0, glyphIndex;
+        int bufferIndex = 0, glyphIndex, background, foreground;
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 glyphIndex = 0;
-
+                background = pixels[y][x].background.isPaletteIndex ? palette[pixels[y][x].background.value] : pixels[y][x].background.value;
+                foreground = pixels[y][x].foreground.isPaletteIndex ? palette[pixels[y][x].foreground.value] : pixels[y][x].foreground.value;
+                
                 for (int j = 0; j < Glyph.HEIGHT; j++) {
                     for (int i = 0; i < Glyph.WIDTH; i++) {
-                        buffer[bufferIndex + i] = Glyph.map[pixels[y][x].code].pixels[glyphIndex] ? pixels[y][x].foreground : pixels[y][x].background;
+                        buffer[bufferIndex + i] = Glyph.map[pixels[y][x].code].pixels[glyphIndex] ? foreground : background;
 
                         glyphIndex++;
                     }
@@ -213,20 +353,26 @@ public class GPU extends ComponentBase {
             bufferIndex += GlyphHEIGHTMulWidthMulHeight - GlyphWIDTHMulWidth;
         }
 
-        pixelWriter.setPixels(
-            0,
-            0,
-            GlyphWIDTHMulWidth,
-            GlyphHEIGHTMulHeight,
-            PixelFormat.getIntArgbPreInstance(),
-            buffer,
-            0,
-            GlyphWIDTHMulWidth
-        );
+        Platform.runLater(() -> {
+            pixelWriter.setPixels(
+                0,
+                0,
+                GlyphWIDTHMulWidth,
+                GlyphHEIGHTMulHeight,
+                PixelFormat.getIntArgbPreInstance(),
+                buffer,
+                0,
+                GlyphWIDTHMulWidth
+            );
+        });
     }
 
+    public boolean checkCoordinates(int x, int y) {
+        return x >= 0 && x < width && y >= 0 && y < height;
+    }
+    
     public void rawSet(int x, int y, int code) {
-        if (x >= 0 && x < width && y >= 0 && y < height) {
+        if (checkCoordinates(x, y)) {
             pixels[y][x].background = background;
             pixels[y][x].foreground = foreground;
             pixels[y][x].code = code;

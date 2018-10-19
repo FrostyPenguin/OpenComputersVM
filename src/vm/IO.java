@@ -14,7 +14,8 @@ public class IO {
         dataFile = new File(System.getProperty("user.home"), "OpenComputersVM"),
         configFile = new File(dataFile, "Config.json"),
         librariesFile = new File(dataFile, "Libraries"),
-        machinesFile = new File(dataFile, "Machines");
+        machinesFile = new File(dataFile, "Machines"),
+        temporaryFile = new File(dataFile, "Temporary");
     
     public static InputStream getResourceAsStream(String name) {
         return Main.class.getResourceAsStream(name);

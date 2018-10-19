@@ -1,85 +1,61 @@
-
-component.proxy(component.list("computer")()).beep(1500, 0.2)
-
-print("Global environment:")
-for key, value in pairs(_G) do
-  print(key, value)
-end
-
--- print("\nUNICODE TEST")
--- print(unicode.sub("Приветик, мирок", 3))
--- print(unicode.sub("Приветик, мирок", 3, 10))
--- print(unicode.sub("Приветик, мирок", 3, 4))
--- print(unicode.sub("Приветик, мирок", 3, 6))
--- print(unicode.sub("Приветик, мирок", 3, -1))
--- print(unicode.sub("Приветик, мирок", 3, -4))
--- print(unicode.sub("Приветик, мирок", 3, 100))
-
-print("\nFS TEST")
-local fs = component.proxy(component.list("filesystem")())
-
-print("\nOpening for writing")
-local id = fs.open("test.lua", "w")
-print("handle id", id)
-print("writing", fs.write(id, "hehehe"))
-print("closing", fs.close(id))
-
-print("\nOpening for reading")
-local id = fs.open("test.lua", "r")
-print("handle id", id)
-print("reading", fs.read(id, 1000))
-print("closing", fs.close(id))
-
-print("\nExists:")
-print(fs.exists("meow"))
-print(fs.exists("TestDir1/"))
-
-print("\nFile list:")
-for key, value in pairs(fs.list("")) do
-  print(key, value)
-end
-
-print("\nMODEM TEST")
-local modem = component.proxy(component.list("modem")())
-local port = 512
-print(modem.open(port))
-print(modem.broadcast(port, "meow", 123, "hehe", true))
-
-print("\nGPU TEST")
-local gpu = component.proxy(component.list("gpu")())
-
-local width, height = gpu.getResolution()
-local x, y
-
-local function clear(b, f)
-  gpu.setBackground(b)
-  gpu.setForeground(f)
-  gpu.fill(1, 1, width, height, " ")
-  gpu.set(3, 2, "Hello world, пидор")
-  
-  x, y = 3, 4
-end
-
-clear(0x2D2D2D, 0xFFFFFF)
-
-while true do
-  local e = {computer.pullSignal()}
-  print("RAM: ", computer.freeMemory() / 1024 / 1024, "Signal: ", table.unpack(e))
-    
-  if e[1] == "key_down" then
-    if e[4] == 14 then
-      clear(math.random(0xFFFFFF), 0xFFFFFF)
-    elseif e[4] == 28 then
-      x, y = 3, y + 1
-    else
-      local char = unicode.char(e[3])
-      -- print("Lua char:", char)
-      if char:match("[^\29\219\56\42\15\58\56\28\14]") then
-        gpu.set(x, y, char)
-        x = x + 1
-      end
-    end
-  elseif e[1] == "touch" or e[1] == "drag" then
-    gpu.set(e[3], e[4], "█")
+local component_invoke = component.invoke
+function boot_invoke(address, method, ...)
+  local result = table.pack(pcall(component_invoke, address, method, ...))
+  if not result[1] then
+    return nil, result[2]
+  else
+    return table.unpack(result, 2, result.n)
   end
 end
+
+-- backwards compatibility, may remove later
+local eeprom = component.list("eeprom")()
+computer.getBootAddress = function()
+  return boot_invoke(eeprom, "getData")
+end
+computer.setBootAddress = function(address)
+  return boot_invoke(eeprom, "setData", address)
+end
+
+do
+  local screen = component.list("screen")()
+  local gpu = component.list("gpu")()
+  if gpu and screen then
+    boot_invoke(gpu, "bind", screen)
+  end
+end
+local function tryLoadFrom(address)
+  local handle, reason = boot_invoke(address, "open", "/init.lua")
+  if not handle then
+    return nil, reason
+  end
+  local buffer = ""
+  repeat
+    local data, reason = boot_invoke(address, "read", handle, math.huge)
+    if not data and reason then
+      return nil, reason
+    end
+    buffer = buffer .. (data or "")
+  until not data
+  boot_invoke(address, "close", handle)
+  return load(buffer, "=init")
+end
+local init, reason
+if computer.getBootAddress() then
+  init, reason = tryLoadFrom(computer.getBootAddress())
+end
+if not init then
+  computer.setBootAddress()
+  for address in component.list("filesystem") do
+    init, reason = tryLoadFrom(address)
+    if init then
+      computer.setBootAddress(address)
+      break
+    end
+  end
+end
+if not init then
+  error("no bootable medium found" .. (reason and (": " .. tostring(reason)) or ""), 0)
+end
+computer.beep(1000, 0.2)
+init()
