@@ -42,9 +42,9 @@ end
 
 local sandboxComponentAPI, sandboxComputerAPI = sandbox.component, sandbox.computer
 
-local componentList = component.list
+local oldList = component.list
 function sandboxComponentAPI.list(filter, exact)
-    local list, key = componentList(filter, exact)
+    local list, key = oldList(filter, exact)
     return setmetatable(list, {
         __call = function()
             key = next(list, key)
