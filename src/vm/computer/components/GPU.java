@@ -136,8 +136,8 @@ public class GPU extends ComponentBase {
 	}
 
 	@Override
-	public void pushProxy() {
-		super.pushProxy();
+	public void pushProxyFields() {
+		super.pushProxyFields();
 
 		machine.lua.pushJavaFunction(args -> {
 			int

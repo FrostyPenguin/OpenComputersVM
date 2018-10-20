@@ -38,7 +38,7 @@
             <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
          </rowConstraints>
          <children>
-            <ImageView fx:id="screenImageView" fitHeight="407.0" fitWidth="662.0" pickOnBounds="true" preserveRatio="true" smooth="false" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+            <ImageView fx:id="screenImageView" fitHeight="495.0" fitWidth="880.0" pickOnBounds="true" preserveRatio="true" smooth="false" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <image>
                   <Image url="@../../../../../../Pictures/Govnokod.png" />
                </image>

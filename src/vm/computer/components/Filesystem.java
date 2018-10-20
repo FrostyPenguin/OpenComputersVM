@@ -39,8 +39,8 @@ public class Filesystem extends ComponentBase {
 	}
 	
 	@Override
-	public void pushProxy() {
-		super.pushProxy();
+	public void pushProxyFields() {
+		super.pushProxyFields();
 
 		// Продрачивание по хендлу бладсикером
 		machine.lua.pushJavaFunction(args -> {

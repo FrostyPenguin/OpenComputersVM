@@ -24,6 +24,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import vm.IO;
+import vm.computer.api.APIBase;
 import vm.computer.api.Component;
 import vm.computer.api.Computer;
 import vm.computer.api.Unicode;
@@ -48,6 +49,9 @@ public class Machine {
 	public Button toolbarButton;
 	
 	// Машиновская поебистика
+	public ArrayList<ComponentBase> componentList = new ArrayList<>();
+	public ArrayList<APIBase> APIList = new ArrayList<>();
+	
 	public boolean started = false;
 	public long startTime;
 	public LuaState lua;
@@ -70,6 +74,7 @@ public class Machine {
 	private Player computerRunningPlayer;
 	private boolean toolbarHidden;
 
+	// Пустой конструктор требуется FXML-ебале для инициализации
 	public Machine() {
 		computerRunningPlayer = new Player("computer_running.mp3");
 		computerRunningPlayer.setRepeating();
@@ -86,61 +91,15 @@ public class Machine {
 			Machine machine = fxmlLoader.getController();
 			machine.stage = stage;
 
-			// Вгондошиваем значение лимита оперативы
-			machine.RAMSlider.setValue(machineConfig.getDouble("totalMemory"));
-			
-			// Инициализируем корректную Lua-машину
-			machine.lua = LuaStateFactory.load52();
-
-			// Добавим логгер, чтоб дебажить потом проще было 
-			machine.lua.pushJavaFunction(args -> {
-				String separator = "   ";
-				StringBuilder result = new StringBuilder();
-
-				for (int i = 1; i <= args.getTop(); i++) {
-					switch (args.type(i)) {
-						case NIL: result.append("nil"); result.append(separator); break;
-						case BOOLEAN: result.append(args.toBoolean(i)); result.append(separator); break;
-						case NUMBER: result.append(args.toNumber(i)); result.append(separator); break;
-						case STRING: result.append(args.toString(i)); result.append(separator); break;
-						case TABLE: result.append("table"); result.append(separator); break;
-						case FUNCTION: result.append("function"); result.append(separator); break;
-						case THREAD: result.append("thread"); result.append(separator); break;
-						case LIGHTUSERDATA: result.append("userdata"); result.append(separator); break;
-						case USERDATA: result.append("userdata"); result.append(separator); break;
-					}
-				}
-				System.out.println(result.toString());
-
-				return 0;
-			});
-			machine.lua.setGlobal("LOG");
-
-			// Компудахтерное апи
-			machine.lua.newTable();
+			// Создаем АПИхи
 			machine.computerAPI = new Computer(machine);
-			machine.lua.setGlobal("computer");
-
-//            // Осевое апи
-//            machine.lua.newTable();
-//            machine.osAPI = new OS(machine);
-//            machine.lua.setGlobal("os");
-
-			// Компонентное апи
-			machine.lua.newTable();
-			machine.componentAPI = new Component(machine.lua);
-			machine.lua.setGlobal("component");
-
-			// Юникодное апи
-			machine.lua.newTable();
-			machine.unicodeAPI = new Unicode(machine.lua);
-			machine.lua.setGlobal("unicode");
+			machine.componentAPI = new Component(machine);
+			machine.unicodeAPI = new Unicode(machine);
 			
 			// Инициализируем компоненты из конфига МОШЫНЫ
 			JSONArray components = machineConfig.getJSONArray("components");
 			JSONObject component;
 			String address;
-			
 			for (int i = 0; i < components.length(); i++) {
 				component = components.getJSONObject(i);
 				address = component.getString("address");
@@ -166,7 +125,7 @@ public class Machine {
 					case "filesystem":
 						boolean temporary = component.getBoolean("temporary");
 						Filesystem filesystem = new Filesystem(machine, address, component.getString("label"), component.getString("path"), temporary);
-					   
+
 						if (temporary) {
 							machine.temporaryFilesystemComponent = filesystem;
 						}
@@ -185,6 +144,9 @@ public class Machine {
 				}
 			}
 
+			// Вгондошиваем значение лимита оперативы
+			machine.RAMSlider.setValue(machineConfig.getDouble("totalMemory"));
+			
 			// Пидорасим главное йоба-окошечко так, как надо
 			machine.stage.setX(machineConfig.getDouble("x"));
 			machine.stage.setY(machineConfig.getDouble("y"));
@@ -302,8 +264,8 @@ public class Machine {
 	
 	public JSONObject toJSONObject() {
 		JSONArray components = new JSONArray();
-		for (int j = 0; j < componentAPI.list.size(); j++) {
-			components.put(componentAPI.list.get(j).toJSONObject());
+		for (int j = 0; j < componentList.size(); j++) {
+			components.put(componentList.get(j).toJSONObject());
 		}
 		
 		return new JSONObject()
@@ -413,7 +375,7 @@ public class Machine {
 			lua.openLib(LuaState.Library.STRING);
 			lua.openLib(LuaState.Library.TABLE);
 			lua.openLib(LuaState.Library.OS);
-			lua.pop(8);
+			lua.pop(9);
 
 			return lua;
 		}
@@ -432,7 +394,8 @@ public class Machine {
 			lua.openLib(LuaState.Library.STRING);
 			lua.openLib(LuaState.Library.TABLE);
 			lua.openLib(LuaState.Library.UTF8);
-			lua.pop(8);
+			lua.openLib(LuaState.Library.OS);
+			lua.pop(9);
 
 			return lua;
 		}
@@ -443,7 +406,48 @@ public class Machine {
 		private HashMap<KeyCode, Boolean> pressedKeyCodes = new HashMap<>();
 		private double lastClickX, lastClickY;
 
-		public LuaThread() {
+		// Интересное решение: данный костыль работает "костыльнее", однако быстрее аналога на machine.lua
+		private boolean shuttingDown = false;
+
+		@Override
+		public void run() {
+			// Инициализируем корректную Lua-машину
+			lua = LuaStateFactory.load52();
+
+			// Добавим логгер, чтоб дебажить потом проще было 
+			lua.pushJavaFunction(args -> {
+				String separator = "   ";
+				StringBuilder result = new StringBuilder();
+
+				for (int i = 1; i <= args.getTop(); i++) {
+					switch (args.type(i)) {
+						case NIL: result.append("nil"); result.append(separator); break;
+						case BOOLEAN: result.append(args.toBoolean(i)); result.append(separator); break;
+						case NUMBER: result.append(args.toNumber(i)); result.append(separator); break;
+						case STRING: result.append(args.toString(i)); result.append(separator); break;
+						case TABLE: result.append("table"); result.append(separator); break;
+						case FUNCTION: result.append("function"); result.append(separator); break;
+						case THREAD: result.append("thread"); result.append(separator); break;
+						case LIGHTUSERDATA: result.append("userdata"); result.append(separator); break;
+						case USERDATA: result.append("userdata"); result.append(separator); break;
+					}
+				}
+				System.out.println(result.toString());
+
+				return 0;
+			});
+			lua.setGlobal("LOG");
+
+			// Пушим все апихи
+			for (APIBase api : APIList) {
+				api.pushTable();
+			}
+
+			// Пушим все компоненты
+			for (ComponentBase component : componentList) {
+				component.pushProxy();
+			}
+
 			Platform.runLater(() -> {
 				// Фокусирование экрана при клике на эту злоебучую область
 				windowGridPane.setOnMousePressed(event -> {
@@ -476,10 +480,10 @@ public class Machine {
 					double p = screenImageView.getFitWidth() / screenImageView.getImage().getWidth();
 					if (
 						screenComponent.precise ||
-						(
-							Math.abs(sceneX - lastClickX) / p >= Glyph.WIDTH ||
-							Math.abs(sceneY - lastClickY) / p >= Glyph.HEIGHT
-						)
+							(
+								Math.abs(sceneX - lastClickX) / p >= Glyph.WIDTH ||
+									Math.abs(sceneY - lastClickY) / p >= Glyph.HEIGHT
+							)
 					) {
 						pushTouchSignal(sceneX, sceneY, getOCButton(event), "drag");
 					}
@@ -493,25 +497,23 @@ public class Machine {
 					pushTouchSignal(event.getSceneX(), event.getSceneY(), event.getDeltaY() > 0 ? 1 : -1, "scroll");
 				});
 			});
-		}
-
-		@Override
-		public void run() {
+			
 			try {
 				// Грузим машин-кодыч
 				lua.setTotalMemory((int) (RAMSlider.getValue() * 1024));
 				lua.load(IO.loadResourceAsString("resources/Machine.lua"), "=machine");
-				lua.call(0, 0);
+				lua.newThread();
+				lua.resume(1, 0);
 
-				error("computer halted");
-			}
-			catch (Exception e) {
-				if (e.getMessage().contains("java.lang.ThreadDeath")) {
-					System.out.println("А НУ ПАШОЛ АЦУДА СО СВОИМИ ЭКСШПНАМИУарфа: " + e.getMessage());
+				if (shuttingDown) {
+					System.out.println("Успешно вырубаем компек))0");
 				}
 				else {
-					error(e.getMessage());
+					error("computer halted");
 				}
+			}
+			catch (Exception e) {
+				error(e.getMessage());
 			}
 		}
 
@@ -601,8 +603,11 @@ public class Machine {
 						// Ждем на 1 мскек больше, т.к. wait(0) ждет бисканечна))00
 						wait(deadline - System.currentTimeMillis() + 1);
 					}
-					catch (InterruptedException e) {
-						System.out.println("computer thread was interrupted");
+					catch (ThreadDeath | InterruptedException e) {
+						System.out.println("Поток интерруптнулся чет у компа");
+						
+						lua.yield(0);
+						shuttingDown = true;
 					}
 				}
 				
@@ -629,7 +634,6 @@ public class Machine {
 			}
 			
 			luaThread.interrupt();
-			luaThread.stop();
 		}
 	}
 

@@ -2,12 +2,13 @@ package vm.computer.api;
 
 import vm.computer.Machine;
 
-public class OS {
-    private Machine machine;
-    
+public class OS extends APIBase {
     public OS(Machine machine) {
-        this.machine = machine;
+        super(machine, "os");
+    }
+
+    @Override
+    public void pushFields() {
         
-//        machine.lua.ti
     }
 }
