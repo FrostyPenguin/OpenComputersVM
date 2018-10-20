@@ -12,7 +12,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -93,7 +92,7 @@ public class Machine {
 			// Инициализируем корректную Lua-машину
 			machine.lua = LuaStateFactory.load52();
 
-			// По дефолту принт будет выводить хуйню в консоль
+			// Добавим логгер, чтоб дебажить потом проще было 
 			machine.lua.pushJavaFunction(args -> {
 				String separator = "   ";
 				StringBuilder result = new StringBuilder();
@@ -453,16 +452,18 @@ public class Machine {
 
 				// Ивенты клавиш всему окну
 				windowGridPane.setOnKeyPressed(event -> {
+					KeyCode keyCode = event.getCode();
 					// Иначе оно спамит даунами
-					if (!isKeyPressed(event.getCode())) {
-						pressedKeyCodes.put(event.getCode(), true);
-						pushKeySignal(event, "key_down");
+					if (!isKeyPressed(keyCode)) {
+						pressedKeyCodes.put(keyCode, true);
+						pushKeySignal(keyCode, event.getText(), "key_down");
 					}
 				});
 
 				windowGridPane.setOnKeyReleased(event -> {
-					pressedKeyCodes.put(event.getCode(), false);
-					pushKeySignal(event, "key_up");
+					KeyCode keyCode = event.getCode();
+					pressedKeyCodes.put(keyCode, false);
+					pushKeySignal(keyCode, event.getText(), "key_up");
 				});
 
 				// А эт уже ивенты тача, драга и прочего конкретно на экранной хуйне этой
@@ -522,9 +523,7 @@ public class Machine {
 			shutdown(false);
 		}
 		
-		private void pushKeySignal(KeyEvent event, String name) {
-			KeyCode keyCode = event.getCode();
-			String text = event.getText();
+		private void pushKeySignal(KeyCode keyCode, String text, String name) {
 			KeyMap.OCKey ocKey = KeyMap.get(keyCode);
 
 			LuaState luaState = new LuaState();
@@ -533,6 +532,7 @@ public class Machine {
 			luaState.pushInteger(text.length() > 0 ? text.codePointAt(0) : ocKey.unicode);
 			luaState.pushInteger(ocKey.ascii);
 			luaState.pushString(playerTextField.getText());
+			
 			pushSignal(luaState);
 		}
 
