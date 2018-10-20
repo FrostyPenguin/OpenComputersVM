@@ -21,7 +21,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<GridPane fx:id="windowGridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="620.0" prefWidth="1068.0" style="-fx-background-color: #1E1E1E;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vm.computer.Machine">
+<GridPane fx:id="windowGridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="681.0" prefWidth="1194.0" style="-fx-background-color: #1E1E1E;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vm.computer.Machine">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="294.0" />
@@ -46,7 +46,7 @@
                   <DropShadow color="#0000007f" height="83.22999999999999" offsetY="5.0" radius="40.735" width="81.71" />
                </effect>
             </ImageView>
-            <Button fx:id="toolbarButton" mnemonicParsing="false" onMouseClicked="#onToolbarButtonPressed" prefHeight="132.0" prefWidth="40.0" stylesheets="@../styles/toolbarButton.css" text="&gt;" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+            <Button fx:id="toolbarButton" focusTraversable="false" mnemonicParsing="false" onMouseClicked="#onToolbarButtonPressed" prefHeight="132.0" prefWidth="40.0" stylesheets="@../styles/toolbarButton.css" text="&gt;" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
                <GridPane.margin>
                   <Insets right="-20.0" />
                </GridPane.margin>
@@ -200,7 +200,7 @@
                               </Pane>
                            </children>
                         </GridPane>
-                        <ToggleButton fx:id="powerButton" layoutX="120.0" layoutY="156.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onMousePressed="#onPowerButtonTouch" prefHeight="54.0" prefWidth="54.0" styleClass="powerButton" />
+                        <ToggleButton fx:id="powerButton" focusTraversable="false" layoutX="120.0" layoutY="156.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onMousePressed="#onPowerButtonTouch" prefHeight="54.0" prefWidth="54.0" styleClass="powerButton" />
                      </children>
                   </Pane>
                   <GridPane>
@@ -210,7 +210,7 @@
                               <Image url="@../resources/images/Screen.png" />
                            </image>
                         </ImageView>
-                        <TextField fx:id="screensHorizontallyTextField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="0.0" promptText="Linked card channel" text="Screens horizontally" GridPane.columnIndex="1">
+                        <TextField fx:id="screensHorizontallyTextField" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="0.0" promptText="Linked card channel" text="Screens horizontally" GridPane.columnIndex="1">
                            <font>
                               <Font name="Minecraft Regular" size="10.0" />
                            </font>
@@ -219,7 +219,7 @@
                               <String fx:value="font" />
                            </styleClass>
                         </TextField>
-                        <TextField fx:id="screensVerticallyTextField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="0.0" promptText="Linked card channel" text="Screens vertically" GridPane.columnIndex="3">
+                        <TextField fx:id="screensVerticallyTextField" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="0.0" promptText="Linked card channel" text="Screens vertically" GridPane.columnIndex="3">
                            <font>
                               <Font name="Minecraft Regular" size="10.0" />
                            </font>
@@ -247,10 +247,38 @@
                      <children>
                         <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
                            <image>
+                              <Image url="@../resources/images/player.png" />
+                           </image>
+                        </ImageView>
+                        <TextField fx:id="playerTextField" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Player name" GridPane.columnIndex="1">
+                           <font>
+                              <Font name="Minecraft Regular" size="10.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="pathInput" />
+                              <String fx:value="font" />
+                           </styleClass>
+                        </TextField>
+                     </children>
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" />
+                     </columnConstraints>
+                     <padding>
+                        <Insets right="6.0" />
+                     </padding>
+                     <rowConstraints>
+                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="48.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                  </GridPane>
+                  <GridPane>
+                     <children>
+                        <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
+                           <image>
                               <Image url="@../resources/images/LinkedCard.png" />
                            </image>
                         </ImageView>
-                        <TextField fx:id="tunnelChannelTextField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Linked card channel" GridPane.columnIndex="1">
+                        <TextField fx:id="tunnelChannelTextField" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Linked card channel" GridPane.columnIndex="1">
                            <font>
                               <Font name="Minecraft Regular" size="10.0" />
                            </font>
@@ -286,7 +314,7 @@
                               <Image url="@../resources/images/HDD.png" />
                            </image>
                         </ImageView>
-                        <TextField fx:id="HDDPathTextField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="HDD path" GridPane.columnIndex="1">
+                        <TextField fx:id="HDDPathTextField" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="HDD path" GridPane.columnIndex="1">
                            <font>
                               <Font name="Minecraft Regular" size="10.0" />
                            </font>
@@ -295,7 +323,7 @@
                               <String fx:value="font" />
                            </styleClass>
                         </TextField>
-                        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="..." GridPane.columnIndex="2">
+                        <Button focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="..." GridPane.columnIndex="2">
                            <font>
                               <Font name="Minecraft Regular" size="10.0" />
                            </font>
@@ -316,7 +344,7 @@
                               <Image url="@../resources/images/EEPROM.png" />
                            </image>
                         </ImageView>
-                        <TextField fx:id="EEPROMPathTextField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="EEPROM path" GridPane.columnIndex="1">
+                        <TextField fx:id="EEPROMPathTextField" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="EEPROM path" GridPane.columnIndex="1">
                            <font>
                               <Font name="Minecraft Regular" size="10.0" />
                            </font>
@@ -325,7 +353,7 @@
                               <String fx:value="font" />
                            </styleClass>
                         </TextField>
-                        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="..." GridPane.columnIndex="2">
+                        <Button focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="..." GridPane.columnIndex="2">
                            <font>
                               <Font name="Minecraft Regular" size="10.0" />
                            </font>
@@ -354,7 +382,7 @@
                               <Image url="@../resources/images/RAM.png" />
                            </image>
                         </ImageView>
-                        <Slider fx:id="RAMSlider" majorTickUnit="992.0" max="4096.0" min="128.0" minorTickCount="2" showTickLabels="true" showTickMarks="true" value="4096.0" GridPane.columnIndex="1">
+                        <Slider fx:id="RAMSlider" focusTraversable="false" majorTickUnit="992.0" max="4096.0" min="128.0" minorTickCount="2" showTickLabels="true" showTickMarks="true" value="4096.0" GridPane.columnIndex="1">
                            <GridPane.margin>
                               <Insets right="5.0" />
                            </GridPane.margin>
@@ -373,7 +401,7 @@
                   </GridPane>
                </children>
             </VBox>
-            <Button maxHeight="-Infinity" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseReleased="#onGenerateButtonTouch" prefHeight="48.0" text="New  virtual  machine" GridPane.halignment="LEFT" GridPane.valignment="BOTTOM">
+            <Button focusTraversable="false" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseReleased="#onGenerateButtonTouch" prefHeight="48.0" text="New  virtual  machine" GridPane.halignment="LEFT" GridPane.valignment="BOTTOM">
                <font>
                   <Font name="Minecraft Regular" size="11.0" />
                </font>

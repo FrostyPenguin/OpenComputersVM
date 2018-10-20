@@ -45,7 +45,7 @@ public class Machine {
 	public GridPane screenGridPane;
 	public ImageView screenImageView, boardImageView;
 	public ToggleButton powerButton;
-	public TextField EEPROMPathTextField, HDDPathTextField, tunnelChannelTextField, screensHorizontallyTextField, screensVerticallyTextField;
+	public TextField EEPROMPathTextField, HDDPathTextField, tunnelChannelTextField, screensHorizontallyTextField, screensVerticallyTextField, playerTextField;
 	public Button toolbarButton;
 	
 	// Машиновская поебистика
@@ -148,7 +148,7 @@ public class Machine {
 
 				switch (component.getString("type")) {
 					case "gpu":
-						machine.gpuComponent = new GPU(machine, address, machine.screenGridPane, machine.screenImageView);
+						machine.gpuComponent = new GPU(machine, address);
 						machine.gpuComponent.rawSetResolution(component.getInt("width"), component.getInt("height"));
 						machine.gpuComponent.updaterThread.update();
 						break;
@@ -192,8 +192,14 @@ public class Machine {
 			machine.stage.setWidth(machineConfig.getDouble("width"));
 			machine.stage.setHeight(machineConfig.getDouble("height"));
 
-			machine.updateControls();
-
+			// Апдейтим контролсы
+			machine.playerTextField.setText(machineConfig.getString("player"));
+			machine.HDDPathTextField.setText(machine.filesystemComponent.realPath);
+			machine.EEPROMPathTextField.setText(machine.eepromComponent.realPath);
+			machine.tunnelChannelTextField.setText(machine.tunnelComponent.channel);
+			machine.screensHorizontallyTextField.setText(String.valueOf(machine.screenComponent.blocksHorizontally));
+			machine.screensVerticallyTextField.setText(String.valueOf(machine.screenComponent.blocksVertically));
+			
 			machine.toolbarHidden = machineConfig.getBoolean("toolbarHidden");
 			machine.updateToolbar();
 
@@ -308,15 +314,8 @@ public class Machine {
 			.put("height", stage.getHeight())
 			.put("toolbarHidden", toolbarHidden)
 			.put("components", components)
-			.put("totalMemory", RAMSlider.getValue());
-	}
-	
-	private void updateControls() {
-		HDDPathTextField.setText(filesystemComponent.realPath);
-		EEPROMPathTextField.setText(eepromComponent.realPath);
-		tunnelChannelTextField.setText(tunnelComponent.channel);
-		screensHorizontallyTextField.setText(String.valueOf(screenComponent.blocksHorizontally));
-		screensVerticallyTextField.setText(String.valueOf(screenComponent.blocksVertically));
+			.put("totalMemory", RAMSlider.getValue())
+			.put("player", playerTextField.getText());
 	}
 	
 	private void updateToolbar() {
@@ -525,19 +524,16 @@ public class Machine {
 		
 		private void pushKeySignal(KeyEvent event, String name) {
 			KeyCode keyCode = event.getCode();
-			if (keyCode != KeyCode.SHIFT) {
-                String text = event.getText();
-                int OCKeyboardCode = KeyMap.get(keyCode);
+			String text = event.getText();
+			KeyMap.OCKey ocKey = KeyMap.get(keyCode);
 
-                LuaState luaState = new LuaState();
-
-                luaState.pushString(name);
-                luaState.pushString(keyboardComponent.address);
-                luaState.pushInteger(text.length() > 0 ? text.codePointAt(0) : OCKeyboardCode);
-                luaState.pushInteger(OCKeyboardCode);
-
-                pushSignal(luaState);
-            }
+			LuaState luaState = new LuaState();
+			luaState.pushString(name);
+			luaState.pushString(keyboardComponent.address);
+			luaState.pushInteger(text.length() > 0 ? text.codePointAt(0) : ocKey.unicode);
+			luaState.pushInteger(ocKey.ascii);
+			luaState.pushString(playerTextField.getText());
+			pushSignal(luaState);
 		}
 
 		private int getOCButton(MouseEvent event) {
@@ -559,7 +555,6 @@ public class Machine {
 //			System.out.println("Pushing touch signal: " + x + ", " + y);
 
 			LuaState luaState = new LuaState();
-			
 			luaState.pushString(name);
 			luaState.pushString(screenComponent.address);
 			if (screenComponent.precise) {
@@ -571,8 +566,7 @@ public class Machine {
 				luaState.pushInteger((int) y);
 			}
 			luaState.pushInteger(state);
-			luaState.pushString("Player");
-			
+			luaState.pushString(playerTextField.getText());
 			pushSignal(luaState);
 
 			lastClickX = screenX;

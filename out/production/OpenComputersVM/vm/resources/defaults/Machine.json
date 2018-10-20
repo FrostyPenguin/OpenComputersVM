@@ -2,10 +2,11 @@
   "name": "My machine",
   "x": 3,
   "y": 3,
-  "width": 1053,
-  "height": 590,
+  "width": 1200,
+  "height": 680,
   "toolbarHidden": false,
   "totalMemory": 4096,
+  "player": "Sangar",
   "components": [
     {
       "type": "gpu",

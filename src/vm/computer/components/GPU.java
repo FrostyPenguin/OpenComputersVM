@@ -1,10 +1,8 @@
 package vm.computer.components;
 
-import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.GridPane;
 import li.cil.repack.com.naef.jnlua.LuaRuntimeException;
 import org.json.JSONObject;
 import vm.computer.Glyph;
@@ -12,26 +10,26 @@ import vm.computer.LuaUtils;
 import vm.computer.Machine;
 
 public class GPU extends ComponentBase {
-	static class Color {
-		public static final Color
+	public static class Color {
+		static final Color
 			BLACK = new Color(0x000000),
 			WHITE = new Color(0xFFFFFF),
 			BLUE = new Color(0x0000FF);
 		
-		public int value;
-		public boolean isPaletteIndex;
+		int value;
+		boolean isPaletteIndex;
 
-		public Color(int value) {
+		Color(int value) {
 			this(value, false);
 		}
 
-		public Color(int value, boolean isPaletteIndex) {
+		Color(int value, boolean isPaletteIndex) {
 			this.value = 0xFF000000 | value;
 			this.isPaletteIndex = isPaletteIndex;
 		}
 	}
 	
-	class Pixel {
+	private class Pixel {
 		Color background, foreground;
 		int code;
 
@@ -42,16 +40,13 @@ public class GPU extends ComponentBase {
 		}
 	}
 
+	// Поток-дрочер, обновляющий пиксельную инфу по запросу
 	public class UpdaterThread extends Thread {
 		// По сути лимитировщик FPS
 		public int waitDelay = 16;
-
+		public int[] buffer;
+		
 		private boolean needUpdate = false;
-		private int[] buffer;
-
-		public void setBufferSize(int size) {
-			buffer = new int[size];
-		}
 
 		public void update() {
 			update(0, 0, width - 1, height - 1);
@@ -94,24 +89,27 @@ public class GPU extends ComponentBase {
 				while (true) {
 					try {
 						wait(waitDelay);
+
+						if (needUpdate) {
+							pixelWriter.setPixels(
+								0,
+								0,
+								GlyphWIDTHMulWidth,
+								GlyphHEIGHTMulHeight,
+								PixelFormat.getIntArgbInstance(),
+								buffer,
+								0,
+								GlyphWIDTHMulWidth
+							);
+
+							needUpdate = false;
+						}
 					}
 					catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-					
-					if (needUpdate) {
-						pixelWriter.setPixels(
-							0,
-							0,
-							GlyphWIDTHMulWidth,
-							GlyphHEIGHTMulHeight,
-							PixelFormat.getIntArgbInstance(),
-							buffer,
-							0,
-							GlyphWIDTHMulWidth
-						);
-
-						needUpdate = false;
+					catch (ThreadDeath e) {
+						break;
 					}
 				}
 			}
@@ -129,16 +127,10 @@ public class GPU extends ComponentBase {
 	private Color background, foreground;
 	private int[] palette = new int[16];
 	private Pixel[][] pixels;
-	private ImageView screenImageView;
-	private GridPane screenGridPane;
 	private PixelWriter pixelWriter;
-	private WritableImage writableImage;
 
-	public GPU(Machine machine, String address, GridPane screenGridPane, ImageView screenImageView) {
+	public GPU(Machine machine, String address) {
 		super(machine, address,"gpu");
-		
-		this.screenGridPane = screenGridPane;
-		this.screenImageView = screenImageView;
 
 		updaterThread.start();
 	}
@@ -245,7 +237,7 @@ public class GPU extends ComponentBase {
 
 		machine.lua.pushJavaFunction(args -> {
 			Color oldColor = background;
-			background = new Color(args.checkInteger(1), args.isNoneOrNil(2) ? false : args.checkBoolean(2));
+			background = new Color(args.checkInteger(1), !args.isNoneOrNil(2) && args.checkBoolean(2));
             
 			return setColorPush(oldColor);
 		});
@@ -253,20 +245,16 @@ public class GPU extends ComponentBase {
 
 		machine.lua.pushJavaFunction(args -> {
 			Color oldColor = foreground;
-			foreground = new Color(args.checkInteger(1), args.isNoneOrNil(2) ? false : args.checkBoolean(2));
+			foreground = new Color(args.checkInteger(1), !args.isNoneOrNil(2) && args.checkBoolean(2));
 
 			return setColorPush(oldColor);
 		});
 		machine.lua.setField(-2, "setForeground");
 
-		machine.lua.pushJavaFunction(args -> {
-			return getColorPush(background);
-		});
+		machine.lua.pushJavaFunction(args -> getColorPush(background));
 		machine.lua.setField(-2, "getBackground");
 
-		machine.lua.pushJavaFunction(args -> {
-            return getColorPush(foreground);
-		});
+		machine.lua.pushJavaFunction(args -> getColorPush(foreground));
 		machine.lua.setField(-2, "getForeground");
 
 		machine.lua.pushJavaFunction(args -> {
@@ -386,32 +374,14 @@ public class GPU extends ComponentBase {
 		GlyphHEIGHTMulHeight = height * Glyph.HEIGHT;
 		GlyphHEIGHTMulWidthMulHeight = GlyphWIDTHMulWidth * Glyph.HEIGHT;
 
-		writableImage = new WritableImage(GlyphWIDTHMulWidth, GlyphHEIGHTMulHeight);
+		WritableImage writableImage = new WritableImage(GlyphWIDTHMulWidth, GlyphHEIGHTMulHeight);
 		pixelWriter = writableImage.getPixelWriter();
-		screenImageView.setImage(writableImage);
+		machine.screenImageView.setImage(writableImage);
 		
 		pixels = new Pixel[height][width];
-		updaterThread.setBufferSize(width * height * Glyph.WIDTH * Glyph.HEIGHT);
-
-		flush();
-	}
-	
-	public void updateScreenImageSize() {
-		double w = width * Glyph.WIDTH;
-		double h = height * Glyph.HEIGHT;
+		updaterThread.buffer = new int[width * height * Glyph.WIDTH * Glyph.HEIGHT];
 		
-		if (w >= h && w > screenGridPane.getWidth()) {
-			screenImageView.setFitWidth(screenGridPane.getWidth());
-			screenImageView.setFitHeight(screenGridPane.getHeight() * w / h);
-		}
-		else if (w < h && h > screenGridPane.getHeight()) {
-			screenImageView.setFitWidth(screenGridPane.getWidth() / w / h);
-			screenImageView.setFitHeight(screenGridPane.getHeight());
-		}
-		else {
-			screenImageView.setFitWidth(w);
-			screenImageView.setFitHeight(h);
-		}
+		flush();
 	}
 
 	public void flush() {
@@ -429,11 +399,11 @@ public class GPU extends ComponentBase {
 		}
 	}
 
-	public boolean checkCoordinates(int x, int y) {
+	private boolean checkCoordinates(int x, int y) {
 		return x >= 0 && x < width && y >= 0 && y < height;
 	}
 	
-	public void checkCoordinatesAndThrow(int x, int y) {
+	private void checkCoordinatesAndThrow(int x, int y) {
 		if (!checkCoordinates(x, y))
 			throw new LuaRuntimeException("screen coordinate is out of range [" + width + "; " + height + "]: " + x + 
 				", " + y);
@@ -465,7 +435,6 @@ public class GPU extends ComponentBase {
 				rawSet(i, j, s);
 	
 		updaterThread.update(fromX, fromY, toX, toY);
-//		updateImageViewFromBuffer();
 	}
 
 	public void rawError(String text) {
