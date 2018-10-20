@@ -11,11 +11,11 @@ public class Glyph {
     public static final Glyph[] map = new Glyph[119639];
     
     public int width;
-    public boolean[] pixels;
+    public boolean[] microPixels;
 
     public Glyph(int width) {
         this.width = width;
-        this.pixels = new boolean[this.width * HEIGHT];
+        this.microPixels = new boolean[this.width * HEIGHT];
     }
 
     public static void initialize() {
@@ -38,7 +38,7 @@ public class Glyph {
                 for (int i = 0; i < pixelData.length(); i += 2) {
                     int glyphByte = Integer.parseInt(pixelData.substring(i, i + 2), 16);
                     for (int j = 0; j < 8; j++) {
-                        glyph.pixels[index - j] = (glyphByte & 1) == 1;
+                        glyph.microPixels[index - j] = (glyphByte & 1) == 1;
                         glyphByte >>= 1;
                     }
                     
@@ -53,7 +53,7 @@ public class Glyph {
 //                    index = 0;
 //                    for (int y = 0; y < HEIGHT; y++) {
 //                        for (int x = 0; x < glyph.width; x++) {
-//                            System.out.print((glyph.pixels[index] ? 1 : 0) + " ");
+//                            System.out.print((glyph.microPixels[index] ? 1 : 0) + " ");
 //                            index++;
 //                        }
 //                        System.out.print("\n");

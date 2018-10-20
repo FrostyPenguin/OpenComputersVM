@@ -1,6 +1,5 @@
 package vm.computer.components;
 
-import javafx.application.Platform;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
@@ -43,26 +42,105 @@ public class GPU extends ComponentBase {
 		}
 	}
 
+	public class UpdaterThread extends Thread {
+		// По сути лимитировщик FPS
+		public int waitDelay = 16;
+
+		private boolean needUpdate = false;
+		private int[] buffer;
+
+		public void setBufferSize(int size) {
+			buffer = new int[size];
+		}
+
+		public void update() {
+			update(0, 0, width - 1, height - 1);
+		}
+
+		public void update(int fromX, int fromY, int toX, int toY) {
+			synchronized (this) {
+				int bufferIndex = fromY * (Glyph.WIDTH * Glyph.HEIGHT * width) + fromX * (Glyph.WIDTH),
+					glyphIndex, background, foreground;
+
+				for (int y = fromY; y <= toY; y++) {
+					for (int x = fromX; x <= toX; x++) {
+						background = pixels[y][x].background.isPaletteIndex ? palette[pixels[y][x].background.value] : pixels[y][x].background.value;
+						foreground = pixels[y][x].foreground.isPaletteIndex ? palette[pixels[y][x].foreground.value] : pixels[y][x].foreground.value;
+
+						glyphIndex = 0;
+						for (int j = 0; j < Glyph.HEIGHT; j++) {
+							for (int i = 0; i < Glyph.WIDTH; i++) {
+								buffer[bufferIndex + i] = Glyph.map[pixels[y][x].code].microPixels[glyphIndex] ? foreground : background;
+
+								glyphIndex++;
+							}
+
+							bufferIndex += GlyphWIDTHMulWidth;
+						}
+
+						bufferIndex += Glyph.WIDTH - GlyphHEIGHTMulWidthMulHeight;
+					}
+
+					bufferIndex += GlyphHEIGHTMulWidthMulHeight - GlyphWIDTHMulWidth;
+				}
+
+				needUpdate = true;
+			}
+		}
+
+		@Override
+		public void run() {
+			synchronized (this) {
+				while (true) {
+					try {
+						wait(waitDelay);
+					}
+					catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					
+					if (needUpdate) {
+						pixelWriter.setPixels(
+							0,
+							0,
+							GlyphWIDTHMulWidth,
+							GlyphHEIGHTMulHeight,
+							PixelFormat.getIntArgbInstance(),
+							buffer,
+							0,
+							GlyphWIDTHMulWidth
+						);
+
+						needUpdate = false;
+					}
+				}
+			}
+		}
+	}
+
 	public int
 		width,
 		height,
 		GlyphWIDTHMulWidth,
 		GlyphHEIGHTMulHeight,
 		GlyphHEIGHTMulWidthMulHeight;
+	public UpdaterThread updaterThread = new UpdaterThread();
 
 	private Color background, foreground;
 	private int[] palette = new int[16];
-	private int[] buffer;
 	private Pixel[][] pixels;
 	private ImageView screenImageView;
 	private GridPane screenGridPane;
 	private PixelWriter pixelWriter;
-	
+	private WritableImage writableImage;
+
 	public GPU(Machine machine, String address, GridPane screenGridPane, ImageView screenImageView) {
 		super(machine, address,"gpu");
 		
 		this.screenGridPane = screenGridPane;
 		this.screenImageView = screenImageView;
+
+		updaterThread.start();
 	}
 
 	@Override
@@ -124,43 +202,42 @@ public class GPU extends ComponentBase {
 			args.checkInteger(2);
 
 			rawSetResolution(args.toInteger(1), args.toInteger(2));
-			update();
+			updaterThread.update();
 
 			return 0;
 		});
 		machine.lua.setField(-2, "setResolution");
 
 		machine.lua.pushJavaFunction(args -> {
-			args.checkInteger(1);
-			args.checkInteger(2);
-			args.checkString(3);
-
 			int
-				x = args.toInteger(1) - 1,
-				y = args.toInteger(2) - 1;
-			String text = args.toString(3);
-
-			for (int i = 0; i < text.length(); i++) {
-				rawSet(x, y, text.codePointAt(i));
-				x++;
+				x = args.checkInteger(1) - 1,
+				y = args.checkInteger(2) - 1;
+			String text = args.checkString(3);
+			int limit = Math.min(text.length(), width - x);
+			
+			for (int i = 0; i < limit; i++) {
+				rawSet(x + i, y, text.codePointAt(i));
 			}
-
-			update();
+			
+//			updateEntireBuffer();
+			updaterThread.update(x, y, x + limit - 1, y);
+//			updateImageViewFromBuffer();
 
 			return 0;
 		});
 		machine.lua.setField(-2, "set");
 
 		machine.lua.pushJavaFunction(args -> {
+			int x = args.checkInteger(1) - 1,
+				y = args.checkInteger(2) - 1;
+			
 			rawFill(
-				args.checkInteger(1) - 1,
-				args.checkInteger(2) - 1,
-				args.checkInteger(3),
-				args.checkInteger(4),
+				x,
+				y,
+				x + args.checkInteger(3) - 1,
+				y + args.checkInteger(4) - 1,
 				args.checkString(5).codePointAt(0)
 			);
-
-			update();
 
 			return 0;
 		});
@@ -263,37 +340,37 @@ public class GPU extends ComponentBase {
 	
 	public boolean rawCopy(int x, int y, int w, int h, int tx, int ty) {
 		if (x >= 0 && y >= 0 && x + w < width && y + h < height) {
-			Pixel[][] buffer = new Pixel[h][w];
-			
-			// Копипиздим
-			int newX = 0, newY = 0;
-			for (int j = y; j < y + h; j++) {
-				for (int i = x; i < x + w; i++) {
-					buffer[newY][newX] = pixels[j][i];
-					
-					newX++;
-				}
-				
-				newX = 0;
-				newY++;
-			}
-			
-			// Вставляем страпон
-			newX = 0;
-			newY = 0;
-			for (int j = y + ty; j <= y + ty + h; j++) {
-				for (int i = x + tx; i <= x + tx + w; i++) {
-					checkCoordinatesAndThrow(i, j);
-					pixels[j][i] = buffer[newY][newX];
-
-					newX++;
-				}
-				
-				newX = 0;
-				newY++;
-			}
-			
-			update(); 
+//			Pixel[][] buffer = new Pixel[h][w];
+//			
+//			// Копипиздим
+//			int newX = 0, newY = 0;
+//			for (int j = y; j < y + h; j++) {
+//				for (int i = x; i < x + w; i++) {
+//					buffer[newY][newX] = pixels[j][i];
+//					
+//					newX++;
+//				}
+//				
+//				newX = 0;
+//				newY++;
+//			}
+//			
+//			// Вставляем страпон
+//			newX = 0;
+//			newY = 0;
+//			for (int j = y + ty; j <= y + ty + h; j++) {
+//				for (int i = x + tx; i <= x + tx + w; i++) {
+//					checkCoordinatesAndThrow(i, j);
+//					pixels[j][i] = buffer[newY][newX];
+//
+//					newX++;
+//				}
+//				
+//				newX = 0;
+//				newY++;
+//			}
+//			
+//			updateEntireBuffer(); 
 			
 			return true;
 		}
@@ -301,7 +378,7 @@ public class GPU extends ComponentBase {
 			return false;
 		}
 	}
-
+	
 	public void rawSetResolution(int newWidth, int newHeight) {
 		width = newWidth;
 		height = newHeight;
@@ -309,12 +386,12 @@ public class GPU extends ComponentBase {
 		GlyphHEIGHTMulHeight = height * Glyph.HEIGHT;
 		GlyphHEIGHTMulWidthMulHeight = GlyphWIDTHMulWidth * Glyph.HEIGHT;
 
-		WritableImage writableImage = new WritableImage(GlyphWIDTHMulWidth, GlyphHEIGHTMulHeight);
+		writableImage = new WritableImage(GlyphWIDTHMulWidth, GlyphHEIGHTMulHeight);
 		pixelWriter = writableImage.getPixelWriter();
 		screenImageView.setImage(writableImage);
 		
 		pixels = new Pixel[height][width];
-		buffer = new int[width * height * Glyph.WIDTH * Glyph.HEIGHT];
+		updaterThread.setBufferSize(width * height * Glyph.WIDTH * Glyph.HEIGHT);
 
 		flush();
 	}
@@ -352,45 +429,6 @@ public class GPU extends ComponentBase {
 		}
 	}
 
-	public void update() {
-		int bufferIndex = 0, glyphIndex, background, foreground;
-
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				glyphIndex = 0;
-				background = pixels[y][x].background.isPaletteIndex ? palette[pixels[y][x].background.value] : pixels[y][x].background.value;
-				foreground = pixels[y][x].foreground.isPaletteIndex ? palette[pixels[y][x].foreground.value] : pixels[y][x].foreground.value;
-				
-				for (int j = 0; j < Glyph.HEIGHT; j++) {
-					for (int i = 0; i < Glyph.WIDTH; i++) {
-						buffer[bufferIndex + i] = Glyph.map[pixels[y][x].code].pixels[glyphIndex] ? foreground : background;
-
-						glyphIndex++;
-					}
-
-					bufferIndex += GlyphWIDTHMulWidth;
-				}
-
-				bufferIndex += Glyph.WIDTH - GlyphHEIGHTMulWidthMulHeight;
-			}
-
-			bufferIndex += GlyphHEIGHTMulWidthMulHeight - GlyphWIDTHMulWidth;
-		}
-
-		Platform.runLater(() -> {
-			pixelWriter.setPixels(
-				0,
-				0,
-				GlyphWIDTHMulWidth,
-				GlyphHEIGHTMulHeight,
-				PixelFormat.getIntArgbPreInstance(),
-				buffer,
-				0,
-				GlyphWIDTHMulWidth
-			);
-		});
-	}
-
 	public boolean checkCoordinates(int x, int y) {
 		return x >= 0 && x < width && y >= 0 && y < height;
 	}
@@ -416,11 +454,18 @@ public class GPU extends ComponentBase {
 		}
 	}
 
-	public void rawFill(int x, int y, int w, int h, int s) {
-		for (int j = y; j < y + h; j++)
-			for (int i = x; i < x + w; i++)
-				if (checkCoordinates(i, j))
-					rawSet(i, j, s);
+	public void rawFill(int fromX, int fromY, int toX, int toY, int s) {
+		fromX = Math.max(0, fromX);
+		fromY = Math.max(0, fromY);
+		toX = Math.min(width - 1, toX);
+		toY = Math.min(height - 1, toY);
+		
+		for (int j = fromY; j <= toY; j++)
+			for (int i = fromX; i <= toX; i++)
+				rawSet(i, j, s);
+	
+		updaterThread.update(fromX, fromY, toX, toY);
+//		updateImageViewFromBuffer();
 	}
 
 	public void rawError(String text) {
@@ -431,7 +476,7 @@ public class GPU extends ComponentBase {
 		background = Color.BLUE;
 		foreground = Color.WHITE;
 
-		rawFill(0, 0, width, height, 32);
+		rawFill(0, 0, width - 1, height - 1, 32);
 
 		int y = height / 2 - lines.length / 2;
 		for (int i = 0; i < lines.length; i++) {

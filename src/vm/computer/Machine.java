@@ -37,635 +37,636 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class Machine {
-    public static final ArrayList<Machine> list = new ArrayList<>();
-    
-    // Жабафыховские обжекты
-    public Slider RAMSlider;
-    public GridPane windowGridPane;
-    public GridPane screenGridPane;
-    public ImageView screenImageView, boardImageView;
-    public ToggleButton powerButton;
-    public TextField EEPROMPathTextField, HDDPathTextField, tunnelChannelTextField, screensHorizontallyTextField, screensVerticallyTextField;
-    public Button toolbarButton;
-    
-    // Машиновская поебистика
-    public boolean started = false;
-    public long startTime;
-    public LuaState lua;
-    public LuaThread luaThread;
-    public Component componentAPI;
-    public Computer computerAPI;
-    public Unicode unicodeAPI;
+	public static final ArrayList<Machine> list = new ArrayList<>();
+	
+	// Жабафыховские обжекты
+	public Slider RAMSlider;
+	public GridPane windowGridPane;
+	public GridPane screenGridPane;
+	public ImageView screenImageView, boardImageView;
+	public ToggleButton powerButton;
+	public TextField EEPROMPathTextField, HDDPathTextField, tunnelChannelTextField, screensHorizontallyTextField, screensVerticallyTextField;
+	public Button toolbarButton;
+	
+	// Машиновская поебистика
+	public boolean started = false;
+	public long startTime;
+	public LuaState lua;
+	public LuaThread luaThread;
+	public Component componentAPI;
+	public Computer computerAPI;
+	public Unicode unicodeAPI;
 //    public OS osAPI;
-    public GPU gpuComponent;
-    public EEPROM eepromComponent;
-    public Keyboard keyboardComponent;
-    public Screen screenComponent;
-    public vm.computer.components.Computer computerComponent;
-    public Filesystem filesystemComponent, temporaryFilesystemComponent;
-    public Modem modemComponent;
-    public Tunnel tunnelComponent;
+	public GPU gpuComponent;
+	public EEPROM eepromComponent;
+	public Keyboard keyboardComponent;
+	public Screen screenComponent;
+	public vm.computer.components.Computer computerComponent;
+	public Filesystem filesystemComponent, temporaryFilesystemComponent;
+	public Modem modemComponent;
+	public Tunnel tunnelComponent;
 //    public Internet internetComponent;
 
-    private Stage stage;
-    private Player computerRunningPlayer;
-    private boolean toolbarHidden;
+	private Stage stage;
+	private Player computerRunningPlayer;
+	private boolean toolbarHidden;
 
-    public Machine() {
-        computerRunningPlayer = new Player("computer_running.mp3");
-        computerRunningPlayer.setRepeating();
-    }
+	public Machine() {
+		computerRunningPlayer = new Player("computer_running.mp3");
+		computerRunningPlayer.setRepeating();
+	}
 
-    public static void fromJSONObject(JSONObject machineConfig) {
-        try {
-            // Ну че, создаем окошко, грузим фхмл-файл и ставим сцену окошку
-            Stage stage = new Stage();
-            FXMLLoader fxmlLoader = new FXMLLoader(Machine.class.getResource("Window.fxml"));
-            stage.setScene(new Scene(fxmlLoader.load()));
-            
-            // Выдрачиваем машинку из фхмл-контроллера и запоминаем эту стейдж-залупу
-            Machine machine = fxmlLoader.getController();
-            machine.stage = stage;
+	public static void fromJSONObject(JSONObject machineConfig) {
+		try {
+			// Ну че, создаем окошко, грузим фхмл-файл и ставим сцену окошку
+			Stage stage = new Stage();
+			FXMLLoader fxmlLoader = new FXMLLoader(Machine.class.getResource("Window.fxml"));
+			stage.setScene(new Scene(fxmlLoader.load()));
+			
+			// Выдрачиваем машинку из фхмл-контроллера и запоминаем эту стейдж-залупу
+			Machine machine = fxmlLoader.getController();
+			machine.stage = stage;
 
-            // Вгондошиваем значение лимита оперативы
-            machine.RAMSlider.setValue(machineConfig.getDouble("totalMemory"));
-            
-            // Инициализируем корректную Lua-машину
-            machine.lua = LuaStateFactory.load52();
+			// Вгондошиваем значение лимита оперативы
+			machine.RAMSlider.setValue(machineConfig.getDouble("totalMemory"));
+			
+			// Инициализируем корректную Lua-машину
+			machine.lua = LuaStateFactory.load52();
 
-            // По дефолту принт будет выводить хуйню в консоль
-            machine.lua.pushJavaFunction(args -> {
-                String separator = "   ";
-                StringBuilder result = new StringBuilder();
+			// По дефолту принт будет выводить хуйню в консоль
+			machine.lua.pushJavaFunction(args -> {
+				String separator = "   ";
+				StringBuilder result = new StringBuilder();
 
-                for (int i = 1; i <= args.getTop(); i++) {
-                    switch (args.type(i)) {
-                        case NIL: result.append("nil"); result.append(separator); break;
-                        case BOOLEAN: result.append(args.toBoolean(i)); result.append(separator); break;
-                        case NUMBER: result.append(args.toNumber(i)); result.append(separator); break;
-                        case STRING: result.append(args.toString(i)); result.append(separator); break;
-                        case TABLE: result.append("table"); result.append(separator); break;
-                        case FUNCTION: result.append("function"); result.append(separator); break;
-                        case THREAD: result.append("thread"); result.append(separator); break;
-                        case LIGHTUSERDATA: result.append("userdata"); result.append(separator); break;
-                        case USERDATA: result.append("userdata"); result.append(separator); break;
-                    }
-                }
-                System.out.println(result.toString());
+				for (int i = 1; i <= args.getTop(); i++) {
+					switch (args.type(i)) {
+						case NIL: result.append("nil"); result.append(separator); break;
+						case BOOLEAN: result.append(args.toBoolean(i)); result.append(separator); break;
+						case NUMBER: result.append(args.toNumber(i)); result.append(separator); break;
+						case STRING: result.append(args.toString(i)); result.append(separator); break;
+						case TABLE: result.append("table"); result.append(separator); break;
+						case FUNCTION: result.append("function"); result.append(separator); break;
+						case THREAD: result.append("thread"); result.append(separator); break;
+						case LIGHTUSERDATA: result.append("userdata"); result.append(separator); break;
+						case USERDATA: result.append("userdata"); result.append(separator); break;
+					}
+				}
+				System.out.println(result.toString());
 
-                return 0;
-            });
-            machine.lua.setGlobal("LOG");
+				return 0;
+			});
+			machine.lua.setGlobal("LOG");
 
-            // Компудахтерное апи
-            machine.lua.newTable();
-            machine.computerAPI = new Computer(machine);
-            machine.lua.setGlobal("computer");
+			// Компудахтерное апи
+			machine.lua.newTable();
+			machine.computerAPI = new Computer(machine);
+			machine.lua.setGlobal("computer");
 
 //            // Осевое апи
 //            machine.lua.newTable();
 //            machine.osAPI = new OS(machine);
 //            machine.lua.setGlobal("os");
 
-            // Компонентное апи
-            machine.lua.newTable();
-            machine.componentAPI = new Component(machine.lua);
-            machine.lua.setGlobal("component");
+			// Компонентное апи
+			machine.lua.newTable();
+			machine.componentAPI = new Component(machine.lua);
+			machine.lua.setGlobal("component");
 
-            // Юникодное апи
-            machine.lua.newTable();
-            machine.unicodeAPI = new Unicode(machine.lua);
-            machine.lua.setGlobal("unicode");
-            
-            // Инициализируем компоненты из конфига МОШЫНЫ
-            JSONArray components = machineConfig.getJSONArray("components");
-            JSONObject component;
-            String address;
-            
-            for (int i = 0; i < components.length(); i++) {
-                component = components.getJSONObject(i);
-                address = component.getString("address");
+			// Юникодное апи
+			machine.lua.newTable();
+			machine.unicodeAPI = new Unicode(machine.lua);
+			machine.lua.setGlobal("unicode");
+			
+			// Инициализируем компоненты из конфига МОШЫНЫ
+			JSONArray components = machineConfig.getJSONArray("components");
+			JSONObject component;
+			String address;
+			
+			for (int i = 0; i < components.length(); i++) {
+				component = components.getJSONObject(i);
+				address = component.getString("address");
 
-                switch (component.getString("type")) {
-                    case "gpu":
-                        machine.gpuComponent = new GPU(machine, address, machine.screenGridPane, machine.screenImageView);
-                        machine.gpuComponent.rawSetResolution(component.getInt("width"), component.getInt("height"));
-                        machine.gpuComponent.update();
-                        break;
-                    case "screen":
-                        machine.screenComponent = new Screen(machine, address, component.getBoolean("precise"), component.getInt("blocksHorizontally"), component.getInt("blocksVertically"));
-                        break;
-                    case "keyboard":
-                        machine.keyboardComponent = new Keyboard(machine, address);
-                        break;
-                    case "computer":
-                        machine.computerComponent = new vm.computer.components.Computer(machine, address);
-                        break;
-                    case "eeprom":
-                        machine.eepromComponent = new EEPROM(machine, address, component.getString("path"), component.getString("data"));
-                        break;
-                    case "filesystem":
-                        boolean temporary = component.getBoolean("temporary");
-                        Filesystem filesystem = new Filesystem(machine, address, component.getString("label"), component.getString("path"), temporary);
-                       
-                        if (temporary) {
-                            machine.temporaryFilesystemComponent = filesystem;
-                        }
-                        else {
-                            machine.filesystemComponent = filesystem;
-                        }
-                        break;
-                    case "modem":
-                        machine.modemComponent = new Modem(machine, address, component.getString("wakeMessage"), component.getBoolean("wakeMessageFuzzy"));
-                        break;
-                    case "tunnel":
-                        machine.tunnelComponent = new Tunnel(machine, address, component.getString("channel"), component.getString("wakeMessage"), component.getBoolean("wakeMessageFuzzy"));
-                    case "internet":
+				switch (component.getString("type")) {
+					case "gpu":
+						machine.gpuComponent = new GPU(machine, address, machine.screenGridPane, machine.screenImageView);
+						machine.gpuComponent.rawSetResolution(component.getInt("width"), component.getInt("height"));
+						machine.gpuComponent.updaterThread.update();
+						break;
+					case "screen":
+						machine.screenComponent = new Screen(machine, address, component.getBoolean("precise"), component.getInt("blocksHorizontally"), component.getInt("blocksVertically"));
+						break;
+					case "keyboard":
+						machine.keyboardComponent = new Keyboard(machine, address);
+						break;
+					case "computer":
+						machine.computerComponent = new vm.computer.components.Computer(machine, address);
+						break;
+					case "eeprom":
+						machine.eepromComponent = new EEPROM(machine, address, component.getString("path"), component.getString("data"));
+						break;
+					case "filesystem":
+						boolean temporary = component.getBoolean("temporary");
+						Filesystem filesystem = new Filesystem(machine, address, component.getString("label"), component.getString("path"), temporary);
+					   
+						if (temporary) {
+							machine.temporaryFilesystemComponent = filesystem;
+						}
+						else {
+							machine.filesystemComponent = filesystem;
+						}
+						break;
+					case "modem":
+						machine.modemComponent = new Modem(machine, address, component.getString("wakeMessage"), component.getBoolean("wakeMessageFuzzy"));
+						break;
+					case "tunnel":
+						machine.tunnelComponent = new Tunnel(machine, address, component.getString("channel"), component.getString("wakeMessage"), component.getBoolean("wakeMessageFuzzy"));
+					case "internet":
 //                        machine.internetComponent = new Internet(machine, address);
-                        break;
-                }
+						break;
+				}
+			}
+
+			// Пидорасим главное йоба-окошечко так, как надо
+			machine.stage.setX(machineConfig.getDouble("x"));
+			machine.stage.setY(machineConfig.getDouble("y"));
+			machine.stage.setWidth(machineConfig.getDouble("width"));
+			machine.stage.setHeight(machineConfig.getDouble("height"));
+
+			machine.updateControls();
+
+			machine.toolbarHidden = machineConfig.getBoolean("toolbarHidden");
+			machine.updateToolbar();
+
+			// При закрытии окошка машину над оффнуть, а то хуй проссыт, будет ли там поток дрочиться или плеер этот асинхронники свои сувать меж булок
+			stage.setOnCloseRequest(event -> {
+				machine.shutdown(true);
+			});
+	
+			// Авторесайз пикчи, чтоб охуенно и пиздато все было
+			machine.screenGridPane.widthProperty().addListener((observable, oldValue, newValue) -> {
+				double cyka = newValue.doubleValue();
+				machine.screenImageView.setFitWidth(cyka > machine.gpuComponent.GlyphWIDTHMulWidth ? machine.gpuComponent.GlyphWIDTHMulWidth : cyka);
+			});
+
+			machine.screenGridPane.heightProperty().addListener((observable, oldValue, newValue) -> {
+				double cyka = newValue.doubleValue();
+				machine.screenImageView.setFitHeight(cyka > machine.gpuComponent.GlyphHEIGHTMulHeight ? machine.gpuComponent.GlyphHEIGHTMulHeight : cyka);
+			});
+			
+			// Запоминаем мошынку в гулаг-перечне мошынок
+			list.add(machine);
+			
+			// Акошычко гатово
+			stage.show();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void generate() {
+		try {
+			System.out.println("Generating new machine...");
+			
+			// Грузим дефолтный конфиг машины и создаем жсон на его основе
+			JSONObject machineConfig = new JSONObject(IO.loadResourceAsString("resources/defaults/Machine.json"));
+			
+			// Продрачиваем дефолтные компоненты
+			String address, type, filesystemAddress = null;
+			JSONObject component;
+			File machineFile = null;
+			JSONArray components = machineConfig.getJSONArray("components");
+			for (int i = 0; i < components.length(); i++) {
+				component = components.getJSONObject(i);
+				type = component.getString("type");
+				
+				// Генерим рандомный адрес
+				address = UUID.randomUUID().toString();
+				component.put("address", address);
+
+				// Вот тута стопэ.
+				if (type.equals("filesystem")) {
+					// Если это временная файлосистема, то въебываем ей соответствующий реальный путь
+					if (component.getBoolean("temporary")) {
+						File temporaryFile = new File(IO.temporaryFile, address);
+						temporaryFile.mkdirs();
+						component.put("path", temporaryFile.getPath());
+					}
+					// А если это обычный хард, то запоминаем его адрес, чтоб потом его в биос дату вхуячить
+					else {
+						filesystemAddress = address;
+						
+						// Заодно создаем основной путь всей вирт. машины
+						machineFile = new File(IO.machinesFile, address);
+						
+						File HDDFile = new File(machineFile, "HDD/");
+						HDDFile.mkdirs();
+						component.put("path", HDDFile.getPath());
+					}
+				}
+				// И рандомный канал компонента линкед карты
+				else if (type.equals("tunnel")) {
+					component.put("channel", UUID.randomUUID().toString());
+				}
+			}
+
+			// А терь ищем еепром и сеттим ему полученный адрес харда
+			for (int i = 0; i < components.length(); i++) {
+				component = components.getJSONObject(i);
+
+				if (component.getString("type").equals("eeprom")) {
+					File EEPROMFile = new File(machineFile, "EEPROM.lua");
+
+					// Сейвим инфу с загрузочным адресом еепрома
+					component.put("data", filesystemAddress);
+					component.put("path", EEPROMFile.getPath());
+					
+					// Копипиздим EEPROM.lua с ресурсов
+					IO.copyResourceToFile("resources/defaults/EEPROM.lua", EEPROMFile);
+					break;
+				}
+			}
+
+			// Усе, уася, готова машинка
+			Machine.fromJSONObject(machineConfig);
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public JSONObject toJSONObject() {
+		JSONArray components = new JSONArray();
+		for (int j = 0; j < componentAPI.list.size(); j++) {
+			components.put(componentAPI.list.get(j).toJSONObject());
+		}
+		
+		return new JSONObject()
+			.put("x", stage.getX())
+			.put("y", stage.getY())
+			.put("width", stage.getWidth())
+			.put("height", stage.getHeight())
+			.put("toolbarHidden", toolbarHidden)
+			.put("components", components)
+			.put("totalMemory", RAMSlider.getValue());
+	}
+	
+	private void updateControls() {
+		HDDPathTextField.setText(filesystemComponent.realPath);
+		EEPROMPathTextField.setText(eepromComponent.realPath);
+		tunnelChannelTextField.setText(tunnelComponent.channel);
+		screensHorizontallyTextField.setText(String.valueOf(screenComponent.blocksHorizontally));
+		screensVerticallyTextField.setText(String.valueOf(screenComponent.blocksVertically));
+	}
+	
+	private void updateToolbar() {
+		ColumnConstraints columnConstraints = windowGridPane.getColumnConstraints().get(1);
+		
+		new Timeline(
+			new KeyFrame(Duration.ZERO,
+				new KeyValue(columnConstraints.prefWidthProperty(), columnConstraints.getPrefWidth()),
+				new KeyValue(toolbarButton.textProperty(), toolbarButton.getText())
+			),
+			new KeyFrame(new Duration(100),
+				new KeyValue(columnConstraints.prefWidthProperty(), toolbarHidden ? 0 : boardImageView.getFitWidth()),
+				new KeyValue(toolbarButton.textProperty(), toolbarHidden ? "<" : ">")
+			)
+		).play();
+	}
+	
+	public void onToolbarButtonPressed() {
+		toolbarHidden = !toolbarHidden;
+		updateToolbar();
+		screenImageView.requestFocus();
+	}
+	
+	public void onGenerateButtonTouch() {
+		generate();
+	}
+
+	public void onPowerButtonTouch() {
+		new Player("click.mp3").play();
+		if (started) {
+			shutdown(true);
+		} else {
+			boot();
+		}
+	}
+
+	public static class LuaStateFactory {
+		private static class Architecture {
+			private static String OS_ARCH = System.getProperty("os.arch");
+			private static boolean isOSArchMatch(String archPrefix) {
+				return OS_ARCH != null && OS_ARCH.startsWith(archPrefix);
+			}
+
+			static boolean
+				IS_OS_ARM = isOSArchMatch("arm"),
+				IS_OS_X86 = isOSArchMatch("x86") || isOSArchMatch("i386"),
+				IS_OS_X64 = isOSArchMatch("x86_64") || isOSArchMatch("amd64");
+		}
+
+		private static void prepareLoad(boolean use53) {
+			NativeSupport.getInstance().setLoader(() -> {
+				String architecture = "64", extension = "dll";
+
+				if (SystemUtils.IS_OS_FREE_BSD) extension = "bsd.so";
+				else if (SystemUtils.IS_OS_LINUX) extension = "so";
+				else if (SystemUtils.IS_OS_MAC) extension = "dylib";
+				
+				if (Architecture.IS_OS_X64) architecture = "64";
+				else if (Architecture.IS_OS_X86) architecture = "32";
+				else if (Architecture.IS_OS_ARM) architecture = "32.arm";
+
+				// Финальное, так сказать, название либсы-хуибсы
+				String libraryPath = "lua" + (use53 ? "53" : "52") + "/native." + architecture + "." + extension;
+				
+				// Копипиздим либу из ресурсов, если ее еще нет
+				File libraryFile = new File(IO.librariesFile, libraryPath);
+				if (!libraryFile.exists()) {
+					try {
+						System.out.println("Unpacking library: " + libraryPath);
+						
+						libraryFile.mkdirs();
+						IO.copyResourceToFile("libraries/" + libraryPath, libraryFile);
+					}
+					catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				// Грузим ее, НАКАНЕЦТА
+				System.out.println("Loading library: " + libraryFile.getPath());
+				System.load(libraryFile.getPath());
+			});
+		}
+
+		public static LuaState load52() {
+			prepareLoad(false);
+
+			LuaState lua = new LuaState(4 * 1024 * 1024);
+
+			lua.openLib(LuaState.Library.BASE);
+			lua.openLib(LuaState.Library.BIT32);
+			lua.openLib(LuaState.Library.COROUTINE);
+			lua.openLib(LuaState.Library.DEBUG);
+			lua.openLib(LuaState.Library.ERIS);
+			lua.openLib(LuaState.Library.MATH);
+			lua.openLib(LuaState.Library.STRING);
+			lua.openLib(LuaState.Library.TABLE);
+			lua.openLib(LuaState.Library.OS);
+			lua.pop(8);
+
+			return lua;
+		}
+
+		public static LuaState load53() {
+			prepareLoad(true);
+
+			LuaState lua = new LuaStateFiveThree(4 * 1024 * 1024);
+
+			lua.openLibs();
+			lua.openLib(LuaState.Library.BASE);
+			lua.openLib(LuaState.Library.COROUTINE);
+			lua.openLib(LuaState.Library.DEBUG);
+			lua.openLib(LuaState.Library.ERIS);
+			lua.openLib(LuaState.Library.MATH);
+			lua.openLib(LuaState.Library.STRING);
+			lua.openLib(LuaState.Library.TABLE);
+			lua.openLib(LuaState.Library.UTF8);
+			lua.pop(8);
+
+			return lua;
+		}
+	}
+
+	public class LuaThread extends Thread {
+		private ArrayList<LuaState> signalStack = new ArrayList<>();
+		private HashMap<KeyCode, Boolean> pressedKeyCodes = new HashMap<>();
+		private double lastClickX, lastClickY;
+
+		public LuaThread() {
+			Platform.runLater(() -> {
+				// Фокусирование экрана при клике на эту злоебучую область
+				windowGridPane.setOnMousePressed(event -> {
+					screenImageView.requestFocus();
+				});
+
+				// Ивенты клавиш всему окну
+				windowGridPane.setOnKeyPressed(event -> {
+					// Иначе оно спамит даунами
+					if (!isKeyPressed(event.getCode())) {
+						pressedKeyCodes.put(event.getCode(), true);
+						pushKeySignal(event, "key_down");
+					}
+				});
+
+				windowGridPane.setOnKeyReleased(event -> {
+					pressedKeyCodes.put(event.getCode(), false);
+					pushKeySignal(event, "key_up");
+				});
+
+				// А эт уже ивенты тача, драга и прочего конкретно на экранной хуйне этой
+				screenImageView.setOnMousePressed(event -> {
+					pushTouchSignal(event.getSceneX(), event.getSceneY(), getOCButton(event), "touch");
+				});
+
+				screenImageView.setOnMouseDragged(event -> {
+					double sceneX = event.getSceneX(), sceneY = event.getSceneY();
+					double p = screenImageView.getFitWidth() / screenImageView.getImage().getWidth();
+					if (
+						screenComponent.precise ||
+						(
+							Math.abs(sceneX - lastClickX) / p >= Glyph.WIDTH ||
+							Math.abs(sceneY - lastClickY) / p >= Glyph.HEIGHT
+						)
+					) {
+						pushTouchSignal(sceneX, sceneY, getOCButton(event), "drag");
+					}
+				});
+
+				screenImageView.setOnMouseReleased(event -> {
+					pushTouchSignal(event.getSceneX(), event.getSceneY(), getOCButton(event), "drop");
+				});
+
+				screenImageView.setOnScroll(event -> {
+					pushTouchSignal(event.getSceneX(), event.getSceneY(), event.getDeltaY() > 0 ? 1 : -1, "scroll");
+				});
+			});
+		}
+
+		@Override
+		public void run() {
+			try {
+				// Грузим машин-кодыч
+				lua.setTotalMemory((int) (RAMSlider.getValue() * 1024));
+				lua.load(IO.loadResourceAsString("resources/Machine.lua"), "=machine");
+				lua.call(0, 0);
+
+				error("computer halted");
+			}
+			catch (Exception e) {
+				if (e.getMessage().contains("java.lang.ThreadDeath")) {
+					System.out.println("А НУ ПАШОЛ АЦУДА СО СВОИМИ ЭКСШПНАМИУарфа: " + e.getMessage());
+				}
+				else {
+					error(e.getMessage());
+				}
+			}
+		}
+
+		private void error(String text) {
+			gpuComponent.rawError("Unrecoverable error\n\n" + text);
+			gpuComponent.updaterThread.update();
+			
+			powerButton.setSelected(false);
+			shutdown(false);
+		}
+		
+		private void pushKeySignal(KeyEvent event, String name) {
+			KeyCode keyCode = event.getCode();
+			if (keyCode != KeyCode.SHIFT) {
+                String text = event.getText();
+                int OCKeyboardCode = KeyMap.get(keyCode);
+
+                LuaState luaState = new LuaState();
+
+                luaState.pushString(name);
+                luaState.pushString(keyboardComponent.address);
+                luaState.pushInteger(text.length() > 0 ? text.codePointAt(0) : OCKeyboardCode);
+                luaState.pushInteger(OCKeyboardCode);
+
+                pushSignal(luaState);
             }
+		}
 
-            // Пидорасим главное йоба-окошечко так, как надо
-            machine.stage.setX(machineConfig.getDouble("x"));
-            machine.stage.setY(machineConfig.getDouble("y"));
-            machine.stage.setWidth(machineConfig.getDouble("width"));
-            machine.stage.setHeight(machineConfig.getDouble("height"));
+		private int getOCButton(MouseEvent event) {
+			switch (event.getButton()) {
+				case SECONDARY: return 1;
+				default: return 0;
+			}
+		}
 
-            machine.updateControls();
-
-            machine.toolbarHidden = machineConfig.getBoolean("toolbarHidden");
-            machine.updateToolbar();
-
-            // При закрытии окошка машину над оффнуть, а то хуй проссыт, будет ли там поток дрочиться или плеер этот асинхронники свои сувать меж булок
-            stage.setOnCloseRequest(event -> {
-                machine.shutdown(true);
-            });
-    
-            // Авторесайз пикчи, чтоб охуенно и пиздато все было
-            machine.screenGridPane.widthProperty().addListener((observable, oldValue, newValue) -> {
-                double cyka = newValue.doubleValue();
-                machine.screenImageView.setFitWidth(cyka > machine.gpuComponent.GlyphWIDTHMulWidth ? machine.gpuComponent.GlyphWIDTHMulWidth : cyka);
-            });
-
-            machine.screenGridPane.heightProperty().addListener((observable, oldValue, newValue) -> {
-                double cyka = newValue.doubleValue();
-                machine.screenImageView.setFitHeight(cyka > machine.gpuComponent.GlyphHEIGHTMulHeight ? machine.gpuComponent.GlyphHEIGHTMulHeight : cyka);
-            });
-            
-            // Запоминаем мошынку в гулаг-перечне мошынок
-            list.add(machine);
-            
-            // Акошычко гатово
-            stage.show();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void generate() {
-        try {
-            System.out.println("Generating new machine...");
-            
-            // Грузим дефолтный конфиг машины и создаем жсон на его основе
-            JSONObject machineConfig = new JSONObject(IO.loadResourceAsString("resources/defaults/Machine.json"));
-            
-            // Продрачиваем дефолтные компоненты
-            String address, type, filesystemAddress = null;
-            JSONObject component;
-            File machineFile = null;
-            JSONArray components = machineConfig.getJSONArray("components");
-            for (int i = 0; i < components.length(); i++) {
-                component = components.getJSONObject(i);
-                type = component.getString("type");
-                
-                // Генерим рандомный адрес
-                address = UUID.randomUUID().toString();
-                component.put("address", address);
-
-                // Вот тута стопэ.
-                if (type.equals("filesystem")) {
-                    // Если это временная файлосистема, то въебываем ей соответствующий реальный путь
-                    if (component.getBoolean("temporary")) {
-                        File temporaryFile = new File(IO.temporaryFile, address);
-                        temporaryFile.mkdirs();
-                        component.put("path", temporaryFile.getPath());
-                    }
-                    // А если это обычный хард, то запоминаем его адрес, чтоб потом его в биос дату вхуячить
-                    else {
-                        filesystemAddress = address;
-                        
-                        // Заодно создаем основной путь всей вирт. машины
-                        machineFile = new File(IO.machinesFile, address);
-                        
-                        File HDDFile = new File(machineFile, "HDD/");
-                        HDDFile.mkdirs();
-                        component.put("path", HDDFile.getPath());
-                    }
-                }
-                // И рандомный канал компонента линкед карты
-                else if (type.equals("tunnel")) {
-                    component.put("channel", UUID.randomUUID().toString());
-                }
-            }
-
-            // А терь ищем еепром и сеттим ему полученный адрес харда
-            for (int i = 0; i < components.length(); i++) {
-                component = components.getJSONObject(i);
-
-                if (component.getString("type").equals("eeprom")) {
-                    File EEPROMFile = new File(machineFile, "EEPROM.lua");
-
-                    // Сейвим инфу с загрузочным адресом еепрома
-                    component.put("data", filesystemAddress);
-                    component.put("path", EEPROMFile.getPath());
-                    
-                    // Копипиздим EEPROM.lua с ресурсов
-                    IO.copyResourceToFile("resources/defaults/EEPROM.lua", EEPROMFile);
-                    break;
-                }
-            }
-
-            // Усе, уася, готова машинка
-            Machine.fromJSONObject(machineConfig);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    public JSONObject toJSONObject() {
-        JSONArray components = new JSONArray();
-        for (int j = 0; j < componentAPI.list.size(); j++) {
-            components.put(componentAPI.list.get(j).toJSONObject());
-        }
-        
-        return new JSONObject()
-            .put("x", stage.getX())
-            .put("y", stage.getY())
-            .put("width", stage.getWidth())
-            .put("height", stage.getHeight())
-            .put("toolbarHidden", toolbarHidden)
-            .put("components", components)
-            .put("totalMemory", RAMSlider.getValue());
-    }
-    
-    private void updateControls() {
-        HDDPathTextField.setText(filesystemComponent.realPath);
-        EEPROMPathTextField.setText(eepromComponent.realPath);
-        tunnelChannelTextField.setText(tunnelComponent.channel);
-        screensHorizontallyTextField.setText(String.valueOf(screenComponent.blocksHorizontally));
-        screensVerticallyTextField.setText(String.valueOf(screenComponent.blocksVertically));
-    }
-    
-    private void updateToolbar() {
-        ColumnConstraints columnConstraints = windowGridPane.getColumnConstraints().get(1);
-        
-        new Timeline(
-            new KeyFrame(Duration.ZERO,
-                new KeyValue(columnConstraints.prefWidthProperty(), columnConstraints.getPrefWidth()),
-                new KeyValue(toolbarButton.textProperty(), toolbarButton.getText())
-            ),
-            new KeyFrame(new Duration(100),
-                new KeyValue(columnConstraints.prefWidthProperty(), toolbarHidden ? 0 : boardImageView.getFitWidth()),
-                new KeyValue(toolbarButton.textProperty(), toolbarHidden ? "<" : ">")
-            )
-        ).play();
-    }
-    
-    public void onToolbarButtonPressed() {
-        toolbarHidden = !toolbarHidden;
-        updateToolbar();
-        screenImageView.requestFocus();
-    }
-    
-    public void onGenerateButtonTouch() {
-        generate();
-    }
-
-    public void onPowerButtonTouch() {
-        new Player("click.mp3").play();
-        if (started) {
-            shutdown(true);
-        } else {
-            boot();
-        }
-    }
-
-    public static class LuaStateFactory {
-        private static class Architecture {
-            private static String OS_ARCH = System.getProperty("os.arch");
-            private static boolean isOSArchMatch(String archPrefix) {
-                return OS_ARCH != null && OS_ARCH.startsWith(archPrefix);
-            }
-
-            static boolean
-                IS_OS_ARM = isOSArchMatch("arm"),
-                IS_OS_X86 = isOSArchMatch("x86") || isOSArchMatch("i386"),
-                IS_OS_X64 = isOSArchMatch("x86_64") || isOSArchMatch("amd64");
-        }
-
-        private static void prepareLoad(boolean use53) {
-            NativeSupport.getInstance().setLoader(() -> {
-                String architecture = "64", extension = "dll";
-
-                if (SystemUtils.IS_OS_FREE_BSD) extension = "bsd.so";
-                else if (SystemUtils.IS_OS_LINUX) extension = "so";
-                else if (SystemUtils.IS_OS_MAC) extension = "dylib";
-                
-                if (Architecture.IS_OS_X64) architecture = "64";
-                else if (Architecture.IS_OS_X86) architecture = "32";
-                else if (Architecture.IS_OS_ARM) architecture = "32.arm";
-
-                // Финальное, так сказать, название либсы-хуибсы
-                String libraryPath = "lua" + (use53 ? "53" : "52") + "/native." + architecture + "." + extension;
-                
-                // Копипиздим либу из ресурсов, если ее еще нет
-                File libraryFile = new File(IO.librariesFile, libraryPath);
-                if (!libraryFile.exists()) {
-                    try {
-                        System.out.println("Unpacking library: " + libraryPath);
-                        
-                        libraryFile.mkdirs();
-                        IO.copyResourceToFile("libraries/" + libraryPath, libraryFile);
-                    }
-                    catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                
-                // Грузим ее, НАКАНЕЦТА
-                System.out.println("Loading library: " + libraryFile.getPath());
-                System.load(libraryFile.getPath());
-            });
-        }
-
-        public static LuaState load52() {
-            prepareLoad(false);
-
-            LuaState lua = new LuaState(4 * 1024 * 1024);
-
-            lua.openLib(LuaState.Library.BASE);
-            lua.openLib(LuaState.Library.BIT32);
-            lua.openLib(LuaState.Library.COROUTINE);
-            lua.openLib(LuaState.Library.DEBUG);
-            lua.openLib(LuaState.Library.ERIS);
-            lua.openLib(LuaState.Library.MATH);
-            lua.openLib(LuaState.Library.STRING);
-            lua.openLib(LuaState.Library.TABLE);
-            lua.openLib(LuaState.Library.OS);
-            lua.pop(8);
-
-            return lua;
-        }
-
-        public static LuaState load53() {
-            prepareLoad(true);
-
-            LuaState lua = new LuaStateFiveThree(4 * 1024 * 1024);
-
-            lua.openLibs();
-            lua.openLib(LuaState.Library.BASE);
-            lua.openLib(LuaState.Library.COROUTINE);
-            lua.openLib(LuaState.Library.DEBUG);
-            lua.openLib(LuaState.Library.ERIS);
-            lua.openLib(LuaState.Library.MATH);
-            lua.openLib(LuaState.Library.STRING);
-            lua.openLib(LuaState.Library.TABLE);
-            lua.openLib(LuaState.Library.UTF8);
-            lua.pop(8);
-
-            return lua;
-        }
-    }
-
-    public class LuaThread extends Thread {
-        private ArrayList<LuaState> signalStack = new ArrayList<>();
-        private HashMap<KeyCode, Boolean> pressedKeyCodes = new HashMap<>();
-        private double lastClickX, lastClickY;
-
-        public LuaThread() {
-            Platform.runLater(() -> {
-                // Фокусирование экрана при клике на эту злоебучую область
-                windowGridPane.setOnMousePressed(event -> {
-                    screenImageView.requestFocus();
-                });
-
-                // Ивенты клавиш всему окну
-                windowGridPane.setOnKeyPressed(event -> {
-                    // Иначе оно спамит даунами
-                    if (!isKeyPressed(event.getCode())) {
-                        pressedKeyCodes.put(event.getCode(), true);
-                        pushKeySignal(event, "key_down");
-                    }
-                });
-
-                windowGridPane.setOnKeyReleased(event -> {
-                    pressedKeyCodes.put(event.getCode(), false);
-                    pushKeySignal(event, "key_up");
-                });
-
-                // А эт уже ивенты тача, драга и прочего конкретно на экранной хуйне этой
-                screenImageView.setOnMousePressed(event -> {
-                    pushTouchSignal(event.getSceneX(), event.getSceneY(), getOCButton(event), "touch");
-                });
-
-                screenImageView.setOnMouseDragged(event -> {
-                    double sceneX = event.getSceneX(), sceneY = event.getSceneY();
-                    double p = screenImageView.getFitWidth() / screenImageView.getImage().getWidth();
-                    if (
-                        screenComponent.precise ||
-                        (
-                            Math.abs(sceneX - lastClickX) / p >= Glyph.WIDTH ||
-                            Math.abs(sceneY - lastClickY) / p >= Glyph.HEIGHT
-                        )
-                    ) {
-                        pushTouchSignal(sceneX, sceneY, getOCButton(event), "drag");
-                    }
-                });
-
-                screenImageView.setOnMouseReleased(event -> {
-                    pushTouchSignal(event.getSceneX(), event.getSceneY(), getOCButton(event), "drop");
-                });
-
-                screenImageView.setOnScroll(event -> {
-                    pushTouchSignal(event.getSceneX(), event.getSceneY(), event.getDeltaY() > 0 ? 1 : -1, "scroll");
-                });
-            });
-        }
-
-        @Override
-        public void run() {
-            try {
-                // Грузим машин-кодыч
-                lua.setTotalMemory((int) (RAMSlider.getValue() * 1024));
-                lua.load(IO.loadResourceAsString("resources/Machine.lua"), "=machine");
-                lua.call(0, 0);
-
-                error("computer halted");
-            }
-            catch (Exception e) {
-                if (e.getMessage().contains("java.lang.ThreadDeath")) {
-                    System.out.println("А НУ ПАШОЛ АЦУДА СО СВОИМИ ЭКСШПНАМИУарфа: " + e.getMessage());
-                }
-                else {
-                    error(e.getMessage());
-                }
-            }
-        }
-
-        private void error(String text) {
-            gpuComponent.rawError("Unrecoverable error\n\n" + text);
-            gpuComponent.update();
-
-//            for (int i = 0; i < 2; i++) {
-//                computerComponent.rawBeep(1400, 0.3);
-//            }
-
-            powerButton.setSelected(false);
-            shutdown(false);
-        }
-        
-        private void pushKeySignal(KeyEvent event, String name) {
-            String text = event.getText();
-            int OCKeyboardCode = KeyMap.get(event.getCode());
-
-            LuaState luaState = new LuaState();
-
-            luaState.pushString(name);
-            luaState.pushString(keyboardComponent.address);
-            luaState.pushInteger(text.length() > 0 ? text.codePointAt(0) : OCKeyboardCode);
-            luaState.pushInteger(OCKeyboardCode);
-
-            pushSignal(luaState);
-        }
-
-        private int getOCButton(MouseEvent event) {
-            switch (event.getButton()) {
-                case MIDDLE: return 3;
-                case SECONDARY: return 2;
-                default: return 1;
-            }
-        }
-
-        private void pushTouchSignal(double screenX, double screenY, int state, String name) {
-            double p1 = screenImageView.getFitWidth() / screenImageView.getImage().getWidth();
+		private void pushTouchSignal(double screenX, double screenY, int state, String name) {
+			
+			double p1 = screenImageView.getFitWidth() / screenImageView.getImage().getWidth();
 //            double p2 = screenImageView.getFitHeight() / screenImageView.getImage().getHeight();
-            
-            double
-                x = (screenX - screenImageView.getLayoutX()) / p1 / Glyph.WIDTH + 1,
-                y = (screenY - screenImageView.getLayoutY()) / p1 / Glyph.HEIGHT + 1;
+			
+			double
+				x = (screenX - screenImageView.getLayoutX()) / p1 / Glyph.WIDTH + 1,
+				y = (screenY - screenImageView.getLayoutY()) / p1 / Glyph.HEIGHT + 1;
 
-            LuaState luaState = new LuaState();
-            
-            luaState.pushString(name);
-            luaState.pushString(screenComponent.address);
-            if (screenComponent.precise) {
-                luaState.pushNumber(x);
-                luaState.pushNumber(y);
-            }
-            else {
-                luaState.pushInteger((int) x);
-                luaState.pushInteger((int) y);
-            }
-            luaState.pushInteger(state);
-            luaState.pushString("Player");
-            
-            pushSignal(luaState);
+//			System.out.println("Pushing touch signal: " + x + ", " + y);
 
-            lastClickX = screenX;
-            lastClickY = screenY;
-        }
+			LuaState luaState = new LuaState();
+			
+			luaState.pushString(name);
+			luaState.pushString(screenComponent.address);
+			if (screenComponent.precise) {
+				luaState.pushNumber(x);
+				luaState.pushNumber(y);
+			}
+			else {
+				luaState.pushInteger((int) x);
+				luaState.pushInteger((int) y);
+			}
+			luaState.pushInteger(state);
+			luaState.pushString("Player");
+			
+			pushSignal(luaState);
 
-        public void pushSignal(LuaState signal) {
-            signalStack.add(signal);
+			lastClickX = screenX;
+			lastClickY = screenY;
+		}
 
-            synchronized (this) {
-                notify();
-            }
-        }
+		public void pushSignal(LuaState signal) {
+			signalStack.add(signal);
 
-        public LuaState pullSignal(double timeout) {
-            synchronized (this) {
-                long deadline = timeout == Double.POSITIVE_INFINITY ? Long.MAX_VALUE : System.currentTimeMillis() + (long) (timeout * 1000);
+			synchronized (this) {
+				notify();
+			}
+		}
+
+		public LuaState pullSignal(double timeout) {
+			synchronized (this) {
+				long deadline = timeout == Double.POSITIVE_INFINITY ? Long.MAX_VALUE : System.currentTimeMillis() + (long) (timeout * 1000);
 
 //                System.out.println("Pulling signal infinite: " + (timeout == Double.POSITIVE_INFINITY) + ", timeout:" + timeout + ", deadline: " + deadline + ", delta: " + (deadline - System.currentTimeMillis()));
-                
-                while (System.currentTimeMillis() <= deadline) {
-                    if (signalStack.size() > 0) {
-                        LuaState result = signalStack.get(0);
+				
+				while (System.currentTimeMillis() <= deadline) {
+					if (signalStack.size() > 0) {
+						LuaState result = signalStack.get(0);
 
-                        // Шифтим
-                        signalStack.remove(0);
+						// Шифтим
+						signalStack.remove(0);
 
-                        return result;
-                    }
+						return result;
+					}
 
-                    try {
-                        // Ждем на 1 мскек больше, т.к. wait(0) ждет бисканечна))00
-                        wait(deadline - System.currentTimeMillis() + 1);
-                    }
-                    catch (InterruptedException e) {
-                        System.out.println("computer thread was interrupted");
-                    }
-                }
-                
-                return new LuaState();
-            }
-        }
+					try {
+						// Ждем на 1 мскек больше, т.к. wait(0) ждет бисканечна))00
+						wait(deadline - System.currentTimeMillis() + 1);
+					}
+					catch (InterruptedException e) {
+						System.out.println("computer thread was interrupted");
+					}
+				}
+				
+				return new LuaState();
+			}
+		}
 
-        public boolean isKeyPressed(KeyCode keyCode) {
-            return pressedKeyCodes.getOrDefault(keyCode, false);
-        }
-    }
-    
-    public void shutdown(boolean resetGPU) {
-        if (started) {
-            started = false;
-            
-            computerRunningPlayer.stop();
-            
-            RAMSlider.setDisable(false);
-            
-            if (resetGPU) {
-                gpuComponent.flush();
-                gpuComponent.update();
-            }
-            
-            luaThread.interrupt();
-            luaThread.stop();
-        }
-    }
+		public boolean isKeyPressed(KeyCode keyCode) {
+			return pressedKeyCodes.getOrDefault(keyCode, false);
+		}
+	}
+	
+	public void shutdown(boolean resetGPU) {
+		if (started) {
+			started = false;
+			
+			computerRunningPlayer.stop();
+			
+			RAMSlider.setDisable(false);
+			
+			if (resetGPU) {
+				gpuComponent.flush();
+				gpuComponent.updaterThread.update();
+			}
+			
+			luaThread.interrupt();
+			luaThread.stop();
+		}
+	}
 
-    public void boot() {
-        if (!started) {
-            try {
-                // Грузим биос-хуйню из файла
-                eepromComponent.loadCode();
+	public void boot() {
+		if (!started) {
+			try {
+				// Грузим биос-хуйню из файла
+				eepromComponent.loadCode();
 
-                // ПОДРУБАЛИТИ
-                started = true;
-                startTime = System.currentTimeMillis();
+				// ПОДРУБАЛИТИ
+				started = true;
+				startTime = System.currentTimeMillis();
 
-                // Экранчик надо чистить, а то вдруг там бсод закрался
-                gpuComponent.flush();
-                gpuComponent.update();
-                
-                // Оффаем слайдер памяти, а то хуйня эта сангаровская ругается
-                RAMSlider.setDisable(true);
-                screenImageView.requestFocus();
+				// Экранчик надо чистить, а то вдруг там бсод закрался
+				gpuComponent.flush();
+				gpuComponent.updaterThread.update();
+				
+				// Оффаем слайдер памяти, а то хуйня эта сангаровская ругается
+				RAMSlider.setDisable(true);
+				screenImageView.requestFocus();
 
-                // Играем звук компека)00
-                computerRunningPlayer.play();
+				// Играем звук компека)00
+				computerRunningPlayer.play();
 
-                // Запускаем луа-машину
-                luaThread = new LuaThread();
-                luaThread.start();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+				// Запускаем луа-машину
+				luaThread = new LuaThread();
+				luaThread.start();
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }

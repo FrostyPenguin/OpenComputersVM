@@ -16,12 +16,13 @@ public class Component {
 			for (ComponentBase component : list) {
 				if (component.address.equals(address)) {
 					lua.rawGet(LuaState.REGISTRYINDEX, component.proxyReference);
-
 					return 1;
 				}
 			}
 
-			return 0;
+			lua.pushNil();
+			lua.pushString("no such component");
+			return 2;
 		});
 		lua.setField(-2, "proxy");
 
@@ -44,6 +45,22 @@ public class Component {
 		});
 		lua.setField(-2, "list");
 
+		lua.pushJavaFunction(args -> {
+			String address = args.checkString(1);
+			
+			for (ComponentBase component : list) {
+				if (component.address.equals(address)) {
+					lua.pushString(component.type);
+					return 1;
+				}
+			}
+
+			lua.pushNil();
+			lua.pushString("no such component");
+			return 2;
+		});
+		lua.setField(-2, "type");
+		
 		lua.pushJavaFunction(args -> {
 			lua.pushInteger(-1);
 			return 1;
