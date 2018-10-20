@@ -42,9 +42,6 @@
                <image>
                   <Image url="@../../../../../../Pictures/Govnokod.png" />
                </image>
-               <effect>
-                  <DropShadow color="#0000007f" height="83.22999999999999" offsetY="5.0" radius="40.735" width="81.71" />
-               </effect>
             </ImageView>
             <Button fx:id="toolbarButton" focusTraversable="false" mnemonicParsing="false" onMouseClicked="#onToolbarButtonPressed" prefHeight="132.0" prefWidth="40.0" stylesheets="@../styles/toolbarButton.css" text="&gt;" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
                <GridPane.margin>

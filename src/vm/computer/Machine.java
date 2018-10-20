@@ -5,16 +5,20 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.effect.BlurType;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import li.cil.repack.com.naef.jnlua.LuaState;
@@ -38,6 +42,7 @@ import java.util.UUID;
 
 public class Machine {
 	public static final ArrayList<Machine> list = new ArrayList<>();
+	private static final int screenImageViewBlurSize = 82;
 	
 	// Жабафыховские обжекты
 	public Slider RAMSlider;
@@ -73,7 +78,7 @@ public class Machine {
 	private Stage stage;
 	private Player computerRunningPlayer;
 	private boolean toolbarHidden;
-
+	
 	// Пустой конструктор требуется FXML-ебале для инициализации
 	public Machine() {
 		computerRunningPlayer = new Player("computer_running.mp3");
@@ -163,6 +168,11 @@ public class Machine {
 			
 			machine.toolbarHidden = machineConfig.getBoolean("toolbarHidden");
 			machine.updateToolbar();
+
+			DropShadow effect = new DropShadow(BlurType.THREE_PASS_BOX, Color.rgb(0, 0, 0, 0.5), 0, 0, 0, 0);
+			effect.setWidth(screenImageViewBlurSize + 2);
+			effect.setHeight(screenImageViewBlurSize + 2);
+			machine.screenImageView.setEffect(effect);
 
 			// При закрытии окошка машину над оффнуть, а то хуй проссыт, будет ли там поток дрочиться или плеер этот асинхронники свои сувать меж булок
 			stage.setOnCloseRequest(event -> {
@@ -404,7 +414,7 @@ public class Machine {
 	public class LuaThread extends Thread {
 		private ArrayList<LuaState> signalStack = new ArrayList<>();
 		private HashMap<KeyCode, Boolean> pressedKeyCodes = new HashMap<>();
-		private double lastClickX, lastClickY;
+		private int lastOCPixelClickX, lastOCPixelClickY;
 
 		// Интересное решение: данный костыль работает "костыльнее", однако быстрее аналога на machine.lua
 		private boolean shuttingDown = false;
@@ -472,29 +482,19 @@ public class Machine {
 
 				// А эт уже ивенты тача, драга и прочего конкретно на экранной хуйне этой
 				screenImageView.setOnMousePressed(event -> {
-					pushTouchSignal(event.getSceneX(), event.getSceneY(), getOCButton(event), "touch");
+					pushTouchSignal(event.getSceneX(), event.getSceneY(), getOCButton(event), "touch", true);
 				});
 
 				screenImageView.setOnMouseDragged(event -> {
-					double sceneX = event.getSceneX(), sceneY = event.getSceneY();
-					double p = screenImageView.getFitWidth() / screenImageView.getImage().getWidth();
-					if (
-						screenComponent.precise ||
-							(
-								Math.abs(sceneX - lastClickX) / p >= Glyph.WIDTH ||
-									Math.abs(sceneY - lastClickY) / p >= Glyph.HEIGHT
-							)
-					) {
-						pushTouchSignal(sceneX, sceneY, getOCButton(event), "drag");
-					}
+					pushTouchSignal(event.getSceneX(), event.getSceneY(), getOCButton(event), "drag", false);
 				});
 
 				screenImageView.setOnMouseReleased(event -> {
-					pushTouchSignal(event.getSceneX(), event.getSceneY(), getOCButton(event), "drop");
+					pushTouchSignal(event.getSceneX(), event.getSceneY(), getOCButton(event), "drop", true);
 				});
 
 				screenImageView.setOnScroll(event -> {
-					pushTouchSignal(event.getSceneX(), event.getSceneY(), event.getDeltaY() > 0 ? 1 : -1, "scroll");
+					pushTouchSignal(event.getSceneX(), event.getSceneY(), event.getDeltaY() > 0 ? 1 : -1, "scroll", true);
 				});
 			});
 			
@@ -545,34 +545,43 @@ public class Machine {
 			}
 		}
 
-		private void pushTouchSignal(double screenX, double screenY, int state, String name) {
-			
-			double p1 = screenImageView.getFitWidth() / screenImageView.getImage().getWidth();
-//            double p2 = screenImageView.getFitHeight() / screenImageView.getImage().getHeight();
+		private void pushTouchSignal(double sceneX, double sceneY, int state, String name, boolean notDrag) {
+			Bounds bounds = screenImageView.getBoundsInLocal();
+			double
+				p1 = (bounds.getWidth() - screenImageViewBlurSize) / gpuComponent.GlyphWIDTHMulWidth,
+				p2 = (bounds.getHeight() - screenImageViewBlurSize) / gpuComponent.GlyphHEIGHTMulHeight;
+
+//			System.out.println(bounds.getWidth() + ", " + bounds.getHeight() + ", " + screenImageView.getFitWidth() + ", " + screenImageView.getFitHeight());
 			
 			double
-				x = (screenX - screenImageView.getLayoutX()) / p1 / Glyph.WIDTH + 1,
-				y = (screenY - screenImageView.getLayoutY()) / p1 / Glyph.HEIGHT + 1;
-
+				x = (sceneX - screenImageView.getLayoutX()) / p1 / Glyph.WIDTH + 1,
+				y = (sceneY - screenImageView.getLayoutY()) / p2 / Glyph.HEIGHT + 1;
+			
+			int OCPixelClickX = (int) x;
+			int OCPixelClickY = (int) y;
+			
 //			System.out.println("Pushing touch signal: " + x + ", " + y);
-
-			LuaState luaState = new LuaState();
-			luaState.pushString(name);
-			luaState.pushString(screenComponent.address);
-			if (screenComponent.precise) {
-				luaState.pushNumber(x);
-				luaState.pushNumber(y);
+			if (notDrag || OCPixelClickX != lastOCPixelClickX || OCPixelClickY != lastOCPixelClickY) {
+				
+				LuaState luaState = new LuaState();
+				luaState.pushString(name);
+				luaState.pushString(screenComponent.address);
+				if (screenComponent.precise) {
+					luaState.pushNumber(x);
+					luaState.pushNumber(y);
+				}
+				else {
+					luaState.pushInteger(OCPixelClickX);
+					luaState.pushInteger(OCPixelClickY);
+				}
+				luaState.pushInteger(state);
+				luaState.pushString(playerTextField.getText());
+				
+				pushSignal(luaState);
 			}
-			else {
-				luaState.pushInteger((int) x);
-				luaState.pushInteger((int) y);
-			}
-			luaState.pushInteger(state);
-			luaState.pushString(playerTextField.getText());
-			pushSignal(luaState);
 
-			lastClickX = screenX;
-			lastClickY = screenY;
+			lastOCPixelClickX = OCPixelClickX;
+			lastOCPixelClickY = OCPixelClickY;
 		}
 
 		public void pushSignal(LuaState signal) {

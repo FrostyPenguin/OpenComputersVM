@@ -18,10 +18,13 @@ public class Filesystem extends ComponentBase {
 		readBufferSize = 4096,
 		spaceUsed = 0,
 		spaceTotal = 12 * 1024 * 1024;
+	private static final long soundNextDelay = 500;
 
 	public String realPath, label;
 	public boolean temporary;
 
+	private long soundNextPlay = 0;
+	private int soundIndex = 0;
 	private Player[] players = new Player[7];
 	private HashMap<Integer, Handle> handles = new HashMap<>();
 	
@@ -457,9 +460,17 @@ public class Filesystem extends ComponentBase {
 	}
 	
 	private void playSound() {
-//        Player player = players[ThreadLocalRandom.current().nextInt(0, players.length)];
-//        player.reset();
-//        player.play();
+		long current = System.currentTimeMillis();
+		if (soundNextPlay < current) {
+			Player player = players[soundIndex];
+			player.reset();
+			player.play();
+
+			soundNextPlay = current + soundNextDelay;
+			soundIndex++;
+			if (soundIndex >= players.length)
+				soundIndex = 0;
+		}
 	}
 
 	private File getFsFile(String path) {
