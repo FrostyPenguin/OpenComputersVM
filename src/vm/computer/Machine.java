@@ -27,6 +27,7 @@ import li.cil.repack.com.naef.jnlua.NativeSupport;
 import org.apache.commons.lang3.SystemUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.luaj.vm2.LuaValue;
 import vm.IO;
 import vm.computer.api.APIBase;
 import vm.computer.api.Component;
@@ -180,15 +181,8 @@ public class Machine {
 			});
 	
 			// Авторесайз пикчи, чтоб охуенно и пиздато все было
-			machine.screenGridPane.widthProperty().addListener((observable, oldValue, newValue) -> {
-				double cyka = newValue.doubleValue();
-				machine.screenImageView.setFitWidth(cyka > machine.gpuComponent.GlyphWIDTHMulWidth ? machine.gpuComponent.GlyphWIDTHMulWidth : cyka);
-			});
-
-			machine.screenGridPane.heightProperty().addListener((observable, oldValue, newValue) -> {
-				double cyka = newValue.doubleValue();
-				machine.screenImageView.setFitHeight(cyka > machine.gpuComponent.GlyphHEIGHTMulHeight ? machine.gpuComponent.GlyphHEIGHTMulHeight : cyka);
-			});
+			machine.screenGridPane.widthProperty().addListener((observable, oldValue, newValue) -> machine.checkImageViewBingings());
+			machine.screenGridPane.heightProperty().addListener((observable, oldValue, newValue) -> machine.checkImageViewBingings());
 			
 			// Запоминаем мошынку в гулаг-перечне мошынок
 			list.add(machine);
@@ -287,6 +281,12 @@ public class Machine {
 			.put("components", components)
 			.put("totalMemory", RAMSlider.getValue())
 			.put("player", playerTextField.getText());
+	}
+
+	public void checkImageViewBingings() {
+		double width = screenGridPane.getWidth(), height = screenGridPane.getHeight();
+		screenImageView.setFitWidth(width > gpuComponent.GlyphWIDTHMulWidth ? gpuComponent.GlyphWIDTHMulWidth : width);
+		screenImageView.setFitHeight(height > gpuComponent.GlyphHEIGHTMulHeight ? gpuComponent.GlyphHEIGHTMulHeight : height);
 	}
 	
 	private void updateToolbar() {
@@ -418,7 +418,6 @@ public class Machine {
 
 		// Интересное решение: данный костыль работает "костыльнее", однако быстрее аналога на machine.lua
 		private boolean shuttingDown = false;
-
 		@Override
 		public void run() {
 			// Инициализируем корректную Lua-машину
@@ -614,9 +613,11 @@ public class Machine {
 					}
 					catch (ThreadDeath | InterruptedException e) {
 						System.out.println("Поток интерруптнулся чет у компа");
-						
-						lua.yield(0);
+
+						lua.yield(1);
 						shuttingDown = true;
+						
+						break;
 					}
 				}
 				

@@ -38,6 +38,12 @@ public class GPU extends ComponentBase {
 			this.foreground = foreground;
 			this.code = code;
 		}
+		
+		Pixel(Pixel source) {
+			this.background = source.background;
+			this.foreground = source.foreground;
+			this.code = source.code;
+		}
 	}
 
 	// Поток-дрочер, обновляющий пиксельную инфу по запросу
@@ -73,10 +79,10 @@ public class GPU extends ComponentBase {
 							bufferIndex += GlyphWIDTHMulWidth;
 						}
 
-						bufferIndex += Glyph.WIDTH - GlyphHEIGHTMulWidthMulHeight;
+						bufferIndex += Glyph.WIDTH - GlyphWidthMulWidthMulGlyphHeight;
 					}
 
-					bufferIndex += GlyphHEIGHTMulWidthMulHeight - GlyphWIDTHMulWidth;
+					bufferIndex += GlyphWidthMulWidthMulGlyphHeight - GlyphWIDTHMulWidth;
 				}
 
 				needUpdate = true;
@@ -121,17 +127,17 @@ public class GPU extends ComponentBase {
 		height,
 		GlyphWIDTHMulWidth,
 		GlyphHEIGHTMulHeight,
-		GlyphHEIGHTMulWidthMulHeight;
+		GlyphWidthMulWidthMulGlyphHeight;
 	public UpdaterThread updaterThread = new UpdaterThread();
 
-	private Color background, foreground;
+	private Color background = Color.BLACK, foreground = Color.WHITE;
 	private int[] palette = new int[16];
 	private Pixel[][] pixels;
 	private PixelWriter pixelWriter;
 
 	public GPU(Machine machine, String address) {
 		super(machine, address,"gpu");
-
+		
 		updaterThread.start();
 	}
 
@@ -168,15 +174,46 @@ public class GPU extends ComponentBase {
 		machine.lua.setField(-2, "get");
 		
 		machine.lua.pushJavaFunction(args -> {
-			machine.lua.pushBoolean(rawCopy(
-				args.checkInteger(1) - 1,
-				args.checkInteger(2) - 1,
-				args.checkInteger(3),
-				args.checkInteger(4),
-				args.checkInteger(5),
-				args.checkInteger(6)
-			));
+			int x = args.checkInteger(1) - 1,
+				y = args.checkInteger(2) - 1;
 
+			int w = Math.max(0, args.checkInteger(3)),
+				h = Math.max(0, args.checkInteger(4));
+
+			int dstX = x + args.checkInteger(5),
+				dstY = y + args.checkInteger(6);
+			
+			// Копипиздим
+			Pixel[][] copy = new Pixel[h][w];
+			for (int j = 0; j < h; j++)
+				for (int i = 0; i < w; i++)
+					if (checkCoordinates(x + i, y + j))
+						copy[j][i] = new Pixel(pixels[y + j][x + i]);
+					
+			// Вставляем заточку в почку
+			int pasteX = dstX,
+				pasteY = dstY;
+			for (int j = 0; j < h; j++) {
+				for (int i = 0; i < w; i++) {
+					if (checkCoordinates(pasteX, pasteY))
+						if (copy[j][i] != null)
+							pixels[pasteY][pasteX] = copy[j][i];
+
+					pasteX++;
+				}
+
+				pasteX = dstX;
+				pasteY++;
+			}
+			
+			updaterThread.update(
+				fixFoord(dstX, width),
+				fixFoord(dstY, height),
+				fixFoord(dstX + w - 1, width),
+				fixFoord(dstY + h - 1, height)
+			);
+			
+			machine.lua.pushBoolean(true);
 			return 1;
 		});
 		machine.lua.setField(-2, "copy");
@@ -190,10 +227,7 @@ public class GPU extends ComponentBase {
 		machine.lua.setField(-2, "maxResolution");
 
 		machine.lua.pushJavaFunction(args -> {
-			args.checkInteger(1);
-			args.checkInteger(2);
-
-			rawSetResolution(args.toInteger(1), args.toInteger(2));
+			rawSetResolution(args.checkInteger(1), args.checkInteger(2));
 			updaterThread.update();
 
 			return 0;
@@ -201,33 +235,40 @@ public class GPU extends ComponentBase {
 		machine.lua.setField(-2, "setResolution");
 
 		machine.lua.pushJavaFunction(args -> {
-			int
-				x = args.checkInteger(1) - 1,
+			int x = args.checkInteger(1) - 1,
 				y = args.checkInteger(2) - 1;
 			String text = args.checkString(3);
-			int limit = Math.min(text.length(), width - x);
 			
-			for (int i = 0; i < limit; i++) {
-				rawSet(x + i, y, text.codePointAt(i));
+			int	setX = x;
+			for (int i = 0; i < text.length(); i++) {
+				if (checkCoordinates(setX, y))
+					rawSet(setX, y, text.codePointAt(i));
+				
+				setX++;
 			}
 			
-//			updateEntireBuffer();
-			updaterThread.update(x, y, x + limit - 1, y);
-//			updateImageViewFromBuffer();
+			// Пабыстрее)00
+			y = fixFoord(y, height);
+			updaterThread.update(
+				fixFoord(x, width),
+				y,
+				fixFoord(x + text.length() - 1, width),
+				y
+			);
 
 			return 0;
 		});
 		machine.lua.setField(-2, "set");
 
 		machine.lua.pushJavaFunction(args -> {
-			int x = args.checkInteger(1) - 1,
-				y = args.checkInteger(2) - 1;
+			int x = fixFoord(args.checkInteger(1) - 1, width),
+				y = fixFoord(args.checkInteger(2) - 1, height);
 			
 			rawFill(
 				x,
 				y,
-				x + args.checkInteger(3) - 1,
-				y + args.checkInteger(4) - 1,
+				fixFoord(x + args.checkInteger(3) - 1, width),
+				fixFoord(y + args.checkInteger(4) - 1, height),
 				args.checkString(5).codePointAt(0)
 			);
 
@@ -326,45 +367,8 @@ public class GPU extends ComponentBase {
 		return index;
 	}
 	
-	public boolean rawCopy(int x, int y, int w, int h, int tx, int ty) {
-		if (x >= 0 && y >= 0 && x + w < width && y + h < height) {
-//			Pixel[][] buffer = new Pixel[h][w];
-//			
-//			// Копипиздим
-//			int newX = 0, newY = 0;
-//			for (int j = y; j < y + h; j++) {
-//				for (int i = x; i < x + w; i++) {
-//					buffer[newY][newX] = pixels[j][i];
-//					
-//					newX++;
-//				}
-//				
-//				newX = 0;
-//				newY++;
-//			}
-//			
-//			// Вставляем страпон
-//			newX = 0;
-//			newY = 0;
-//			for (int j = y + ty; j <= y + ty + h; j++) {
-//				for (int i = x + tx; i <= x + tx + w; i++) {
-//					checkCoordinatesAndThrow(i, j);
-//					pixels[j][i] = buffer[newY][newX];
-//
-//					newX++;
-//				}
-//				
-//				newX = 0;
-//				newY++;
-//			}
-//			
-//			updateEntireBuffer(); 
-			
-			return true;
-		}
-		else {
-			return false;
-		}
+	private int fixFoord(int c, int limiter) {
+		return Math.max(Math.min(c, limiter - 1), 0);
 	}
 	
 	public void rawSetResolution(int newWidth, int newHeight) {
@@ -372,31 +376,48 @@ public class GPU extends ComponentBase {
 		height = newHeight;
 		GlyphWIDTHMulWidth = width * Glyph.WIDTH;
 		GlyphHEIGHTMulHeight = height * Glyph.HEIGHT;
-		GlyphHEIGHTMulWidthMulHeight = GlyphWIDTHMulWidth * Glyph.HEIGHT;
+		GlyphWidthMulWidthMulGlyphHeight = GlyphWIDTHMulWidth * Glyph.HEIGHT;
+		
+		Pixel[][] oldPixels = pixels;
+		pixels = new Pixel[height][width];
+		
+		// Если мы тока создали объект видяхи, и никаких пикселей в помине нет
+		if (oldPixels == null)
+			flushPixels();
+		// Ну, а иначе копируем старые пиксели в новый йоба-буфер
+		else {
+			for (int j = 0; j < height; j++)
+				for (int i = 0; i < width; i++)
+					if (j < oldPixels.length && i < oldPixels[0].length)
+						pixels[j][i] = oldPixels[j][i];
+					else
+						pixels[j][i] = new Pixel(background, foreground, 32);
+		}
+				
+		updaterThread.buffer = new int[GlyphWIDTHMulWidth * GlyphHEIGHTMulHeight];
 
+		// Создаем новое записабельное изображение и вдрачиваем его в пикчу
 		WritableImage writableImage = new WritableImage(GlyphWIDTHMulWidth, GlyphHEIGHTMulHeight);
 		pixelWriter = writableImage.getPixelWriter();
 		machine.screenImageView.setImage(writableImage);
 		
-		pixels = new Pixel[height][width];
-		updaterThread.buffer = new int[width * height * Glyph.WIDTH * Glyph.HEIGHT];
-		
-		flush();
+		machine.checkImageViewBingings();
 	}
 
+	private void flushPixels() {
+		for (int y = 0; y < height; y++)
+			for (int x = 0; x < width; x++)
+				pixels[y][x] = new Pixel(background, foreground, 32);
+	}
+	
 	public void flush() {
 		background = Color.BLACK;
 		foreground = Color.WHITE;
 
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				pixels[y][x] = new Pixel(background, foreground, 32);
-			}
-		}
-
-		for (int i = 0; i < palette.length; i++) {
+		flushPixels();
+			
+		for (int i = 0; i < palette.length; i++)
 			palette[i] = 0xFF000000;
-		}
 	}
 
 	private boolean checkCoordinates(int x, int y) {
@@ -425,11 +446,6 @@ public class GPU extends ComponentBase {
 	}
 
 	public void rawFill(int fromX, int fromY, int toX, int toY, int s) {
-		fromX = Math.max(0, fromX);
-		fromY = Math.max(0, fromY);
-		toX = Math.min(width - 1, toX);
-		toY = Math.min(height - 1, toY);
-		
 		for (int j = fromY; j <= toY; j++)
 			for (int i = fromX; i <= toX; i++)
 				rawSet(i, j, s);

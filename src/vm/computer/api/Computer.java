@@ -1,5 +1,6 @@
 package vm.computer.api;
 
+import javafx.application.Platform;
 import li.cil.repack.com.naef.jnlua.LuaState;
 import vm.computer.LuaUtils;
 import vm.computer.Machine;
@@ -15,6 +16,20 @@ public class Computer extends APIBase {
 
 	@Override
 	public void pushFields() {
+		machine.lua.pushJavaFunction(args -> {
+			System.out.println("Сышь компутер.шутдаун() спахал");
+			
+			boolean reboot = !args.isNoneOrNil(1) && args.checkBoolean(1);
+			Platform.runLater(() -> {
+				machine.shutdown(true);
+				if (reboot)
+					machine.boot();
+			});
+			
+			return 0;
+		});
+		machine.lua.setField(-2, "shutdown");
+		
 		machine.lua.pushJavaFunction(args -> {
 			machine.lua.newTable();
 			return 1;
