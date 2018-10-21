@@ -15,6 +15,7 @@ import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -34,6 +35,9 @@ import vm.computer.api.Computer;
 import vm.computer.api.Unicode;
 import vm.computer.components.*;
 
+import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -73,7 +77,7 @@ public class Machine {
 	public Filesystem filesystemComponent, temporaryFilesystemComponent;
 	public Modem modemComponent;
 	public Tunnel tunnelComponent;
-//    public Internet internetComponent;
+    public Internet internetComponent;
 
 	private Stage stage;
 	private Player computerRunningPlayer;
@@ -143,8 +147,9 @@ public class Machine {
 						break;
 					case "tunnel":
 						machine.tunnelComponent = new Tunnel(machine, address, component.getString("channel"), component.getString("wakeMessage"), component.getBoolean("wakeMessageFuzzy"));
+						break;
 					case "internet":
-//                        machine.internetComponent = new Internet(machine, address);
+                        machine.internetComponent = new Internet(machine, address);
 						break;
 				}
 			}
@@ -282,6 +287,17 @@ public class Machine {
 			.put("player", playerTextField.getText());
 	}
 
+	public String getClipboard() {
+		try {
+			return (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+		}
+		catch (HeadlessException | IOException | UnsupportedFlavorException e) {
+			e.printStackTrace();
+		}
+		
+		return "";
+	}
+	
 	public void checkImageViewBingings() {
 		double width = screenGridPane.getWidth(), height = screenGridPane.getHeight();
 		screenImageView.setFitWidth(width > gpuComponent.GlyphWIDTHMulWidth ? gpuComponent.GlyphWIDTHMulWidth : width);
@@ -458,9 +474,7 @@ public class Machine {
 
 			Platform.runLater(() -> {
 				// Фокусирование экрана при клике на эту злоебучую область
-				windowGridPane.setOnMousePressed(event -> {
-					screenImageView.requestFocus();
-				});
+				windowGridPane.setOnMousePressed(event -> screenImageView.requestFocus());
 
 				// Ивенты клавиш всему окну
 				windowGridPane.setOnKeyPressed(event -> {
@@ -480,15 +494,29 @@ public class Machine {
 
 				// А эт уже ивенты тача, драга и прочего конкретно на экранной хуйне этой
 				screenImageView.setOnMousePressed(event -> {
-					pushTouchSignal(event.getSceneX(), event.getSceneY(), getOCButton(event), "touch", true);
+					// Сигнал вставки из буфера обмена
+					if (event.getButton() == MouseButton.MIDDLE) {
+						LuaState luaState = new LuaState();
+						
+						luaState.pushString("clipboard");
+						luaState.pushString(keyboardComponent.address);
+						luaState.pushString(getClipboard());
+						luaState.pushString(playerTextField.getText());
+						
+						pushSignal(luaState);
+					}
+					else
+						pushTouchSignal(event.getSceneX(), event.getSceneY(), getOCButton(event), "touch", true);
 				});
 
 				screenImageView.setOnMouseDragged(event -> {
-					pushTouchSignal(event.getSceneX(), event.getSceneY(), getOCButton(event), "drag", false);
+					if (event.getButton() != MouseButton.MIDDLE)
+						pushTouchSignal(event.getSceneX(), event.getSceneY(), getOCButton(event), "drag", false);
 				});
 
 				screenImageView.setOnMouseReleased(event -> {
-					pushTouchSignal(event.getSceneX(), event.getSceneY(), getOCButton(event), "drop", true);
+					if (event.getButton() != MouseButton.MIDDLE)
+						pushTouchSignal(event.getSceneX(), event.getSceneY(), getOCButton(event), "drop", true);
 				});
 
 				screenImageView.setOnScroll(event -> {
