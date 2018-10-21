@@ -28,7 +28,7 @@
 
 .pathInput {
     -fx-background-color: #333;
-    -fx-text-fill: #CCC;
+    -fx-text-fill: #888;
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
     -fx-border: none;
@@ -68,8 +68,8 @@
 }
 
 .slider .axis {
-    -fx-tick-label-font: 8 Minecraft; 
-    -fx-tick-label-fill: #FFFFFF88;
+    -fx-tick-label-font: 9 Minecraft; 
+    -fx-tick-label-fill: #999;
 }
 
 .axis-tick-mark, .axis-minor-tick-mark {
