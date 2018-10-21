@@ -3,7 +3,9 @@ package vm.computer.components;
 import org.json.JSONObject;
 import vm.computer.Machine;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
@@ -99,6 +101,53 @@ public class Internet extends ComponentBase {
 					return 1;
 				});
 				machine.lua.setField(-2, "close");
+
+				// Закрытие http request
+				machine.lua.pushJavaFunction(readArgs -> {
+					try {
+						// Пушим код и текст
+						machine.lua.pushInteger(connection.getResponseCode());
+						machine.lua.pushString(connection.getResponseMessage());
+
+						// Пушим поля заголовка вида Map<String, List<String>>
+						machine.lua.newTable();
+						int tableIndex = machine.lua.getTop();
+						
+						connection.getHeaderFields().forEach((key, list) -> {
+//							System.out.println("Map key: " + key);
+//							for (int i = 0; i < list.size(); i++) {
+//								System.out.println("Map List: " + i + ", " + list.get(i));
+//							}
+							
+							// В душе не ебу, с хуев ли тут может быть нулл, но бывает. Видимо, это тонкая задумка разрабов
+							if (key != null) {
+								// Ключ мапы
+								machine.lua.pushString(key);
+
+								// Валуя мапы (тот самый List<String>)
+								machine.lua.newTable();
+								int listIndex = machine.lua.getTop();
+
+								for (int i = 0; i < list.size(); i++) {
+									machine.lua.pushInteger(i + 1);
+									machine.lua.pushString(list.get(i));
+									//Впездываем ключи листа
+									machine.lua.setTable(listIndex);
+								}
+
+								// Впездываем валую
+								machine.lua.setTable(tableIndex);	
+							}
+						});
+						
+						return 3;
+					}
+					catch (IOException e) {
+						e.printStackTrace();
+						return pushIOExcetion();
+					}
+				});
+				machine.lua.setField(-2, "response");
 				
 				return 1;
 			}
