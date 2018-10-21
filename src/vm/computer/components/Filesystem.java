@@ -36,9 +36,8 @@ public class Filesystem extends ComponentBase {
 		this.temporary = temporary;
 
 		// Создаем дохуяллион плееров для воспроизведения наших прекрасных звуков харда
-		for (int i = 0; i < players.length; i++) {
+		for (int i = 0; i < players.length; i++)
 			players[i] = new Player("hdd_access" + i + ".mp3");
-		}
 	}
 	
 	@Override
@@ -86,16 +85,13 @@ public class Filesystem extends ComponentBase {
 		
 		// Чтение из хендла
 		machine.lua.pushJavaFunction(args -> {
-			args.checkInteger(1);
-			args.checkInteger(2);
-
-			int id = args.toInteger(1);
+			int id = args.checkInteger(1);
 			if (handles.containsKey(id)) {
 				playSound();
-				
-				String result = handles.get(id).read(args);
-				if (result.length() > 0) {
-					machine.lua.pushString(result);
+
+				byte[] result = handles.get(id).read(args);
+				if (result.length > 0) {
+					machine.lua.pushByteArray(result);
 					return 1;
 				}
 				else {
@@ -352,7 +348,7 @@ public class Filesystem extends ComponentBase {
 		}
 
 		public abstract int write(LuaState args);
-		public abstract String read(LuaState args);
+		public abstract byte[] read(LuaState args);
 		
 		public void close() {
 			try {
@@ -370,37 +366,25 @@ public class Filesystem extends ComponentBase {
             System.out.println("Opening file for reading: " + file.getPath());
 		}
 
-		public String read(LuaState args) {
+		public byte[] read(LuaState args) {
 			try {
 				double needToRead = args.checkNumber(2);
-				int readCount;
-				byte[] buffer;
-
-				StringBuilder stringBuilder = new StringBuilder();
-
-				while (needToRead > 0) {
-					buffer = new byte[(int) Math.min(readBufferSize, needToRead)];
-					readCount = randomAccessFile.read(buffer);
-
-					if (readCount > 0) {
-						stringBuilder.append(new String(buffer, 0, readCount, StandardCharsets.UTF_8));
-						needToRead = needToRead - buffer.length;
-
-//                        System.out.println("readCount > 0: " + readCount + ", needToRead: " + needToRead);
+				byte[] buffer = new byte[needToRead > randomAccessFile.length() ? (int) randomAccessFile.length() : (int) needToRead];
+				int readCount = randomAccessFile.read(buffer);
+				if (readCount > 0) {
+					byte[] pizda = new byte[readCount];
+					for (int i = 0; i < readCount; i++) {
+						pizda[i] = buffer[i];
 					}
-					else {
-//                        System.out.println("readCount <= 0: " + readCount + ", needToRead: " + needToRead);
-						break;
-					}
+					
+					return pizda;
 				}
-
-				return stringBuilder.toString();
 			}
 			catch (IOException e) {
 				e.printStackTrace();
 			}
 			
-			return "";
+			return new byte[] {};
 		}
 
 		public int write(LuaState args) {
@@ -439,7 +423,7 @@ public class Filesystem extends ComponentBase {
 			}
 		}
 
-		public String read(LuaState args) {
+		public byte[] read(LuaState args) {
 			return null;
 		}
 	}

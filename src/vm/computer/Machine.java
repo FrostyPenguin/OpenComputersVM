@@ -27,7 +27,6 @@ import li.cil.repack.com.naef.jnlua.NativeSupport;
 import org.apache.commons.lang3.SystemUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.luaj.vm2.LuaValue;
 import vm.IO;
 import vm.computer.api.APIBase;
 import vm.computer.api.Component;
@@ -614,7 +613,7 @@ public class Machine {
 					catch (ThreadDeath | InterruptedException e) {
 						System.out.println("Поток интерруптнулся чет у компа");
 
-						lua.yield(1);
+						lua.yield(0);
 						shuttingDown = true;
 						
 						break;
