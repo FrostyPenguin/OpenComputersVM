@@ -1,0 +1,55 @@
+{
+  "name": "My machine",
+  "x": 3,
+  "y": 3,
+  "width": 1200,
+  "height": 680,
+  "toolbarHidden": false,
+  "totalMemory": 4.0,
+  "player": "Sangar",
+  "components": [
+    {
+      "type": "gpu",
+      "width": 80,
+      "height": 25
+    },
+    {
+      "type": "screen",
+      "precise": false,
+      "blocksHorizontally": 3,
+      "blocksVertically": 2
+    },
+    {
+      "type": "computer"
+    },
+    {
+      "type": "filesystem",
+      "label": "Hard disk (Tier 3)",
+      "temporary": false
+    },
+    {
+      "type": "filesystem",
+      "label": "tmpfs",
+      "temporary": true
+    },
+    {
+      "type": "eeprom"
+    },
+    {
+      "type": "keyboard"
+    },
+    {
+      "type": "modem",
+      "wakeMessage": "",
+      "wakeMessageFuzzy": false
+    },
+    {
+      "type": "tunnel",
+      "wakeMessage": "",
+      "wakeMessageFuzzy": false
+    },
+    {
+      "type": "internet"
+    }
+  ]
+}

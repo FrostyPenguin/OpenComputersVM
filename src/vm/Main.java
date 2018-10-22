@@ -9,12 +9,10 @@ import vm.computer.Glyph;
 import vm.computer.KeyMap;
 import vm.computer.Machine;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.UUID;
 
 public class Main extends Application {
     @Override
@@ -27,7 +25,7 @@ public class Main extends Application {
         KeyMap.initialize();
         
         // Чекаем, имеется ли конфиг и грузим его, либо создаем новый из ресурсов
-        JSONObject loadedConfig = null;
+        JSONObject loadedConfig;
         try {
             if (IO.configFile.exists()) {
                 System.out.println("Loading config from: " + IO.configFile.toURI());
@@ -53,8 +51,6 @@ public class Main extends Application {
 
         // Сейвим конфиг при выходе из прожки
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.println("Generating config JSON...");
-
             JSONArray JSONMachines = new JSONArray();
             for (Machine machine : Machine.list) {
                 JSONMachines.put(machine.toJSONObject());
