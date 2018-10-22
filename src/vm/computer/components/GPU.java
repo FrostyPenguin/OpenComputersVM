@@ -88,6 +88,21 @@ public class GPU extends ComponentBase {
 				needUpdate = true;
 			}
 		}
+		
+		public void setPixels() {
+			pixelWriter.setPixels(
+				0,
+				0,
+				GlyphWIDTHMulWidth,
+				GlyphHEIGHTMulHeight,
+				PixelFormat.getIntArgbInstance(),
+				buffer,
+				0,
+				GlyphWIDTHMulWidth
+			);
+			
+			needUpdate = false;
+		}
 
 		@Override
 		public void run() {
@@ -96,20 +111,8 @@ public class GPU extends ComponentBase {
 					try {
 						wait(waitDelay);
 
-						if (needUpdate) {
-							pixelWriter.setPixels(
-								0,
-								0,
-								GlyphWIDTHMulWidth,
-								GlyphHEIGHTMulHeight,
-								PixelFormat.getIntArgbInstance(),
-								buffer,
-								0,
-								GlyphWIDTHMulWidth
-							);
-
-							needUpdate = false;
-						}
+						if (needUpdate)
+							setPixels();
 					}
 					catch (InterruptedException e) {
 						e.printStackTrace();
@@ -228,7 +231,6 @@ public class GPU extends ComponentBase {
 
 		machine.lua.pushJavaFunction(args -> {
 			rawSetResolution(args.checkInteger(1), args.checkInteger(2));
-			updaterThread.update();
 
 			return 0;
 		});
@@ -393,14 +395,19 @@ public class GPU extends ComponentBase {
 					else
 						pixels[j][i] = new Pixel(background, foreground, 32);
 		}
-				
-		updaterThread.buffer = new int[GlyphWIDTHMulWidth * GlyphHEIGHTMulHeight];
-
-		// Создаем новое записабельное изображение и вдрачиваем его в пикчу
+		
+		// Сначала создаем записывабельную пикчу
 		WritableImage writableImage = new WritableImage(GlyphWIDTHMulWidth, GlyphHEIGHTMulHeight);
 		pixelWriter = writableImage.getPixelWriter();
-		machine.screenImageView.setImage(writableImage);
 		
+		// Потом адейтим буфер видяхи в нее
+		updaterThread.buffer = new int[GlyphWIDTHMulWidth * GlyphHEIGHTMulHeight];
+		updaterThread.update();
+		updaterThread.setPixels();
+
+		// А потом уже можна и вхуячить ее в виджет))0
+		machine.screenImageView.setImage(writableImage);
+		// И чекнуть размерчики
 		machine.checkImageViewBingings();
 	}
 

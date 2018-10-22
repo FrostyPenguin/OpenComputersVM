@@ -14,5 +14,5 @@
 .button:pressed {
     -fx-background-color: #EEE;
     -fx-text-fill: #333;
-    -fx-effect: dropshadow(three-pass-box, rgba(255, 255, 255, 0.6), 30, 0.2, 0, 1);
+    -fx-effect: dropshadow(three-pass-box, #FFFFFF99, 20, 0.2, 0, 1);
 }

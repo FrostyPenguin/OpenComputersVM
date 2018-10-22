@@ -36,8 +36,14 @@
     -fx-background-radius: 0;
 }
 
+.pathInputEditable:focused {
+    -fx-background-color: #FFF;
+    -fx-text-fill: #222;
+    -fx-effect: dropshadow(three-pass-box, #FFFFFF99, 10, 0.2, 0, 1);
+}
+
 .pathInputButton {
-    -fx-background-color: #444;
+    -fx-background-color: #404040;
     -fx-text-fill: #CCC;
     -fx-border-radius: 0;
     -fx-background-radius: 0;
@@ -52,7 +58,7 @@
 .pathInputButton:pressed, .button:selected {
     -fx-background-color: #FFF;
     -fx-text-fill: #222;
-    -fx-effect: dropshadow(three-pass-box, rgba(255, 255, 255, 0.6), 10, 0.2, 0, 1);
+    -fx-effect: dropshadow(three-pass-box, #FFFFFF99, 10, 0.2, 0, 1);
 }
 
 .slider .track {
@@ -64,7 +70,7 @@
 .slider .thumb {
     -fx-background-color: #FFF;
     -fx-background-radius: 100;
-    -fx-padding: 7;
+    -fx-background-insets: 1;
 }
 
 .slider .axis {
@@ -74,4 +80,13 @@
 
 .axis-tick-mark, .axis-minor-tick-mark {
     -fx-stroke: #333;
+}
+
+.slider .thumb:hover {
+    -fx-background-insets: 0;
+}
+
+.slider .thumb:pressed {
+    -fx-background-insets: 0;
+    -fx-effect: dropshadow(three-pass-box, #FFFFFF99, 10, 0.2, 0, 1);
 }

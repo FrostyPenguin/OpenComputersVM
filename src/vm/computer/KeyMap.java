@@ -101,6 +101,7 @@ public class KeyMap {
 		map.put(KeyCode.CLEAR, new OCKey(69));
 
         map.put(KeyCode.MINUS, new OCKey(12));
+		map.put(KeyCode.EQUALS, new OCKey(13));
 		map.put(KeyCode.OPEN_BRACKET, new OCKey(26));
 		map.put(KeyCode.CLOSE_BRACKET, new OCKey(27));
 		map.put(KeyCode.SEMICOLON, new OCKey(39));

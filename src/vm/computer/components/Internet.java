@@ -23,6 +23,7 @@ public class Internet extends ComponentBase {
 		
 		machine.lua.pushJavaFunction(requestArgs -> {
 			try {
+				System.out.println("Opening HTTP connection: " + requestArgs.checkString(1));
 				HttpURLConnection connection = (HttpURLConnection) new URL(requestArgs.checkString(1)).openConnection();
 
 				connection.setDoInput(true);
@@ -30,7 +31,7 @@ public class Internet extends ComponentBase {
 				// Подрубаем хедеры
 				if (!requestArgs.isNoneOrNil(3) && requestArgs.isTable(3)) {
 					requestArgs.toJavaObject(3, Map.class).forEach((key, value) -> {
-						System.out.println("Setting header: "+ key.toString() + " : " + value.toString());
+//						System.out.println("Setting header: "+ key.toString() + " : " + value.toString());
 						connection.setRequestProperty(key.toString(), value.toString());
 					});
 				}
@@ -43,7 +44,7 @@ public class Internet extends ComponentBase {
 
 					connection.setDoOutput(true);
 					connection.setReadTimeout(1000);
-
+					
 					OutputStream outputStream = connection.getOutputStream();
 					outputStream.write(postData.getBytes());
 					outputStream.close();

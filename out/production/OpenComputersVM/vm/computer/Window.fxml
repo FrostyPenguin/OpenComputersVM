@@ -1,25 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.effect.*?>
-<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<?import java.lang.String?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import java.lang.*?>
 
 <GridPane fx:id="windowGridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="681.0" prefWidth="1194.0" style="-fx-background-color: #1E1E1E;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vm.computer.Machine">
   <columnConstraints>
@@ -143,202 +129,210 @@
                         <ToggleButton fx:id="powerButton" focusTraversable="false" layoutX="120.0" layoutY="82.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onMousePressed="#onPowerButtonTouch" prefHeight="54.0" prefWidth="54.0" styleClass="powerButton" />
                      </children>
                   </Pane>
-                  <GridPane>
+                  <VBox fx:id="propertiesVBox" spacing="10.0">
                      <children>
-                        <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
-                           <image>
-                              <Image url="@../resources/images/Screen.png" />
-                           </image>
-                        </ImageView>
-                        <TextField fx:id="screensHorizontallyTextField" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="0.0" promptText="Linked card channel" text="3" GridPane.columnIndex="1">
-                           <font>
-                              <Font name="Minecraft Regular" size="10.0" />
-                           </font>
-                           <styleClass>
-                              <String fx:value="pathInput" />
-                              <String fx:value="font" />
-                           </styleClass>
-                        </TextField>
-                        <TextField fx:id="screensVerticallyTextField" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="0.0" promptText="Linked card channel" text="2" GridPane.columnIndex="3">
-                           <font>
-                              <Font name="Minecraft Regular" size="10.0" />
-                           </font>
-                           <styleClass>
-                              <String fx:value="pathInput" />
-                              <String fx:value="font" />
-                           </styleClass>
-                        </TextField>
-                        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="font" text="x" textFill="#656363" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-                     </children>
-                     <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="20.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" />
-                     </columnConstraints>
-                     <padding>
-                        <Insets right="6.0" />
-                     </padding>
-                     <rowConstraints>
-                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="42.0" vgrow="SOMETIMES" />
-                     </rowConstraints>
-                  </GridPane>
-                  <GridPane>
-                     <children>
-                        <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
-                           <image>
-                              <Image url="@../resources/images/player.png" />
-                           </image>
-                        </ImageView>
-                        <TextField fx:id="playerTextField" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Player name" text="Sangar" GridPane.columnIndex="1">
-                           <font>
-                              <Font name="Minecraft Regular" size="10.0" />
-                           </font>
-                           <styleClass>
-                              <String fx:value="pathInput" />
-                              <String fx:value="font" />
-                           </styleClass>
-                        </TextField>
-                     </children>
-                     <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" />
-                     </columnConstraints>
-                     <padding>
-                        <Insets right="6.0" />
-                     </padding>
-                     <rowConstraints>
-                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="42.0" vgrow="SOMETIMES" />
-                     </rowConstraints>
-                  </GridPane>
-                  <GridPane>
-                     <children>
-                        <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
-                           <image>
-                              <Image url="@../resources/images/LinkedCard.png" />
-                           </image>
-                        </ImageView>
-                        <TextField fx:id="tunnelChannelTextField" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Linked card channel" text="aeff1ff-31ff13f13f-13f13f1f3" GridPane.columnIndex="1">
-                           <font>
-                              <Font name="Minecraft Regular" size="10.0" />
-                           </font>
-                           <styleClass>
-                              <String fx:value="pathInput" />
-                              <String fx:value="font" />
-                           </styleClass>
-                        </TextField>
-                     </children>
-                     <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" />
-                     </columnConstraints>
-                     <padding>
-                        <Insets right="6.0" />
-                     </padding>
-                     <rowConstraints>
-                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="42.0" vgrow="SOMETIMES" />
-                     </rowConstraints>
-                  </GridPane>
-                  <GridPane>
-                    <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                      <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="42.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
-                     <children>
-                        <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
-                           <image>
-                              <Image url="@../resources/images/HDD.png" />
-                           </image>
-                        </ImageView>
-                        <TextField fx:id="HDDPathTextField" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="HDD path" text="/igor/siski/pidor" GridPane.columnIndex="1">
-                           <font>
-                              <Font name="Minecraft Regular" size="10.0" />
-                           </font>
-                           <styleClass>
-                              <String fx:value="pathInput" />
-                              <String fx:value="font" />
-                           </styleClass>
-                        </TextField>
-                        <Button focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="..." GridPane.columnIndex="2">
-                           <font>
-                              <Font name="Minecraft Regular" size="10.0" />
-                           </font>
-                           <styleClass>
-                              <String fx:value="pathInputButton" />
-                              <String fx:value="font" />
-                           </styleClass>
-                        </Button>
-                     </children>
-                     <padding>
-                        <Insets right="6.0" />
-                     </padding>
-                  </GridPane>
-                  <GridPane>
-                     <children>
-                        <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
-                           <image>
-                              <Image url="@../resources/images/EEPROM.png" />
-                           </image>
-                        </ImageView>
-                        <TextField fx:id="EEPROMPathTextField" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="EEPROM path" text="/igor/hdd/pizda" GridPane.columnIndex="1">
-                           <font>
-                              <Font name="Minecraft Regular" size="10.0" />
-                           </font>
-                           <styleClass>
-                              <String fx:value="pathInput" />
-                              <String fx:value="font" />
-                           </styleClass>
-                        </TextField>
-                        <Button focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="..." GridPane.columnIndex="2">
-                           <font>
-                              <Font name="Minecraft Regular" size="10.0" />
-                           </font>
-                           <styleClass>
-                              <String fx:value="pathInputButton" />
-                              <String fx:value="font" />
-                           </styleClass>
-                        </Button>
-                     </children>
-                     <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
-                     </columnConstraints>
-                     <padding>
-                        <Insets right="6.0" />
-                     </padding>
-                     <rowConstraints>
-                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="42.0" vgrow="SOMETIMES" />
-                     </rowConstraints>
-                  </GridPane>
-                  <GridPane>
-                     <children>
-                        <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
-                           <image>
-                              <Image url="@../resources/images/RAM.png" />
-                           </image>
-                        </ImageView>
-                        <Slider fx:id="RAMSlider" focusTraversable="false" majorTickUnit="992.0" max="4096.0" min="128.0" minorTickCount="2" showTickLabels="true" showTickMarks="true" value="4096.0" GridPane.columnIndex="1">
-                           <GridPane.margin>
+                        <GridPane>
+                           <children>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
+                                 <image>
+                                    <Image url="@../resources/images/Screen.png" />
+                                 </image>
+                              </ImageView>
+                              <TextField fx:id="screensHorizontallyTextField" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="0.0" promptText="Linked card channel" text="3" GridPane.columnIndex="1">
+                                 <font>
+                                    <Font name="Minecraft Regular" size="10.0" />
+                                 </font>
+                                 <styleClass>
+                                    <String fx:value="pathInput" />
+                                    <String fx:value="pathInputEditable" />
+                                    <String fx:value="font" />
+                                 </styleClass>
+                              </TextField>
+                              <TextField fx:id="screensVerticallyTextField" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="0.0" promptText="Linked card channel" text="2" GridPane.columnIndex="3">
+                                 <font>
+                                    <Font name="Minecraft Regular" size="10.0" />
+                                 </font>
+                                 <styleClass>
+                                    <String fx:value="pathInput" />
+                                    <String fx:value="pathInputEditable" />
+                                    <String fx:value="font" />
+                                 </styleClass>
+                              </TextField>
+                              <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="font" text="x" textFill="#656363" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                           </children>
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="20.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                           </columnConstraints>
+                           <padding>
+                              <Insets right="6.0" />
+                           </padding>
+                           <rowConstraints>
+                              <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="42.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                        </GridPane>
+                        <GridPane>
+                           <children>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
+                                 <image>
+                                    <Image url="@../resources/images/player.png" />
+                                 </image>
+                              </ImageView>
+                              <TextField fx:id="playerTextField" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Player name" text="Sangar" GridPane.columnIndex="1">
+                                 <font>
+                                    <Font name="Minecraft Regular" size="10.0" />
+                                 </font>
+                                 <styleClass>
+                                    <String fx:value="pathInput" />
+                                    <String fx:value="pathInputEditable" />
+                                    <String fx:value="font" />
+                                 </styleClass>
+                              </TextField>
+                           </children>
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                           </columnConstraints>
+                           <padding>
+                              <Insets right="6.0" />
+                           </padding>
+                           <rowConstraints>
+                              <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="42.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                        </GridPane>
+                        <GridPane>
+                           <children>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
+                                 <image>
+                                    <Image url="@../resources/images/LinkedCard.png" />
+                                 </image>
+                              </ImageView>
+                              <TextField fx:id="tunnelChannelTextField" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Linked card channel" text="aeff1ff-31ff13f13f-13f13f1f3" GridPane.columnIndex="1">
+                                 <font>
+                                    <Font name="Minecraft Regular" size="10.0" />
+                                 </font>
+                                 <styleClass>
+                                    <String fx:value="pathInput" />
+                                    <String fx:value="pathInputEditable" />
+                                    <String fx:value="font" />
+                                 </styleClass>
+                              </TextField>
+                           </children>
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                           </columnConstraints>
+                           <padding>
+                              <Insets right="6.0" />
+                           </padding>
+                           <rowConstraints>
+                              <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="42.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                        </GridPane>
+                        <GridPane>
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="42.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
+                                 <image>
+                                    <Image url="@../resources/images/HDD.png" />
+                                 </image>
+                              </ImageView>
+                              <TextField fx:id="HDDPathTextField" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="HDD path" text="/igor/hdd/huy" GridPane.columnIndex="1">
+                                 <font>
+                                    <Font name="Minecraft Regular" size="10.0" />
+                                 </font>
+                                 <styleClass>
+                                    <String fx:value="pathInput" />
+                                    <String fx:value="font" />
+                                 </styleClass>
+                              </TextField>
+                              <Button focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onHDDChooseClicked" text="..." GridPane.columnIndex="2">
+                                 <font>
+                                    <Font name="Minecraft Regular" size="10.0" />
+                                 </font>
+                                 <styleClass>
+                                    <String fx:value="pathInputButton" />
+                                    <String fx:value="font" />
+                                 </styleClass>
+                              </Button>
+                           </children>
+                           <padding>
+                              <Insets right="6.0" />
+                           </padding>
+                        </GridPane>
+                        <GridPane>
+                           <children>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
+                                 <image>
+                                    <Image url="@../resources/images/EEPROM.png" />
+                                 </image>
+                              </ImageView>
+                              <TextField fx:id="EEPROMPathTextField" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="EEPROM path" text="/igor/eeprom/pizda" GridPane.columnIndex="1">
+                                 <font>
+                                    <Font name="Minecraft Regular" size="10.0" />
+                                 </font>
+                                 <styleClass>
+                                    <String fx:value="pathInput" />
+                                    <String fx:value="font" />
+                                 </styleClass>
+                              </TextField>
+                              <Button focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onEEPROMChooseClicked" text="..." GridPane.columnIndex="2">
+                                 <font>
+                                    <Font name="Minecraft Regular" size="10.0" />
+                                 </font>
+                                 <styleClass>
+                                    <String fx:value="pathInputButton" />
+                                    <String fx:value="font" />
+                                 </styleClass>
+                              </Button>
+                           </children>
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                           </columnConstraints>
+                           <padding>
+                              <Insets right="6.0" />
+                           </padding>
+                           <rowConstraints>
+                              <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="42.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                        </GridPane>
+                        <GridPane>
+                           <children>
+                              <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" smooth="false">
+                                 <image>
+                                    <Image url="@../resources/images/RAM.png" />
+                                 </image>
+                              </ImageView>
+                              <Slider fx:id="RAMSlider" focusTraversable="false" majorTickUnit="2.0" max="16.0" minorTickCount="2" showTickLabels="true" showTickMarks="true" value="4.0" GridPane.columnIndex="1">
+                                 <GridPane.margin>
+                                    <Insets right="2.0" />
+                                 </GridPane.margin>
+                              </Slider>
+                           </children>
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                           </columnConstraints>
+                           <padding>
                               <Insets right="5.0" />
-                           </GridPane.margin>
-                        </Slider>
+                           </padding>
+                           <rowConstraints>
+                              <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="42.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                        </GridPane>
                      </children>
-                     <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" />
-                     </columnConstraints>
-                     <padding>
-                        <Insets right="5.0" />
-                     </padding>
-                     <rowConstraints>
-                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="42.0" vgrow="SOMETIMES" />
-                     </rowConstraints>
-                  </GridPane>
+                  </VBox>
                </children>
             </VBox>
             <Button focusTraversable="false" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseReleased="#onGenerateButtonTouch" prefHeight="48.0" text="New  virtual  machine" GridPane.halignment="LEFT" GridPane.valignment="BOTTOM">

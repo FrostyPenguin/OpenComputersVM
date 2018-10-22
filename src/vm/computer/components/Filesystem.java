@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -89,7 +88,7 @@ public class Filesystem extends ComponentBase {
 			if (handles.containsKey(id)) {
 				playSound();
 
-				byte[] result = handles.get(id).read(args);
+				byte[] result = handles.get(id).read(args.checkNumber(2));
 				if (result.length > 0) {
 					machine.lua.pushByteArray(result);
 					return 1;
@@ -113,7 +112,7 @@ public class Filesystem extends ComponentBase {
 			int id = args.toInteger(1);
 			if (handles.containsKey(id)) {
 				playSound();
-				machine.lua.pushInteger(handles.get(id).write(args));
+				machine.lua.pushInteger(handles.get(id).write(args.checkString(2)));
 				
 				return 1;
 			}
@@ -347,8 +346,8 @@ public class Filesystem extends ComponentBase {
 			}
 		}
 
-		public abstract int write(LuaState args);
-		public abstract byte[] read(LuaState args);
+		public abstract int write(String data);
+		public abstract byte[] read(double count);
 		
 		public void close() {
 			try {
@@ -363,12 +362,11 @@ public class Filesystem extends ComponentBase {
 	private class ReadHandle extends Handle {
 		public ReadHandle(File file, boolean binary) {
 			super(file);
-            System.out.println("Opening file for reading: " + file.getPath());
+            System.out.println("Reading file: " + file.getPath());
 		}
 
-		public byte[] read(LuaState args) {
+		public byte[] read(double needToRead) {
 			try {
-				double needToRead = args.checkNumber(2);
 				byte[] buffer = new byte[needToRead > randomAccessFile.length() ? (int) randomAccessFile.length() : (int) needToRead];
 				int readCount = randomAccessFile.read(buffer);
 				if (readCount > 0) {
@@ -387,7 +385,7 @@ public class Filesystem extends ComponentBase {
 			return new byte[] {};
 		}
 
-		public int write(LuaState args) {
+		public int write(String data) {
 			return 0;
 		}
 	}
@@ -395,6 +393,8 @@ public class Filesystem extends ComponentBase {
 	private class WriteHandle extends Handle {
 		public WriteHandle(File file, boolean binary, boolean append) {
 			super(file);
+
+			System.out.println("Writing file: " + file.getPath());
 			
 			try {
 				if (append) {
@@ -409,9 +409,9 @@ public class Filesystem extends ComponentBase {
 			}
 		}
 
-		public int write(LuaState args) {
+		public int write(String data) {
 			try {
-				byte[] bytes = args.toString(2).getBytes(StandardCharsets.US_ASCII);
+				byte[] bytes = data.getBytes();
 				randomAccessFile.write(bytes);
 				
 				return bytes.length;
@@ -423,7 +423,7 @@ public class Filesystem extends ComponentBase {
 			}
 		}
 
-		public byte[] read(LuaState args) {
+		public byte[] read(double count) {
 			return null;
 		}
 	}

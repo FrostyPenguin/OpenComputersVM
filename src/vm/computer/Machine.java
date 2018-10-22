@@ -19,7 +19,10 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import li.cil.repack.com.naef.jnlua.LuaState;
@@ -49,6 +52,7 @@ public class Machine {
 	private static final int screenImageViewBlurSize = 82;
 	
 	// Жабафыховские обжекты
+	public VBox propertiesVBox;
 	public Slider RAMSlider;
 	public GridPane windowGridPane;
 	public GridPane screenGridPane;
@@ -117,7 +121,6 @@ public class Machine {
 					case "gpu":
 						machine.gpuComponent = new GPU(machine, address);
 						machine.gpuComponent.rawSetResolution(component.getInt("width"), component.getInt("height"));
-						machine.gpuComponent.updaterThread.update();
 						break;
 					case "screen":
 						machine.screenComponent = new Screen(machine, address, component.getBoolean("precise"), component.getInt("blocksHorizontally"), component.getInt("blocksVertically"));
@@ -526,7 +529,7 @@ public class Machine {
 			
 			try {
 				// Грузим машин-кодыч
-				lua.setTotalMemory((int) (RAMSlider.getValue() * 1024));
+				lua.setTotalMemory((int) (RAMSlider.getValue() * 1024 * 1024));
 				lua.load(IO.loadResourceAsString("resources/Machine.lua"), "=machine");
 				lua.newThread();
 				lua.resume(1, 0);
@@ -663,7 +666,7 @@ public class Machine {
 			
 			computerRunningPlayer.stop();
 			
-			RAMSlider.setDisable(false);
+			propertiesVBox.setDisable(false);
 			
 			if (resetGPU) {
 				gpuComponent.flush();
@@ -688,8 +691,8 @@ public class Machine {
 				gpuComponent.flush();
 				gpuComponent.updaterThread.update();
 				
-				// Оффаем слайдер памяти, а то хуйня эта сангаровская ругается
-				RAMSlider.setDisable(true);
+				// Оффаем изменения параметров пекарни на время работы
+				propertiesVBox.setDisable(true);
 				screenImageView.requestFocus();
 
 				// Играем звук компека)00
@@ -703,5 +706,45 @@ public class Machine {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private interface OnFileChosen {
+		void run(File file);
+	}
+	
+	public void chooseFile(String title, OnFileChosen onFileChosen) {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle(title);
+		fileChooser.setInitialDirectory(IO.machinesFile);
+		
+		File file = fileChooser.showOpenDialog(stage);
+		if (file != null) {
+			onFileChosen.run(file);
+		}
+	}
+
+	public void chooseDirectory(String title, OnFileChosen onFileChosen) {
+		DirectoryChooser fileChooser = new DirectoryChooser();
+		fileChooser.setTitle(title);
+		fileChooser.setInitialDirectory(IO.machinesFile);
+		
+		File file = fileChooser.showDialog(stage);
+		if (file != null) {
+			onFileChosen.run(file);
+		}
+	}
+	
+	public void onEEPROMChooseClicked() {
+		chooseFile("Choose EEPROM.lua file", (file) -> {
+			EEPROMPathTextField.setText(file.getPath());
+			eepromComponent.realPath = file.getPath();
+		});
+	}
+
+	public void onHDDChooseClicked() {
+		chooseDirectory("Choose HDD directory", (file) -> {
+			HDDPathTextField.setText(file.getPath());
+			filesystemComponent.realPath = file.getPath();
+		});
 	}
 }
