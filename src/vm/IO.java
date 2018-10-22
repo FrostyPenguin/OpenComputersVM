@@ -12,7 +12,7 @@ import java.nio.file.StandardCopyOption;
 public class IO {
     public static final File
         dataFile = new File(System.getProperty("user.home"), "OpenComputersVM"),
-        configFile = new File(dataFile, "Config.json"),
+        configFile = new File(dataFile, "Config2.json"),
         librariesFile = new File(dataFile, "Libraries"),
         machinesFile = new File(dataFile, "Machines"),
         temporaryFile = new File(dataFile, "Temporary");

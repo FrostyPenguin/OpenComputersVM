@@ -20,11 +20,10 @@ public class Computer extends APIBase {
 			System.out.println("Сышь компутер.шутдаун() спахал");
 			
 			boolean reboot = !args.isNoneOrNil(1) && args.checkBoolean(1);
-			Platform.runLater(() -> {
-				machine.shutdown(true);
-				if (reboot)
-					machine.boot();
-			});
+
+			machine.shutdown(true);
+			if (reboot)
+				machine.boot();
 			
 			return 0;
 		});

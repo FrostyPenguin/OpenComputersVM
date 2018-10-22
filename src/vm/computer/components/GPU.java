@@ -114,10 +114,7 @@ public class GPU extends ComponentBase {
 						if (needUpdate)
 							setPixels();
 					}
-					catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					catch (ThreadDeath e) {
+					catch (InterruptedException | ThreadDeath e) {
 						break;
 					}
 				}

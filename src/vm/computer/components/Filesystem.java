@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -112,7 +113,10 @@ public class Filesystem extends ComponentBase {
 			int id = args.toInteger(1);
 			if (handles.containsKey(id)) {
 				playSound();
-				machine.lua.pushInteger(handles.get(id).write(args.checkString(2)));
+				
+				byte[] bytes = args.checkByteArray(2);
+				handles.get(id).write(bytes);
+				machine.lua.pushInteger(bytes.length);
 				
 				return 1;
 			}
@@ -346,7 +350,7 @@ public class Filesystem extends ComponentBase {
 			}
 		}
 
-		public abstract int write(String data);
+		public abstract void write(byte[] data);
 		public abstract byte[] read(double count);
 		
 		public void close() {
@@ -385,9 +389,7 @@ public class Filesystem extends ComponentBase {
 			return new byte[] {};
 		}
 
-		public int write(String data) {
-			return 0;
-		}
+		public void write(byte[] bytes) {}
 	}
 	
 	private class WriteHandle extends Handle {
@@ -409,22 +411,17 @@ public class Filesystem extends ComponentBase {
 			}
 		}
 
-		public int write(String data) {
+		public byte[] read(double count) {
+			return null;
+		}
+
+		public void write(byte[] bytes) {
 			try {
-				byte[] bytes = data.getBytes();
 				randomAccessFile.write(bytes);
-				
-				return bytes.length;
 			}
 			catch (IOException e) {
 				e.printStackTrace();
-				
-				return 0;
 			}
-		}
-
-		public byte[] read(double count) {
-			return null;
 		}
 	}
 

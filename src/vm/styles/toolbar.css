@@ -1,92 +1,92 @@
 .font {
-    -fx-font-family: "Minecraft";
-    -fx-font-size: 11;
+	-fx-font-family: "Minecraft";
+	-fx-font-size: 11;
 }
 
 .powerButton {
-    -fx-background-image: url("../resources/images/button_power_default.png");
-    -fx-background-repeat: no-repeat;
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
-    -fx-background-color: transparent;
-    -fx-border: none;
-    -fx-border-radius: 0;
-    -fx-background-radius: 0;
+	-fx-background-image: url("../resources/images/button_power_default.png");
+	-fx-background-repeat: no-repeat;
+	-fx-focus-color: transparent;
+	-fx-faint-focus-color: transparent;
+	-fx-background-color: transparent;
+	-fx-border: none;
+	-fx-border-radius: 0;
+	-fx-background-radius: 0;
 }
 
 .powerButton:hover {
-     -fx-background-image: url("../resources/images/button_power_hovered.png");
+	 -fx-background-image: url("../resources/images/button_power_hovered.png");
 }
 
 .powerButton:selected {
-    -fx-background-image: url("../resources/images/button_power_on.png");
+	-fx-background-image: url("../resources/images/button_power_on.png");
 }
 
 .powerButton:selected:hover {
-    -fx-background-image: url("../resources/images/button_power_on_hovered.png");
+	-fx-background-image: url("../resources/images/button_power_on_hovered.png");
 }
 
 .pathInput {
-    -fx-background-color: #333;
-    -fx-text-fill: #888;
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
-    -fx-border: none;
-    -fx-border-radius: 0;
-    -fx-background-radius: 0;
+	-fx-background-color: #333;
+	-fx-text-fill: #888;
+	-fx-focus-color: transparent;
+	-fx-faint-focus-color: transparent;
+	-fx-border: none;
+	-fx-border-radius: 0;
+	-fx-background-radius: 0;
 }
 
 .pathInputEditable:focused {
-    -fx-background-color: #FFF;
-    -fx-text-fill: #222;
-    -fx-effect: dropshadow(three-pass-box, #FFFFFF99, 10, 0.2, 0, 1);
+	-fx-background-color: #FFF;
+	-fx-text-fill: #222;
+	-fx-effect: dropshadow(three-pass-box, #FFFFFF99, 10, 0.2, 0, 1);
 }
 
 .pathInputButton {
-    -fx-background-color: #404040;
-    -fx-text-fill: #CCC;
-    -fx-border-radius: 0;
-    -fx-background-radius: 0;
-    -fx-border-width: 0;
+	-fx-background-color: #404040;
+	-fx-text-fill: #CCC;
+	-fx-border-radius: 0;
+	-fx-background-radius: 0;
+	-fx-border-width: 0;
 }
 
 .pathInputButton:hover {
-    -fx-background-color: #555;
-    -fx-text-fill: #EEE;
+	-fx-background-color: #555;
+	-fx-text-fill: #EEE;
 }
 
 .pathInputButton:pressed, .button:selected {
-    -fx-background-color: #FFF;
-    -fx-text-fill: #222;
-    -fx-effect: dropshadow(three-pass-box, #FFFFFF99, 10, 0.2, 0, 1);
+	-fx-background-color: #FFF;
+	-fx-text-fill: #222;
+	-fx-effect: dropshadow(three-pass-box, #FFFFFF99, 10, 0.2, 0, 1);
 }
 
 .slider .track {
-    -fx-background-color: #333;
-    -fx-background-radius: 2;
-    -fx-padding: 2;
+	-fx-background-color: #333;
+	-fx-background-radius: 2;
+	-fx-padding: 2;
 }
 
 .slider .thumb {
-    -fx-background-color: #FFF;
-    -fx-background-radius: 100;
-    -fx-background-insets: 1;
+	-fx-background-color: #FFF;
+	-fx-background-radius: 100;
+	-fx-background-insets: 1;
 }
 
 .slider .axis {
-    -fx-tick-label-font: 9 Minecraft; 
-    -fx-tick-label-fill: #999;
+	-fx-tick-label-font: 9 Minecraft; 
+	-fx-tick-label-fill: #999;
 }
 
 .axis-tick-mark, .axis-minor-tick-mark {
-    -fx-stroke: #333;
+	-fx-stroke: #333;
 }
 
 .slider .thumb:hover {
-    -fx-background-insets: 0;
+	-fx-background-insets: 0;
 }
 
 .slider .thumb:pressed {
-    -fx-background-insets: 0;
-    -fx-effect: dropshadow(three-pass-box, #FFFFFF99, 10, 0.2, 0, 1);
+	-fx-background-insets: 0;
+	-fx-effect: dropshadow(three-pass-box, #FFFFFF99, 10, 0.2, 0, 1);
 }

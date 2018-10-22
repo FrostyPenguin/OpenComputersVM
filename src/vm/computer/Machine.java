@@ -185,6 +185,7 @@ public class Machine {
 			// При закрытии окошка машину над оффнуть, а то хуй проссыт, будет ли там поток дрочиться или плеер этот асинхронники свои сувать меж булок
 			stage.setOnCloseRequest(event -> {
 				machine.shutdown(true);
+				machine.gpuComponent.updaterThread.interrupt();
 			});
 	
 			// Авторесайз пикчи, чтоб охуенно и пиздато все было
@@ -275,9 +276,8 @@ public class Machine {
 	
 	public JSONObject toJSONObject() {
 		JSONArray components = new JSONArray();
-		for (int j = 0; j < componentList.size(); j++) {
-			components.put(componentList.get(j).toJSONObject());
-		}
+		for (ComponentBase component : componentList)
+			components.put(component.toJSONObject());
 		
 		return new JSONObject()
 			.put("x", stage.getX())
@@ -436,6 +436,7 @@ public class Machine {
 
 		// Интересное решение: данный костыль работает "костыльнее", однако быстрее аналога на machine.lua
 		private boolean shuttingDown = false;
+
 		@Override
 		public void run() {
 			// Инициализируем корректную Lua-машину
@@ -531,18 +532,17 @@ public class Machine {
 				// Грузим машин-кодыч
 				lua.setTotalMemory((int) (RAMSlider.getValue() * 1024 * 1024));
 				lua.load(IO.loadResourceAsString("resources/Machine.lua"), "=machine");
-				lua.newThread();
-				lua.resume(1, 0);
+				lua.call(0, 0);
 
+				error("computer halted");
+			}
+			catch (Exception e) {
 				if (shuttingDown) {
 					System.out.println("Успешно вырубаем компек))0");
 				}
 				else {
-					error("computer halted");
+					error(e.getMessage());
 				}
-			}
-			catch (Exception e) {
-				error(e.getMessage());
 			}
 		}
 
@@ -644,8 +644,8 @@ public class Machine {
 					catch (ThreadDeath | InterruptedException e) {
 						System.out.println("Поток интерруптнулся чет у компа");
 
-						lua.yield(0);
 						shuttingDown = true;
+						lua = null;
 						
 						break;
 					}
@@ -674,6 +674,7 @@ public class Machine {
 			}
 			
 			luaThread.interrupt();
+			gpuComponent.updaterThread.interrupt();
 		}
 	}
 
