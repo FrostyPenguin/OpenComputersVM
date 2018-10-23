@@ -44,8 +44,8 @@ public class KeyMap {
 		map.put(KeyCode.DIGIT0, new OCKey(11));
 
 		map.put(KeyCode.A, new OCKey(30));
-		map.put(KeyCode.B, new OCKey(8));
-		map.put(KeyCode.C, new OCKey(6));
+		map.put(KeyCode.B, new OCKey(48));
+		map.put(KeyCode.C, new OCKey(46));
 		map.put(KeyCode.D, new OCKey(32));
 		map.put(KeyCode.E, new OCKey(18));
 		map.put(KeyCode.F, new OCKey(33));

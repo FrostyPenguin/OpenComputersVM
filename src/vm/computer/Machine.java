@@ -431,12 +431,14 @@ public class Machine {
 
 	public class LuaThread extends Thread {
 		private ArrayList<LuaState> signalStack = new ArrayList<>();
-		private HashMap<KeyCode, Boolean> pressedKeyCodes = new HashMap<>();
 		private int lastOCPixelClickX, lastOCPixelClickY;
 
 		// Интересное решение: данный костыль работает "костыльнее", однако быстрее аналога на machine.lua
 		private boolean shuttingDown = false;
 
+		private HashMap<KeyCode, String> codes = new HashMap<>();
+		private KeyCode lastCode;
+		
 		@Override
 		public void run() {
 			// Инициализируем корректную Lua-машину
@@ -482,18 +484,36 @@ public class Machine {
 
 				// Ивенты клавиш всему окну
 				windowGridPane.setOnKeyPressed(event -> {
-					KeyCode keyCode = event.getCode();
-					// Иначе оно спамит даунами
-					if (!isKeyPressed(keyCode)) {
-						pressedKeyCodes.put(keyCode, true);
-						pushKeySignal(keyCode, event.getText(), "key_down");
+//					System.out.println("PRESSED: " + event.getCharacter() + ", " + event.getText() + ", " + event.getCode());
+
+					lastCode = event.getCode();
+					
+					// Системная клавиша никогда не приведет к KeyTyped-ивенту
+					if (event.getText().length() == 0) {
+						pushKeySignal(lastCode, "", "key_down");
+						codes.put(lastCode, "");
+					}
+				});
+
+				// Этот ивент всегда следует сразу за KeyPressed в случае несистемных клавиш
+				windowGridPane.setOnKeyTyped(event -> {
+					if (!codes.containsKey(lastCode)) {
+//						System.out.println("TYPED: " + event.getCharacter() + ", " + event.getText() + ", " + event.getCode());
+
+						String character = event.getCharacter();
+						pushKeySignal(lastCode, character, "key_down");
+						codes.put(lastCode, character);
 					}
 				});
 
 				windowGridPane.setOnKeyReleased(event -> {
+//					System.out.println("RELEASED: " + event.getCharacter() + ", " + event.getText() + ", " + event.getCode());
+					
 					KeyCode keyCode = event.getCode();
-					pressedKeyCodes.put(keyCode, false);
-					pushKeySignal(keyCode, event.getText(), "key_up");
+					if (codes.containsKey(keyCode)) {
+						pushKeySignal(keyCode, codes.get(keyCode), "key_up");
+						codes.remove(keyCode);
+					}
 				});
 
 				// А эт уже ивенты тача, драга и прочего конкретно на экранной хуйне этой
@@ -654,10 +674,6 @@ public class Machine {
 				return new LuaState();
 			}
 		}
-
-		public boolean isKeyPressed(KeyCode keyCode) {
-			return pressedKeyCodes.getOrDefault(keyCode, false);
-		}
 	}
 	
 	public void shutdown(boolean resetGPU) {
@@ -665,16 +681,13 @@ public class Machine {
 			started = false;
 			
 			computerRunningPlayer.stop();
-			
 			propertiesVBox.setDisable(false);
-			
+			luaThread.interrupt();
+
 			if (resetGPU) {
 				gpuComponent.flush();
 				gpuComponent.updaterThread.update();
 			}
-			
-			luaThread.interrupt();
-			gpuComponent.updaterThread.interrupt();
 		}
 	}
 

@@ -13,7 +13,7 @@
 /*.ipr
 /*.iws
 /.idea
-/out
+/out/production
 
 # Debugging
 /eclipse
