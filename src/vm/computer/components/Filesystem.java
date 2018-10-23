@@ -197,7 +197,7 @@ public class Filesystem extends ComponentBase {
 			
 			File file = getFsFile(args);
 			if (file.exists()) {
-				machine.lua.pushInteger((int) file.lastModified());
+				machine.lua.pushInteger((int) (file.lastModified() / 1000));
 				
 				return 1;
 			}

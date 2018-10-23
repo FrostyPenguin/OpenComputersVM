@@ -7,7 +7,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="81d01b5e-1eff-448a-9c68-224ae0dd0a07" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/vm/resources/Machine.lua" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/resources/Machine.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/computer/components/Filesystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/computer/components/Filesystem.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -66,7 +66,7 @@
         <counts>
           <entry key="MF" value="1" />
           <entry key="iml" value="1" />
-          <entry key="java" value="16" />
+          <entry key="java" value="19" />
           <entry key="json" value="2" />
           <entry key="lua" value="3" />
         </counts>
@@ -74,7 +74,7 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="IDEA_MODULE" value="1" />
-          <entry key="JAVA" value="16" />
+          <entry key="JAVA" value="19" />
           <entry key="JSON" value="2" />
           <entry key="Manifest" value="1" />
           <entry key="PLAIN_TEXT" value="3" />
@@ -83,14 +83,14 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="iml" value="1" />
-          <entry key="java" value="2137" />
+          <entry key="java" value="2147" />
           <entry key="lua" value="540" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="IDEA_MODULE" value="1" />
-          <entry key="JAVA" value="2137" />
+          <entry key="JAVA" value="2147" />
           <entry key="PLAIN_TEXT" value="540" />
         </counts>
       </usages-collector>
@@ -143,11 +143,20 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/vm/resources/Machine.lua">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="263">
-              <caret line="78" column="25" lean-forward="true" selection-start-line="78" selection-start-column="25" selection-end-line="78" selection-end-column="25" />
+            <state relative-caret-position="211">
+              <caret line="76" lean-forward="true" selection-start-line="76" selection-end-line="76" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/vm/computer/components/Filesystem.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="226">
+              <caret line="200" column="16" lean-forward="true" selection-start-line="200" selection-start-column="16" selection-end-line="200" selection-end-column="16" />
             </state>
           </provider>
         </entry>
@@ -157,15 +166,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="177">
               <caret line="48" column="13" selection-start-line="48" selection-start-column="13" selection-end-line="48" selection-end-column="13" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/vm/computer/KeyMap.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2626">
-              <caret line="101" selection-start-line="101" selection-end-line="101" />
             </state>
           </provider>
         </entry>
@@ -188,6 +188,7 @@
       <find>pushKe</find>
       <find>rawGe</find>
       <find>апи</find>
+      <find>lastModi</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -218,6 +219,7 @@
         <option value="$PROJECT_DIR$/src/vm/computer/api/OS.java" />
         <option value="$PROJECT_DIR$/src/vm/computer/Machine.java" />
         <option value="$PROJECT_DIR$/src/vm/resources/Machine.lua" />
+        <option value="$PROJECT_DIR$/src/vm/computer/components/Filesystem.java" />
       </list>
     </option>
   </component>
@@ -711,8 +713,29 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/vm/resources/Machine.lua">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="263">
-          <caret line="78" column="25" lean-forward="true" selection-start-line="78" selection-start-column="25" selection-end-line="78" selection-end-column="25" />
+        <state relative-caret-position="211">
+          <caret line="76" lean-forward="true" selection-start-line="76" selection-end-line="76" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_192.jdk/Contents/Home/src.zip!/java/io/FileSystem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="136" column="25" selection-start-line="136" selection-start-column="25" selection-end-line="136" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_192.jdk/Contents/Home/src.zip!/java/io/File.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="155">
+          <caret line="923" column="6" lean-forward="true" selection-start-line="923" selection-start-column="6" selection-end-line="923" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/components/Filesystem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="200" column="16" lean-forward="true" selection-start-line="200" selection-start-column="16" selection-end-line="200" selection-end-column="16" />
         </state>
       </provider>
     </entry>
