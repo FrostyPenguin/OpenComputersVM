@@ -6,7 +6,9 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="81d01b5e-1eff-448a-9c68-224ae0dd0a07" name="Default Changelist" comment="" />
+    <list default="true" id="81d01b5e-1eff-448a-9c68-224ae0dd0a07" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/src/vm/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/Main.java" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -102,11 +104,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/vm/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="265">
-              <caret line="62" column="15" selection-start-line="62" selection-start-column="15" selection-end-line="74" selection-end-column="13" />
+            <state relative-caret-position="241">
+              <caret line="64" lean-forward="true" selection-start-line="64" selection-end-line="64" />
             </state>
           </provider>
         </entry>
@@ -183,7 +185,7 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/vm/IO.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="160">
@@ -263,11 +265,11 @@
         <option value="$PROJECT_DIR$/src/vm/computer/components/FilesystemBase.java" />
         <option value="$PROJECT_DIR$/src/vm/resources/defaults/Machine.json" />
         <option value="$PROJECT_DIR$/src/vm/computer/components/Filesystem.java" />
-        <option value="$PROJECT_DIR$/src/vm/Main.java" />
         <option value="$PROJECT_DIR$/src/vm/IO.java" />
         <option value="$PROJECT_DIR$/src/vm/computer/Window.fxml" />
         <option value="$PROJECT_DIR$/src/vm/computer/Machine.java" />
         <option value="$PROJECT_DIR$/src/vm/computer/Player.java" />
+        <option value="$PROJECT_DIR$/src/vm/Main.java" />
       </list>
     </option>
   </component>
@@ -799,13 +801,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/Main.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="265">
-          <caret line="62" column="15" selection-start-line="62" selection-start-column="15" selection-end-line="74" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/vm/computer/components/Filesystem.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="172">
@@ -853,6 +848,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="160">
           <caret line="7" column="21" lean-forward="true" selection-start-line="7" selection-start-column="21" selection-end-line="7" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="241">
+          <caret line="64" lean-forward="true" selection-start-line="64" selection-end-line="64" />
         </state>
       </provider>
     </entry>
