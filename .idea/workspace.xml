@@ -7,12 +7,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="81d01b5e-1eff-448a-9c68-224ae0dd0a07" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/computer/Machine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/computer/Machine.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/computer/Window.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/computer/Window.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/vm/computer/api/Computer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/computer/api/Computer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/computer/api/OS.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/vm/computer/components/Filesystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/computer/components/Filesystem.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/vm/computer/components/GPU.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/computer/components/GPU.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/computer/components/Screen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/computer/components/Screen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/styles/toolbar.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/styles/toolbar.css" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -71,18 +71,20 @@
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="MF" value="1" />
+          <entry key="css" value="2" />
           <entry key="fxml" value="1" />
           <entry key="gitignore" value="1" />
           <entry key="iml" value="1" />
-          <entry key="java" value="38" />
+          <entry key="java" value="40" />
           <entry key="json" value="3" />
           <entry key="lua" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
+          <entry key="CSS" value="2" />
           <entry key="IDEA_MODULE" value="1" />
-          <entry key="JAVA" value="38" />
+          <entry key="JAVA" value="40" />
           <entry key="JSON" value="3" />
           <entry key="Manifest" value="1" />
           <entry key="PLAIN_TEXT" value="4" />
@@ -91,17 +93,19 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
+          <entry key="css" value="120" />
           <entry key="dummy" value="7" />
           <entry key="iml" value="1" />
-          <entry key="java" value="4011" />
+          <entry key="java" value="4262" />
           <entry key="json" value="4" />
           <entry key="lua" value="540" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
+          <entry key="CSS" value="120" />
           <entry key="IDEA_MODULE" value="1" />
-          <entry key="JAVA" value="4011" />
+          <entry key="JAVA" value="4262" />
           <entry key="JSON" value="4" />
           <entry key="PLAIN_TEXT" value="547" />
         </counts>
@@ -111,37 +115,19 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/vm/computer/Player.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="156">
-              <caret line="6" selection-start-line="6" selection-end-line="6" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/vm/resources/Machine.lua">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1976">
-              <caret line="76" selection-start-line="76" selection-end-line="76" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/vm/computer/components/Filesystem.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="437">
-              <caret line="408" column="17" lean-forward="true" selection-start-line="408" selection-start-column="17" selection-end-line="408" selection-end-column="17" />
+            <state relative-caret-position="-138">
+              <caret line="241" column="44" lean-forward="true" selection-start-line="241" selection-start-column="44" selection-end-line="241" selection-end-column="44" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/vm/computer/api/Component.java">
+        <entry file="file://$PROJECT_DIR$/src/vm/computer/Machine.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="494">
-              <caret line="19" column="77" selection-start-line="19" selection-start-column="77" selection-end-line="19" selection-end-column="77" />
+            <state relative-caret-position="26">
+              <caret line="187" column="57" lean-forward="true" selection-start-line="187" selection-start-column="57" selection-end-line="187" selection-end-column="57" />
             </state>
           </provider>
         </entry>
@@ -149,8 +135,22 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/vm/computer/api/Computer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3354">
-              <caret line="129" column="63" selection-start-line="129" selection-start-column="63" selection-end-line="129" selection-end-column="63" />
+            <state relative-caret-position="478">
+              <caret line="131" column="12" lean-forward="true" selection-start-line="131" selection-start-column="12" selection-end-line="131" selection-end-column="12" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/vm/styles/toolbarButton.css">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/vm/styles/toolbar.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="231">
+              <caret line="93" column="21" selection-start-line="93" selection-start-column="21" selection-end-line="93" selection-end-column="21" />
             </state>
           </provider>
         </entry>
@@ -173,20 +173,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/vm/computer/components/GPU.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="182">
-              <caret line="345" lean-forward="true" selection-start-line="345" selection-end-line="345" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/vm/computer/components/EEPROM.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1768">
-              <caret line="68" selection-start-line="68" selection-end-line="68" />
+            <state relative-caret-position="216">
+              <caret line="92" column="34" selection-start-line="92" selection-start-column="34" selection-end-line="92" selection-end-column="34" />
             </state>
           </provider>
         </entry>
@@ -211,9 +202,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>rawGe</find>
-      <find>апи</find>
-      <find>lastModi</find>
       <find>HDD</find>
       <find>temp</find>
       <find>temporary</find>
@@ -241,6 +229,9 @@
       <find>&quot;get&quot;</find>
       <find>Reading</find>
       <find>writeHa</find>
+      <find>pathInput</find>
+      <find>genera</find>
+      <find>onGener</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -272,13 +263,14 @@
         <option value="$PROJECT_DIR$/src/vm/resources/defaults/Machine.json" />
         <option value="$PROJECT_DIR$/src/vm/IO.java" />
         <option value="$PROJECT_DIR$/src/vm/computer/Window.fxml" />
-        <option value="$PROJECT_DIR$/src/vm/computer/Machine.java" />
         <option value="$PROJECT_DIR$/src/vm/computer/Player.java" />
         <option value="$PROJECT_DIR$/src/vm/Main.java" />
-        <option value="$PROJECT_DIR$/src/vm/computer/api/Computer.java" />
         <option value="$PROJECT_DIR$/src/vm/computer/components/Screen.java" />
-        <option value="$PROJECT_DIR$/src/vm/computer/components/GPU.java" />
         <option value="$PROJECT_DIR$/src/vm/computer/components/Filesystem.java" />
+        <option value="$PROJECT_DIR$/src/vm/computer/api/Computer.java" />
+        <option value="$PROJECT_DIR$/src/vm/styles/toolbar.css" />
+        <option value="$PROJECT_DIR$/src/vm/computer/Machine.java" />
+        <option value="$PROJECT_DIR$/src/vm/computer/components/GPU.java" />
       </list>
     </option>
   </component>
@@ -562,15 +554,7 @@
               <item name="OpenComputersVM" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="vm" type="462c0819:PsiDirectoryNode" />
-              <item name="resources" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="OpenComputersVM" type="b2602c69:ProjectViewProjectNode" />
-              <item name="OpenComputersVM" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="vm" type="462c0819:PsiDirectoryNode" />
-              <item name="resources" type="462c0819:PsiDirectoryNode" />
-              <item name="defaults" type="462c0819:PsiDirectoryNode" />
+              <item name="styles" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -798,13 +782,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/Machine.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="177" column="49" selection-start-line="177" selection-start-column="49" selection-end-line="177" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/vm/computer/Player.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="156">
@@ -823,13 +800,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="494">
           <caret line="19" column="77" selection-start-line="19" selection-start-column="77" selection-end-line="19" selection-end-column="77" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/api/Computer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3354">
-          <caret line="129" column="63" selection-start-line="129" selection-start-column="63" selection-end-line="129" selection-end-column="63" />
         </state>
       </provider>
     </entry>
@@ -861,17 +831,48 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/components/GPU.java">
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/components/Filesystem.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="182">
-          <caret line="345" lean-forward="true" selection-start-line="345" selection-end-line="345" />
+        <state relative-caret-position="-138">
+          <caret line="241" column="44" lean-forward="true" selection-start-line="241" selection-start-column="44" selection-end-line="241" selection-end-column="44" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/components/Filesystem.java">
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/api/Computer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="437">
-          <caret line="408" column="17" lean-forward="true" selection-start-line="408" selection-start-column="17" selection-end-line="408" selection-end-column="17" />
+        <state relative-caret-position="478">
+          <caret line="131" column="12" lean-forward="true" selection-start-line="131" selection-start-column="12" selection-end-line="131" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/styles/toolbarButton.css">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/styles/toolbar.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="93" column="21" selection-start-line="93" selection-start-column="21" selection-end-line="93" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_192.jdk/Contents/Home/javafx-src.zip!/javafx/stage/Stage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="267">
+          <caret line="1234" column="5" lean-forward="true" selection-start-line="1234" selection-start-column="5" selection-end-line="1234" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/Machine.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="26">
+          <caret line="187" column="57" lean-forward="true" selection-start-line="187" selection-start-column="57" selection-end-line="187" selection-end-column="57" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/components/GPU.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="92" column="34" selection-start-line="92" selection-start-column="34" selection-end-line="92" selection-end-column="34" />
         </state>
       </provider>
     </entry>

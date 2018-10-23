@@ -100,7 +100,7 @@ public class GPU extends ComponentBase {
 				0,
 				GlyphWIDTHMulWidth
 			);
-			
+
 			needUpdate = false;
 		}
 

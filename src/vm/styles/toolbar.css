@@ -42,25 +42,6 @@
 	-fx-effect: dropshadow(three-pass-box, #FFFFFF99, 10, 0.2, 0, 1);
 }
 
-.pathInputButton {
-	-fx-background-color: #404040;
-	-fx-text-fill: #CCC;
-	-fx-border-radius: 0;
-	-fx-background-radius: 0;
-	-fx-border-width: 0;
-}
-
-.pathInputButton:hover {
-	-fx-background-color: #555;
-	-fx-text-fill: #EEE;
-}
-
-.pathInputButton:pressed, .button:selected {
-	-fx-background-color: #FFF;
-	-fx-text-fill: #222;
-	-fx-effect: dropshadow(three-pass-box, #FFFFFF99, 10, 0.2, 0, 1);
-}
-
 .slider .track {
 	-fx-background-color: #333;
 	-fx-background-radius: 2;
@@ -89,4 +70,36 @@
 .slider .thumb:pressed {
 	-fx-background-insets: 0;
 	-fx-effect: dropshadow(three-pass-box, #FFFFFF99, 10, 0.2, 0, 1);
+}
+
+.anyButton {
+	-fx-background-radius: 0;
+	-fx-border-radius: 0;
+	-fx-border-width: 0;
+}
+
+.anyButton:hover {
+	-fx-background-color: #555;
+    -fx-text-fill: #EEE;
+}
+
+.anyButton:pressed {
+    -fx-background-color: #FFF;
+    -fx-text-fill: #222;
+    -fx-effect: dropshadow(three-pass-box, #FFFFFF99, 10, 0.2, 0, 1);
+}
+
+.pathInputButton {
+	-fx-background-color: #404040;
+	-fx-text-fill: #CCC;
+}
+
+.newMachineButton {
+	-fx-background-color: #3F3F3F;
+	-fx-text-fill: #CCC;
+}
+
+.closeMachineButton {
+	-fx-background-color: #383838;
+	-fx-text-fill: #CCC;
 }

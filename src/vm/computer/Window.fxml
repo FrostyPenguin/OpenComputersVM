@@ -270,6 +270,7 @@
                                  </font>
                                  <styleClass>
                                     <String fx:value="pathInputButton" />
+                                    <String fx:value="anyButton" />
                                     <String fx:value="font" />
                                  </styleClass>
                               </Button>
@@ -300,6 +301,7 @@
                                  </font>
                                  <styleClass>
                                     <String fx:value="pathInputButton" />
+                                    <String fx:value="anyButton" />
                                     <String fx:value="font" />
                                  </styleClass>
                               </Button>
@@ -344,12 +346,23 @@
                   </VBox>
                </children>
             </VBox>
-            <Button focusTraversable="false" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseReleased="#onGenerateButtonTouch" prefHeight="48.0" text="New  virtual  machine" GridPane.halignment="LEFT" GridPane.valignment="BOTTOM">
+            <Button focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseReleased="#onCloseMachineButtonPressed" prefHeight="48.0" prefWidth="48.0" text="x" GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM">
                <font>
                   <Font name="Minecraft Regular" size="11.0" />
                </font>
                <styleClass>
-                  <String fx:value="pathInputButton" />
+                  <String fx:value="anyButton" />
+                  <String fx:value="closeMachineButton" />
+                  <String fx:value="font" />
+               </styleClass>
+            </Button>
+            <Button focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseReleased="#onGenerateButtonPressed" prefHeight="48.0" prefWidth="247.0" text="New  virtual  machine" GridPane.halignment="LEFT" GridPane.valignment="BOTTOM">
+               <font>
+                  <Font name="Minecraft Regular" size="11.0" />
+               </font>
+               <styleClass>
+                  <String fx:value="anyButton" />
+                  <String fx:value="newMachineButton" />
                   <String fx:value="font" />
                </styleClass>
             </Button>

@@ -190,11 +190,8 @@ public class Machine {
 			machine.screenImageView.setEffect(effect);
 
 			// При закрытии окошка машину над оффнуть, а то хуй проссыт, будет ли там поток дрочиться или плеер этот асинхронники свои сувать меж булок
-			stage.setOnCloseRequest(event -> {
-				machine.shutdown(true);
-				machine.gpuComponent.updaterThread.interrupt();
-			});
-	
+			stage.setOnCloseRequest(event -> machine.onWindowClosed());
+			
 			// Авторесайз пикчи, чтоб охуенно и пиздато все было
 			machine.screenGridPane.widthProperty().addListener((observable, oldValue, newValue) -> machine.checkImageViewBingings());
 			machine.screenGridPane.heightProperty().addListener((observable, oldValue, newValue) -> machine.checkImageViewBingings());
@@ -345,8 +342,19 @@ public class Machine {
 		screenImageView.requestFocus();
 	}
 	
-	public void onGenerateButtonTouch() {
+	public void onGenerateButtonPressed() {
 		generate();
+	}
+	
+	private void onWindowClosed() {
+		shutdown(true);
+		gpuComponent.updaterThread.interrupt();
+	}
+
+	public void onCloseMachineButtonPressed() {
+		onWindowClosed();
+		list.remove(this);
+		stage.close();
 	}
 
 	public static class LuaStateFactory {

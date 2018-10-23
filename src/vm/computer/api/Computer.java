@@ -117,8 +117,8 @@ public class Computer extends APIBase {
 			int tableIndex = machine.lua.getTop();
 			
 			machine.lua.pushNumber(1);
-			machine.lua.pushString("Lua 5.3");
-			machine.lua.pushNumber(2);
+//			machine.lua.pushString("Lua 5.3");
+//			machine.lua.pushNumber(2);
 			machine.lua.pushString("Lua 5.2");
 			
 			machine.lua.setTable(tableIndex);
@@ -126,6 +126,13 @@ public class Computer extends APIBase {
 			return 1;
 		});
 		machine.lua.setField(-2,"getArchitectures");
+
+		machine.lua.pushJavaFunction(args -> {
+			machine.lua.pushString("Lua 5.2");
+			
+			return 1;
+		});
+		machine.lua.setField(-2,"getArchitecture");
 
 		LuaUtils.pushVoidFunction(machine.lua, "setArchitecture");
 	}

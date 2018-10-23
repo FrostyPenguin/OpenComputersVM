@@ -401,12 +401,10 @@ public class Filesystem extends ComponentBase {
 //			System.out.println("Writing file: " + file.getPath());
 			
 			try {
-				if (append) {
+				if (append)
 					randomAccessFile.seek(randomAccessFile.length());
-				}
-				else {
+				else
 					randomAccessFile.setLength(0);
-				}
 			}
 			catch (IOException e) {
 				e.printStackTrace();
