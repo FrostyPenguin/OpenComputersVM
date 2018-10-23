@@ -325,6 +325,29 @@ public class GPU extends ComponentBase {
 		});
 		machine.lua.setField(-2, "getDepth");
 
+		machine.lua.pushJavaFunction(args -> {
+			int index = args.checkInteger(1);
+			int value = args.checkInteger(2);
+			checkPaletteIndex(index);
+			
+			int oldValue = palette[index];
+			palette[index] = value;
+			machine.lua.pushInteger(oldValue);
+			
+			return 1;
+		});
+		machine.lua.setField(-2, "setPaletteColor");
+
+		machine.lua.pushJavaFunction(args -> {
+			int index = args.checkInteger(1);
+			checkPaletteIndex(index);
+			
+			machine.lua.pushInteger(palette[index]);
+
+			return 1;
+		});
+		machine.lua.setField(-2, "getPaletteColor");
+
 		LuaUtils.pushBooleanFunction(machine.lua, "setViewport", true);
 		LuaUtils.pushBooleanFunction(machine.lua, "setDepth", true);
 		LuaUtils.pushBooleanFunction(machine.lua, "bind", true);

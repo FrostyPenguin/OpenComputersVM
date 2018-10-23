@@ -42,13 +42,13 @@ public class Screen extends ComponentBase {
 		});
 		machine.lua.setField(-2, "getKeyboards");
 		
-		// 
+		// Дохуя четко ивентящийся дисплей
 		machine.lua.pushJavaFunction(args -> {
-			args.checkBoolean(1);
-
-			precise = args.toBoolean(1);
+			boolean oldValue = precise;
+			precise = args.checkBoolean(1);
+			machine.lua.pushBoolean(oldValue);
 			
-			return 0;
+			return 1;
 		});
 		machine.lua.setField(-2, "setPrecise");
 

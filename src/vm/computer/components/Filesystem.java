@@ -367,7 +367,8 @@ public class Filesystem extends ComponentBase {
 	private class ReadHandle extends Handle {
 		public ReadHandle(File file, boolean binary) {
 			super(file);
-            System.out.println("Reading file: " + file.getPath());
+			
+//            System.out.println("Reading file: " + file.getPath());
 		}
 
 		public byte[] read(double needToRead) {
@@ -397,7 +398,7 @@ public class Filesystem extends ComponentBase {
 		public WriteHandle(File file, boolean binary, boolean append) {
 			super(file);
 
-			System.out.println("Writing file: " + file.getPath());
+//			System.out.println("Writing file: " + file.getPath());
 			
 			try {
 				if (append) {
