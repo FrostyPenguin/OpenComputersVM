@@ -16,12 +16,6 @@ function checkArg(n, have, ...)
 	end
 end
 
--- Да пошли вы на хуй со своим кастомным говнищем. Че за дела? Хули под msvc компилером эта ебала вообще отсутствует? Пизда ноль унификации
-local oldOSDate = os.date
-os.date = function(format, time)
-	return oldOSDate(format:gsub("%%T", "%%H:%%M:%%S"), time)
-end
-
 ---------------------------------------- Sandbox ----------------------------------------
 
 local sandbox = {}
@@ -79,6 +73,14 @@ end
 
 local computerComponent = sandboxComponentAPI.proxy(sandboxComponentAPI.list("computer")())
 sandboxComputerAPI.beep = computerComponent.beep
+
+
+-- Да пошли вы на хуй со своим кастомным говнищем. Че за дела? Хули под msvc компилером эта ебала вообще отсутствует? Пизда ноль унификации
+local oldOSDate = os.date
+sandbox.os.date = function(format, time)
+    format = format:gsub("%%T", "%%X"):gsub("%%F", "%%Y-%%m-%%d")
+	return oldOSDate(format, time)
+end
 
 ---------------------------------------- EEPROM loading ----------------------------------------
 

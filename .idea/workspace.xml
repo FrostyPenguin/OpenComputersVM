@@ -7,9 +7,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="81d01b5e-1eff-448a-9c68-224ae0dd0a07" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/computer/Machine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/computer/Machine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/computer/api/OS.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/computer/api/OS.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/vm/resources/Machine.lua" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/resources/Machine.lua" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -87,14 +84,14 @@
         <counts>
           <entry key="iml" value="1" />
           <entry key="java" value="2137" />
-          <entry key="lua" value="388" />
+          <entry key="lua" value="540" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="IDEA_MODULE" value="1" />
           <entry key="JAVA" value="2137" />
-          <entry key="PLAIN_TEXT" value="388" />
+          <entry key="PLAIN_TEXT" value="540" />
         </counts>
       </usages-collector>
     </session>
@@ -149,8 +146,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/vm/resources/Machine.lua">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="287">
-              <caret line="18" column="24" selection-start-line="18" selection-start-column="24" selection-end-line="18" selection-end-column="24" />
+            <state relative-caret-position="263">
+              <caret line="78" column="25" lean-forward="true" selection-start-line="78" selection-start-column="25" selection-end-line="78" selection-end-column="25" />
             </state>
           </provider>
         </entry>
@@ -714,8 +711,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/vm/resources/Machine.lua">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="287">
-          <caret line="18" column="24" selection-start-line="18" selection-start-column="24" selection-end-line="18" selection-end-column="24" />
+        <state relative-caret-position="263">
+          <caret line="78" column="25" lean-forward="true" selection-start-line="78" selection-start-column="25" selection-end-line="78" selection-end-column="25" />
         </state>
       </provider>
     </entry>
