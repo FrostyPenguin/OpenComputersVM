@@ -77,17 +77,18 @@ public class Machine {
 	public Keyboard keyboardComponent;
 	public Screen screenComponent;
 	public vm.computer.components.Computer computerComponent;
-	public Filesystem filesystemComponent, temporaryFilesystemComponent;
+	public Filesystem temporaryFilesystemComponent, filesystemComponent;
 	public Modem modemComponent;
 	public Tunnel tunnelComponent;
     public Internet internetComponent;
 
 	private Stage stage;
-	private Player computerRunningPlayer;
+	private Player powerButtonPlayer, computerRunningPlayer;
 	private boolean toolbarHidden;
 	
 	// Пустой конструктор требуется FXML-ебале для инициализации
 	public Machine() {
+		powerButtonPlayer = new Player("click.mp3");
 		computerRunningPlayer = new Player("computer_running.mp3");
 		computerRunningPlayer.setRepeating();
 	}
@@ -134,15 +135,10 @@ public class Machine {
 						machine.eepromComponent = new EEPROM(machine, address, component.getString("path"), component.getString("data"));
 						break;
 					case "filesystem":
-						boolean temporary = component.getBoolean("temporary");
-						Filesystem filesystem = new Filesystem(machine, address, component.getString("label"), component.getString("path"), temporary);
-
-						if (temporary) {
-							machine.temporaryFilesystemComponent = filesystem;
-						}
-						else {
-							machine.filesystemComponent = filesystem;
-						}
+						if (component.getBoolean("temporary"))
+							machine.temporaryFilesystemComponent = new Filesystem(machine, address, component.getString("label"), component.getString("path"), true);
+						else
+							machine.filesystemComponent = new Filesystem(machine, address, component.getString("label"), component.getString("path"), false);
 						break;
 					case "modem":
 						machine.modemComponent = new Modem(machine, address, component.getString("wakeMessage"), component.getBoolean("wakeMessageFuzzy"));
@@ -175,6 +171,18 @@ public class Machine {
 			
 			machine.toolbarHidden = machineConfig.getBoolean("toolbarHidden");
 			machine.updateToolbar();
+			
+			machine.powerButton.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+				event.consume();
+				
+				machine.powerButtonPlayer.stop();
+				machine.powerButtonPlayer.play();
+				
+				if (machine.started)
+					machine.shutdown(true);
+				else
+					machine.boot();
+			});
 
 			DropShadow effect = new DropShadow(BlurType.THREE_PASS_BOX, Color.rgb(0, 0, 0, 0.5), 0, 0, 0, 0);
 			effect.setWidth(screenImageViewBlurSize + 2);
@@ -209,10 +217,16 @@ public class Machine {
 			// Грузим дефолтный конфиг машины и создаем жсон на его основе
 			JSONObject machineConfig = new JSONObject(IO.loadResourceAsString("resources/defaults/Machine.json"));
 			
+			// Создаем основной путь всей вирт. машины
+			File machineFile;
+			int counter = 0;
+			do {
+				machineFile = new File(IO.machinesFile, "Machine" + counter++);
+			} while (machineFile.exists());
+
 			// Продрачиваем дефолтные компоненты
 			String address, type, filesystemAddress = null;
 			JSONObject component;
-			File machineFile = null;
 			JSONArray components = machineConfig.getJSONArray("components");
 			for (int i = 0; i < components.length(); i++) {
 				component = components.getJSONObject(i);
@@ -226,19 +240,23 @@ public class Machine {
 				if (type.equals("filesystem")) {
 					// Если это временная файлосистема, то въебываем ей соответствующий реальный путь
 					if (component.getBoolean("temporary")) {
-						File temporaryFile = new File(IO.temporaryFile, address);
+						File temporaryFile = new File(machineFile, "Temporary");
 						temporaryFile.mkdirs();
+						
 						component.put("path", temporaryFile.getPath());
 					}
 					// А если это обычный хард, то запоминаем его адрес, чтоб потом его в биос дату вхуячить
 					else {
 						filesystemAddress = address;
 						
-						// Заодно создаем основной путь всей вирт. машины
-						machineFile = new File(IO.machinesFile, address);
-						
-						File HDDFile = new File(machineFile, "HDD/");
+						// Создаем хуйню под хард
+						File HDDFile = new File(machineFile, "HDD");
 						HDDFile.mkdirs();
+						
+						// Анпачим опенось
+						System.out.println("Copying OpenOS sources...");
+						IO.unzipResource("resources/defaults/OpenOS.zip", HDDFile);
+						
 						component.put("path", HDDFile.getPath());
 					}
 				}
@@ -329,15 +347,6 @@ public class Machine {
 	
 	public void onGenerateButtonTouch() {
 		generate();
-	}
-
-	public void onPowerButtonTouch() {
-		new Player("click.mp3").play();
-		if (started) {
-			shutdown(true);
-		} else {
-			boot();
-		}
 	}
 
 	public static class LuaStateFactory {
@@ -569,7 +578,6 @@ public class Machine {
 			gpuComponent.rawError("Unrecoverable error\n\n" + text);
 			gpuComponent.updaterThread.update();
 			
-			powerButton.setSelected(false);
 			shutdown(false);
 		}
 		
@@ -678,10 +686,11 @@ public class Machine {
 	public void shutdown(boolean resetGPU) {
 		if (started) {
 			started = false;
-			
-			computerRunningPlayer.stop();
-			propertiesVBox.setDisable(false);
+
 			luaThread.interrupt();
+			powerButton.setSelected(false);
+			propertiesVBox.setDisable(false);
+			computerRunningPlayer.stop();
 
 			if (resetGPU) {
 				gpuComponent.flush();
@@ -693,10 +702,8 @@ public class Machine {
 	public void boot() {
 		if (!started) {
 			try {
-				// Грузим биос-хуйню из файла
 				eepromComponent.loadCode();
 
-				// ПОДРУБАЛИТИ
 				started = true;
 				startTime = System.currentTimeMillis();
 
@@ -704,14 +711,11 @@ public class Machine {
 				gpuComponent.flush();
 				gpuComponent.updaterThread.update();
 				
-				// Оффаем изменения параметров пекарни на время работы
 				propertiesVBox.setDisable(true);
+				powerButton.setSelected(true);
 				screenImageView.requestFocus();
-
-				// Играем звук компека)00
 				computerRunningPlayer.play();
-
-				// Запускаем луа-машину
+				
 				luaThread = new LuaThread();
 				luaThread.start();
 			}

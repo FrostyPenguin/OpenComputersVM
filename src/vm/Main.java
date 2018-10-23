@@ -60,19 +60,19 @@ public class Main extends Application {
 				JSONMachines.put(machine.toJSONObject());
 			}
 
-			try {
-				System.out.println("Saving config file...");
-
-				Files.write(
-					Paths.get(IO.configFile.toURI()),
-					new JSONObject()
-						.put("machines", JSONMachines)
-						.toString(2).getBytes(StandardCharsets.UTF_8)
-				);
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				System.out.println("Saving config file...");
+//
+//				Files.write(
+//					Paths.get(IO.configFile.toURI()),
+//					new JSONObject()
+//						.put("machines", JSONMachines)
+//						.toString(2).getBytes(StandardCharsets.UTF_8)
+//				);
+//			}
+//			catch (IOException e) {
+//				e.printStackTrace();
+//			}
 		}));
 	}
 }

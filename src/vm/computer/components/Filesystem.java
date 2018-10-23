@@ -20,9 +20,10 @@ public class Filesystem extends ComponentBase {
 		spaceTotal = 12 * 1024 * 1024;
 	private static final long soundNextDelay = 500;
 
-	public String realPath, label;
-	public boolean temporary;
-
+	public String realPath;
+	public String label;
+	
+	private boolean temporary;
 	private long soundNextPlay = 0;
 	private int soundIndex = 0;
 	private Player[] players = new Player[7];
@@ -326,9 +327,9 @@ public class Filesystem extends ComponentBase {
 	@Override
 	public JSONObject toJSONObject() {
 		return super.toJSONObject()
-			.put("path", realPath)
 			.put("temporary", temporary)
-			.put("label", label);
+			.put("label", label)
+			.put("path", realPath);
 	}
 
 	private abstract class Handle {

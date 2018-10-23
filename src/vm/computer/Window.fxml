@@ -135,7 +135,7 @@
                               </Pane>
                            </children>
                         </GridPane>
-                        <ToggleButton fx:id="powerButton" focusTraversable="false" layoutX="120.0" layoutY="82.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onMousePressed="#onPowerButtonTouch" prefHeight="54.0" prefWidth="54.0" styleClass="powerButton" />
+                        <ToggleButton fx:id="powerButton" focusTraversable="false" layoutX="120.0" layoutY="82.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="54.0" prefWidth="54.0" styleClass="powerButton" />
                      </children>
                   </Pane>
                   <VBox fx:id="propertiesVBox" spacing="10.0">
