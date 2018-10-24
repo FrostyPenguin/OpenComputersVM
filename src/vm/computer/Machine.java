@@ -55,7 +55,7 @@ public class Machine {
 	public GridPane mainGridPane, screenGridPane;
 	public AnchorPane sceneAnchorPane;
 	public VBox propertiesVBox;
-	public Slider RAMSlider;
+	public Slider RAMSlider, volumeSlider;
 	public ImageView screenImageView, boardImageView;
 	public ToggleButton powerButton;
 	public TextField EEPROMPathTextField, HDDPathTextField, tunnelChannelTextField, screensHorizontallyTextField, screensVerticallyTextField, playerTextField;
@@ -167,6 +167,9 @@ public class Machine {
 			machine.tunnelChannelTextField.setText(machine.tunnelComponent.channel);
 			machine.screensHorizontallyTextField.setText(String.valueOf(machine.screenComponent.blocksHorizontally));
 			machine.screensVerticallyTextField.setText(String.valueOf(machine.screenComponent.blocksVertically));
+			
+			machine.volumeSlider.setValue(machineConfig.getDouble("volume"));
+			machine.onVolumeSliderPressed();
 			
 			machine.toolbarHidden = machineConfig.getBoolean("toolbarHidden");
 			machine.updateToolbar();
@@ -327,7 +330,8 @@ public class Machine {
 			.put("toolbarHidden", toolbarHidden)
 			.put("components", components)
 			.put("totalMemory", RAMSlider.getValue())
-			.put("player", playerTextField.getText());
+			.put("player", playerTextField.getText())
+			.put("volume", volumeSlider.getValue());
 	}
 
 	public String getClipboard() {
@@ -383,6 +387,10 @@ public class Machine {
 		onWindowClosed();
 		list.remove(this);
 		stage.close();
+	}
+	
+	public void onVolumeSliderPressed() {
+		player.setVolume(volumeSlider.getValue());
 	}
 
 	public static class LuaStateFactory {

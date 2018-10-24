@@ -16,14 +16,10 @@ public class Filesystem extends ComponentBase {
 		readBufferSize = 4096,
 		spaceUsed = 0,
 		spaceTotal = 12 * 1024 * 1024;
-	private static final long soundNextDelay = 500;
-
 	public String realPath;
 	public String label;
 	
 	private boolean temporary;
-	private long soundNextPlay = 0;
-	private int soundIndex = 0;
 	private HashMap<Integer, Handle> handles = new HashMap<>();
 	
 	public Filesystem(Machine machine, String address, String label, String realPath, boolean temporary) {
@@ -46,7 +42,7 @@ public class Filesystem extends ComponentBase {
 			
 			int id = args.toInteger(1);
 			if (handles.containsKey(id)) {
-				playSound();
+				machine.player.playHDDSound();
 
 				try {
 					RandomAccessFile randomAccessFile = handles.get(id).randomAccessFile;
@@ -81,7 +77,7 @@ public class Filesystem extends ComponentBase {
 		machine.lua.pushJavaFunction(args -> {
 			int id = args.checkInteger(1);
 			if (handles.containsKey(id)) {
-				playSound();
+				machine.player.playHDDSound();
 
 				byte[] result = handles.get(id).read(args.checkNumber(2));
 				if (result.length > 0) {
@@ -106,7 +102,7 @@ public class Filesystem extends ComponentBase {
 
 			int id = args.toInteger(1);
 			if (handles.containsKey(id)) {
-				playSound();
+				machine.player.playHDDSound();
 				
 				byte[] bytes = args.checkByteArray(2);
 				handles.get(id).write(bytes);
@@ -187,7 +183,7 @@ public class Filesystem extends ComponentBase {
 
 		// Таймштамп изменения файла
 		machine.lua.pushJavaFunction(args -> {
-			playSound();
+			machine.player.playHDDSound();
 			
 			File file = getFsFile(args);
 			if (file.exists()) {
@@ -203,7 +199,7 @@ public class Filesystem extends ComponentBase {
 
 		// Размер файла
 		machine.lua.pushJavaFunction(args -> {
-			playSound();
+			machine.player.playHDDSound();
 
 			File file = getFsFile(args);
 			if (file.exists()) {
@@ -219,7 +215,7 @@ public class Filesystem extends ComponentBase {
 
 		// Создание директорий
 		machine.lua.pushJavaFunction(args -> {
-			playSound();
+			machine.player.playHDDSound();
 
 			machine.lua.pushBoolean(getFsFile(args).mkdirs());
 			return 1;
@@ -228,7 +224,7 @@ public class Filesystem extends ComponentBase {
 		
 		// Удоление файла
 		machine.lua.pushJavaFunction(args -> {
-			playSound();
+			machine.player.playHDDSound();
 
 			File file = getFsFile(args);
 			if (file.exists()) {
@@ -243,7 +239,7 @@ public class Filesystem extends ComponentBase {
 
 		// Директория ли
 		machine.lua.pushJavaFunction(args -> {
-			playSound();
+			machine.player.playHDDSound();
 			
 			machine.lua.pushBoolean(getFsFile(args).isDirectory());
 
@@ -253,7 +249,7 @@ public class Filesystem extends ComponentBase {
 		
 		// Существование файла
 		machine.lua.pushJavaFunction(args -> {
-			playSound();
+			machine.player.playHDDSound();
 
 			machine.lua.pushBoolean(getFsFile(args).exists());
 			
@@ -263,7 +259,7 @@ public class Filesystem extends ComponentBase {
 	
 		// Список файлов в директории
 		machine.lua.pushJavaFunction(args -> {
-			playSound();
+			machine.player.playHDDSound();
 
 			File file = getFsFile(args);
 			if (file.exists()) {
@@ -433,17 +429,6 @@ public class Filesystem extends ComponentBase {
 
 	private int pushHandleNotExists() {
 		return pushNilAndReason("handle id doesn't exists");
-	}
-	
-	private void playSound() {
-		long current = System.currentTimeMillis();
-		if (soundNextPlay < current) {
-			machine.player.play(machine.player.HDDPlayers[soundIndex]);
-			
-			soundNextPlay = current + soundNextDelay;
-			if (++soundIndex >= machine.player.HDDPlayers.length)
-				soundIndex = 0;
-		}
 	}
 
 	private File getFsFile(String path) {

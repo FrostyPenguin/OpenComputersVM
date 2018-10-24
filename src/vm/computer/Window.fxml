@@ -81,7 +81,7 @@
                                     </ImageView>
                                     <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="3.0" layoutY="3.0" pickOnBounds="true" smooth="false">
                                        <image>
-                                          <Image url="@../resources/images/LinkedCard.png" />
+                                          <Image url="@../resources/images/GPU.png" />
                                        </image>
                                     </ImageView>
                                  </children>
@@ -95,7 +95,7 @@
                                     </ImageView>
                                     <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="3.0" layoutY="3.0" pickOnBounds="true" smooth="false">
                                        <image>
-                                          <Image url="@../resources/images/GPU.png" />
+                                          <Image url="@../resources/images/INET.png" />
                                        </image>
                                     </ImageView>
                                  </children>
@@ -109,7 +109,7 @@
                                     </ImageView>
                                     <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="3.0" layoutY="3.0" pickOnBounds="true" smooth="false">
                                        <image>
-                                          <Image url="@../resources/images/INET.png" />
+                                          <Image url="@../resources/images/WLAN.png" />
                                        </image>
                                     </ImageView>
                                  </children>
@@ -123,7 +123,7 @@
                                     </ImageView>
                                     <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="3.0" layoutY="3.0" pickOnBounds="true" smooth="false">
                                        <image>
-                                          <Image url="@../resources/images/WLAN.png" />
+                                          <Image url="@../resources/images/LinkedCard.gif" />
                                        </image>
                                     </ImageView>
                                  </children>
@@ -131,6 +131,7 @@
                            </children>
                         </GridPane>
                         <ToggleButton fx:id="powerButton" focusTraversable="false" layoutX="120.0" layoutY="82.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="54.0" prefWidth="54.0" styleClass="powerButton" />
+                        <Slider fx:id="volumeSlider" layoutX="186.0" layoutY="102.0" majorTickUnit="1.0" max="1.0" minorTickCount="0" onMouseDragged="#onVolumeSliderPressed" onMousePressed="#onVolumeSliderPressed" prefWidth="77.0" stylesheets="@../styles/VolumeSlider.css" value="1.0" />
                      </children>
                   </Pane>
                   <VBox fx:id="propertiesVBox" spacing="10.0">
@@ -326,7 +327,7 @@
                                     <Image url="@../resources/images/RAM.png" />
                                  </image>
                               </ImageView>
-                              <Slider fx:id="RAMSlider" focusTraversable="false" majorTickUnit="2.0" max="16.0" minorTickCount="2" showTickLabels="true" showTickMarks="true" value="4.0" GridPane.columnIndex="1">
+                              <Slider fx:id="RAMSlider" focusTraversable="false" majorTickUnit="2.0" max="16.0" minorTickCount="2" showTickLabels="true" showTickMarks="true" stylesheets="@../styles/RAMSlider.css" value="4.0" GridPane.columnIndex="1">
                                  <GridPane.margin>
                                     <Insets right="2.0" />
                                  </GridPane.margin>
@@ -342,6 +343,15 @@
                            <rowConstraints>
                               <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="42.0" vgrow="SOMETIMES" />
                            </rowConstraints>
+                        </GridPane>
+                        <GridPane>
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                           </columnConstraints>
+                           <padding>
+                              <Insets right="5.0" />
+                           </padding>
                         </GridPane>
                      </children>
                   </VBox>

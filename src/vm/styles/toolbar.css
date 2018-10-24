@@ -42,36 +42,6 @@
 	-fx-effect: dropshadow(three-pass-box, #FFFFFF99, 10, 0.2, 0, 1);
 }
 
-.slider .track {
-	-fx-background-color: #333;
-	-fx-background-radius: 2;
-	-fx-padding: 2;
-}
-
-.slider .thumb {
-	-fx-background-color: #FFF;
-	-fx-background-radius: 100;
-	-fx-background-insets: 1;
-}
-
-.slider .axis {
-	-fx-tick-label-font: 9 Minecraft; 
-	-fx-tick-label-fill: #999;
-}
-
-.axis-tick-mark, .axis-minor-tick-mark {
-	-fx-stroke: #333;
-}
-
-.slider .thumb:hover {
-	-fx-background-insets: 0;
-}
-
-.slider .thumb:pressed {
-	-fx-background-insets: 0;
-	-fx-effect: dropshadow(three-pass-box, #FFFFFF99, 10, 0.2, 0, 1);
-}
-
 .anyButton {
 	-fx-background-radius: 0;
 	-fx-border-radius: 0;

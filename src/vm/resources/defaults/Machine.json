@@ -6,6 +6,7 @@
   "height": 680,
   "toolbarHidden": false,
   "totalMemory": 4.0,
+  "volume": 1.0,
   "components": [
     {
       "type": "gpu",
