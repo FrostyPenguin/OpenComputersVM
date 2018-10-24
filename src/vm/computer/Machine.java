@@ -131,7 +131,7 @@ public class Machine {
 						machine.computerComponent = new vm.computer.components.Computer(machine, address);
 						break;
 					case "eeprom":
-						machine.eepromComponent = new EEPROM(machine, address, component.getString("path"), component.getString("data"));
+						machine.eepromComponent = new EEPROM(machine, address, component.getString("label"), component.getString("path"), component.getString("data"));
 						break;
 					case "filesystem":
 						if (component.getBoolean("temporary"))
@@ -732,7 +732,7 @@ public class Machine {
 						System.out.println("Поток интерруптнулся чет у компа");
 
 						shuttingDown = true;
-						lua = null;
+						lua = new LuaState();
 						
 						break;
 					}
@@ -762,7 +762,8 @@ public class Machine {
 	public void boot() {
 		if (!started) {
 			try {
-				eepromComponent.loadCode();
+				System.out.println("Loading EEPROM from " + eepromComponent.realPath);
+				eepromComponent.code = IO.loadFileAsByteArray(new File(eepromComponent.realPath).toURI());
 
 				started = true;
 				startTime = System.currentTimeMillis();

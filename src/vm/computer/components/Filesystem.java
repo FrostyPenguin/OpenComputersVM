@@ -11,25 +11,20 @@ import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Filesystem extends ComponentBase {
+public class Filesystem extends FilesystemBase {
 	private static final int
-		readBufferSize = 4096,
 		spaceUsed = 0,
 		spaceTotal = 12 * 1024 * 1024;
-	public String realPath;
-	public String label;
 	
 	private boolean temporary;
 	private HashMap<Integer, Handle> handles = new HashMap<>();
 	
 	public Filesystem(Machine machine, String address, String label, String realPath, boolean temporary) {
-		super(machine, address, "filesystem");
-
-		this.realPath = realPath;
-		this.label = label;
+		super(machine, address, "filesystem", label, realPath);
+		
 		this.temporary = temporary;
 	}
-	
+
 	@Override
 	public void pushProxyFields() {
 		super.pushProxyFields();
@@ -161,25 +156,6 @@ public class Filesystem extends ComponentBase {
 			}
 		});
 		machine.lua.setField(-2, "open");
-
-		// Получение лейбла
-		machine.lua.pushJavaFunction(args -> {
-			machine.lua.pushString(label);
-
-			return 1;
-		});
-		machine.lua.setField(-2, "getLabel");
-
-		// Установка лейбла
-		machine.lua.pushJavaFunction(args -> {
-			args.checkString(1);
-			
-			label = args.toString(1);
-			
-			machine.lua.pushBoolean(true);
-			return 1;
-		});
-		machine.lua.setField(-2, "setLabel");
 
 		// Таймштамп изменения файла
 		machine.lua.pushJavaFunction(args -> {
@@ -316,17 +292,14 @@ public class Filesystem extends ComponentBase {
 	@Override
 	public JSONObject toJSONObject() {
 		return super.toJSONObject()
-			.put("temporary", temporary)
-			.put("label", label)
-			.put("path", realPath);
+			.put("temporary", temporary);
 	}
 
 	private abstract class Handle {
 		public int id;
 		public RandomAccessFile randomAccessFile;
-		File pizda;
+		
 		public Handle(File file) {
-			pizda = file;
 			try {
 				randomAccessFile = new RandomAccessFile(file, "rw");
 			   

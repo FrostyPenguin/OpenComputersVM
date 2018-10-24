@@ -1,21 +1,20 @@
 package vm.computer.components;
 
 import org.json.JSONObject;
-import vm.IO;
 import vm.computer.Machine;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.zip.CRC32;
 
-public class EEPROM extends ComponentBase {
-	public String data, realPath;
-
-	private String code;
+public class EEPROM extends FilesystemBase {
+	public String data;
+	public byte[] code;
 	
-	public EEPROM(Machine machine, String address, String realPath, String data) {
-		super(machine, address, "eeprom");
-
-		this.realPath = realPath;
+	public EEPROM(Machine machine, String address, String label, String realPath, String data) {
+		super(machine, address, "eeprom", label, realPath);
+		
 		this.data = data;
 	}
 
@@ -24,48 +23,53 @@ public class EEPROM extends ComponentBase {
 		super.pushProxyFields();
 
 		machine.lua.pushJavaFunction(args -> {
-			args.checkString(1);
-			
-			code = args.toString(1);
-			
+			code = args.checkByteArray(1);
+
+			try {
+				Files.write(
+					Paths.get(realPath),
+					code
+				);
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+
 			return 0;
 		});
 		machine.lua.setField(-2, "set");
 
 		machine.lua.pushJavaFunction(args -> {
-			args.checkString(1);
-
-			data = args.toString(1);
-
+			data = args.checkString(1);
 			return 0;
 		});
 		machine.lua.setField(-2, "setData");
 
 		machine.lua.pushJavaFunction(args -> {
-			machine.lua.pushString(code);
-
+			machine.lua.pushByteArray(code);
 			return 1;
 		});
 		machine.lua.setField(-2, "get");
 		
 		machine.lua.pushJavaFunction(args -> {
 			machine.lua.pushString(data);
-			
 			return 1;
 		});
 		machine.lua.setField(-2, "getData");
+
+		machine.lua.pushJavaFunction(args -> {
+			CRC32 crc32 = new CRC32();
+			crc32.update(code);
+			machine.lua.pushString(Long.toHexString(crc32.getValue()));
+			
+			return 1;
+		});
+		machine.lua.setField(-2, "getChecksum");
 	}
 
 	@Override
 	public JSONObject toJSONObject() {
 		return super.toJSONObject()
-			.put("data", data)
-			.put("path", realPath);
-	}
-
-	public void loadCode() throws IOException {
-		System.out.println("Loading EEPROM source code from " + realPath);
-
-		code = IO.loadFileAsString(new File(realPath).toURI());
+			.put("data", data);
 	}
 }

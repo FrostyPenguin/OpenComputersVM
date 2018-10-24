@@ -23,9 +23,13 @@ public class IO {
 	public static InputStream getResourceAsStream(String name) {
 		return Main.class.getResourceAsStream(name);
 	}
+	
+	public static byte[] loadFileAsByteArray(URI uri) throws IOException {
+		return Files.readAllBytes(Paths.get(uri));
+	}
 
 	public static String loadFileAsString(URI uri) throws IOException {
-		return new String(Files.readAllBytes(Paths.get(uri)), StandardCharsets.UTF_8);
+		return new String(loadFileAsByteArray(uri));
 	}
 	
 	public static String loadResourceAsString(String name) throws IOException {

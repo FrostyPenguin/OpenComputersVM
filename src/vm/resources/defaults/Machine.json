@@ -33,7 +33,8 @@
       "temporary": true
     },
     {
-      "type": "eeprom"
+      "type": "eeprom",
+      "label": "EEPROM (Lua BIOS)"
     },
     {
       "type": "keyboard"

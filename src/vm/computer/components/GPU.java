@@ -54,6 +54,12 @@ public class GPU extends ComponentBase {
 		
 		private boolean needUpdate = false;
 
+		public void setBufferSize(int size) {
+			synchronized (this) {
+				buffer = new int[size];
+			}
+		}
+		
 		public void update() {
 			update(0, 0, width - 1, height - 1);
 		}
@@ -421,7 +427,7 @@ public class GPU extends ComponentBase {
 		pixelWriter = writableImage.getPixelWriter();
 		
 		// Потом адейтим буфер видяхи в нее
-		updaterThread.buffer = new int[GlyphWIDTHMulWidth * GlyphHEIGHTMulHeight];
+		updaterThread.setBufferSize(GlyphWIDTHMulWidth * GlyphHEIGHTMulHeight);
 		updaterThread.update();
 		updaterThread.setPixels();
 
