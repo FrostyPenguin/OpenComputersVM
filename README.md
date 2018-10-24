@@ -15,6 +15,7 @@ Here's list of features for this moment:
 Planned:
 * Lua architecture switching
 * Data card component implementation
+* Socket client support for internet component
 
 Development is still in progress. But you can try the latest build located in /out/ directory without any guarantees :3
 
