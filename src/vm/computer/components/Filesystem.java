@@ -3,13 +3,11 @@ package vm.computer.components;
 import li.cil.repack.com.naef.jnlua.LuaState;
 import org.json.JSONObject;
 import vm.computer.Machine;
-import vm.computer.Player;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -26,7 +24,6 @@ public class Filesystem extends ComponentBase {
 	private boolean temporary;
 	private long soundNextPlay = 0;
 	private int soundIndex = 0;
-	private Player[] players = new Player[7];
 	private HashMap<Integer, Handle> handles = new HashMap<>();
 	
 	public Filesystem(Machine machine, String address, String label, String realPath, boolean temporary) {
@@ -35,10 +32,6 @@ public class Filesystem extends ComponentBase {
 		this.realPath = realPath;
 		this.label = label;
 		this.temporary = temporary;
-
-		// Создаем дохуяллион плееров для воспроизведения наших прекрасных звуков харда
-		for (int i = 0; i < players.length; i++)
-			players[i] = new Player("hdd_access" + i + ".mp3");
 	}
 	
 	@Override
@@ -335,8 +328,9 @@ public class Filesystem extends ComponentBase {
 	private abstract class Handle {
 		public int id;
 		public RandomAccessFile randomAccessFile;
-		
+		File pizda;
 		public Handle(File file) {
+			pizda = file;
 			try {
 				randomAccessFile = new RandomAccessFile(file, "rw");
 			   
@@ -356,6 +350,7 @@ public class Filesystem extends ComponentBase {
 		
 		public void close() {
 			try {
+//				System.out.println("Closing handle " + pizda.getPath());
 				randomAccessFile.close();
 			}
 			catch (IOException e) {
@@ -368,7 +363,7 @@ public class Filesystem extends ComponentBase {
 		public ReadHandle(File file, boolean binary) {
 			super(file);
 			
-//            System.out.println("Reading file: " + file.getPath());
+            System.out.println("Reading file: " + file.getPath());
 		}
 
 		public byte[] read(double needToRead) {
@@ -398,7 +393,7 @@ public class Filesystem extends ComponentBase {
 		public WriteHandle(File file, boolean binary, boolean append) {
 			super(file);
 
-//			System.out.println("Writing file: " + file.getPath());
+			System.out.println("Writing file: " + file.getPath());
 			
 			try {
 				if (append)
@@ -443,13 +438,10 @@ public class Filesystem extends ComponentBase {
 	private void playSound() {
 		long current = System.currentTimeMillis();
 		if (soundNextPlay < current) {
-			Player player = players[soundIndex];
-			player.reset();
-			player.play();
-
+			machine.player.play(machine.player.HDDPlayers[soundIndex]);
+			
 			soundNextPlay = current + soundNextDelay;
-			soundIndex++;
-			if (soundIndex >= players.length)
+			if (++soundIndex >= machine.player.HDDPlayers.length)
 				soundIndex = 0;
 		}
 	}

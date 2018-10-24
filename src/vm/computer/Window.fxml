@@ -9,6 +9,7 @@
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.Pane?>
@@ -16,28 +17,32 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<GridPane fx:id="windowGridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="588.0" prefWidth="1166.0" style="-fx-background-color: #1E1E1E;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vm.computer.Machine">
-  <columnConstraints>
-    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-      <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="294.0" />
-  </columnConstraints>
-  <rowConstraints>
-    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-  </rowConstraints>
+<AnchorPane fx:id="sceneAnchorPane" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vm.computer.Machine">
    <children>
-      <GridPane fx:id="screenGridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
-         <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-         </columnConstraints>
-         <rowConstraints>
-            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-         </rowConstraints>
+      <GridPane fx:id="mainGridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="588.0" prefWidth="1166.0" style="-fx-background-color: #1A1A1A;" stylesheets="@../styles/toolbar.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="10.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="294.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+        </rowConstraints>
          <children>
-            <ImageView fx:id="screenImageView" fitHeight="324.0" fitWidth="564.0" pickOnBounds="true" preserveRatio="true" smooth="false" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-               <image>
-                  <Image url="@../../../../../../Pictures/Govnokod.png" />
-               </image>
-            </ImageView>
+            <GridPane fx:id="screenGridPane">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <ImageView fx:id="screenImageView" fitHeight="324.0" fitWidth="1232.0" pickOnBounds="true" preserveRatio="true" smooth="false" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                     <image>
+                        <Image url="@../../../../../../Pictures/Govnokod.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </GridPane>
             <Button fx:id="toolbarButton" focusTraversable="false" mnemonicParsing="false" onMouseClicked="#onToolbarButtonPressed" prefHeight="132.0" prefWidth="40.0" stylesheets="@../styles/toolbarButton.css" text="&gt;" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
                <GridPane.margin>
                   <Insets right="-20.0" />
@@ -46,17 +51,7 @@
                   <Insets right="16.0" />
                </padding>
             </Button>
-         </children>
-      </GridPane>
-      <GridPane style="-fx-background-color: #282828;" stylesheets="@../styles/toolbar.css" GridPane.columnIndex="1">
-         <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-         </columnConstraints>
-         <rowConstraints>
-            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-         </rowConstraints>
-         <children>
-            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+            <VBox alignment="TOP_CENTER" spacing="10.0" style="-fx-background-color: #272727;" GridPane.columnIndex="1">
                <children>
                   <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="152.0" prefWidth="294.0">
                      <children>
@@ -244,7 +239,7 @@
                           <columnConstraints>
                             <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
                             <ColumnConstraints hgrow="SOMETIMES" />
-                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="42.0" />
                           </columnConstraints>
                           <rowConstraints>
                             <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="42.0" vgrow="SOMETIMES" />
@@ -273,6 +268,9 @@
                                     <String fx:value="anyButton" />
                                     <String fx:value="font" />
                                  </styleClass>
+                                 <GridPane.margin>
+                                    <Insets bottom="1.0" />
+                                 </GridPane.margin>
                               </Button>
                            </children>
                            <padding>
@@ -304,12 +302,15 @@
                                     <String fx:value="anyButton" />
                                     <String fx:value="font" />
                                  </styleClass>
+                                 <GridPane.margin>
+                                    <Insets bottom="1.0" />
+                                 </GridPane.margin>
                               </Button>
                            </children>
                            <columnConstraints>
                               <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
                               <ColumnConstraints hgrow="SOMETIMES" />
-                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="48.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="42.0" />
                            </columnConstraints>
                            <padding>
                               <Insets right="6.0" />
@@ -346,7 +347,7 @@
                   </VBox>
                </children>
             </VBox>
-            <Button focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseReleased="#onCloseMachineButtonPressed" prefHeight="48.0" prefWidth="48.0" text="x" GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM">
+            <Button fx:id="closeMachineButton" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" mnemonicParsing="false" onMouseReleased="#onCloseMachineButtonPressed" prefHeight="42.0" prefWidth="42.0" text="x" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM">
                <font>
                   <Font name="Minecraft Regular" size="11.0" />
                </font>
@@ -356,7 +357,7 @@
                   <String fx:value="font" />
                </styleClass>
             </Button>
-            <Button focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseReleased="#onGenerateButtonPressed" prefHeight="48.0" prefWidth="247.0" text="New  virtual  machine" GridPane.halignment="LEFT" GridPane.valignment="BOTTOM">
+            <Button focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseReleased="#onGenerateButtonPressed" prefHeight="42.0" prefWidth="252.0" text="New  virtual  machine" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.valignment="BOTTOM">
                <font>
                   <Font name="Minecraft Regular" size="11.0" />
                </font>
@@ -369,4 +370,4 @@
          </children>
       </GridPane>
    </children>
-</GridPane>
+</AnchorPane>

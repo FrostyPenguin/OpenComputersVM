@@ -1,5 +1,9 @@
 package vm;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import vm.computer.Machine;
+
 import java.io.*;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -73,5 +77,21 @@ public class IO {
 		
 		zipInputStream.closeEntry();
 		zipInputStream.close();
+	}
+	
+	public static void saveConfig() throws IOException {
+		System.out.println("Saving config file...");
+
+		JSONArray JSONMachines = new JSONArray();
+		for (Machine machine : Machine.list) {
+			JSONMachines.put(machine.toJSONObject());
+		}
+
+		Files.write(
+			Paths.get(IO.configFile.toURI()),
+			new JSONObject()
+				.put("machines", JSONMachines)
+				.toString(2).getBytes(StandardCharsets.UTF_8)
+		);
 	}
 }

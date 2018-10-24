@@ -8,15 +8,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -32,9 +32,10 @@ import org.apache.commons.lang3.SystemUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import vm.IO;
-import vm.computer.api.*;
+import vm.computer.api.APIBase;
 import vm.computer.api.Component;
 import vm.computer.api.Computer;
+import vm.computer.api.Unicode;
 import vm.computer.components.*;
 
 import java.awt.*;
@@ -51,14 +52,14 @@ public class Machine {
 	private static final int screenImageViewBlurSize = 82;
 	
 	// Жабафыховские обжекты
+	public GridPane mainGridPane, screenGridPane;
+	public AnchorPane sceneAnchorPane;
 	public VBox propertiesVBox;
 	public Slider RAMSlider;
-	public GridPane windowGridPane;
-	public GridPane screenGridPane;
 	public ImageView screenImageView, boardImageView;
 	public ToggleButton powerButton;
 	public TextField EEPROMPathTextField, HDDPathTextField, tunnelChannelTextField, screensHorizontallyTextField, screensVerticallyTextField, playerTextField;
-	public Button toolbarButton;
+	public Button toolbarButton, closeMachineButton;
 	
 	// Машиновская поебистика
 	public ArrayList<ComponentBase> componentList = new ArrayList<>();
@@ -81,16 +82,14 @@ public class Machine {
 	public Modem modemComponent;
 	public Tunnel tunnelComponent;
     public Internet internetComponent;
-
+    public Player player = new Player();
+    
 	private Stage stage;
-	private Player powerButtonPlayer, computerRunningPlayer;
 	private boolean toolbarHidden;
 	
 	// Пустой конструктор требуется FXML-ебале для инициализации
 	public Machine() {
-		powerButtonPlayer = new Player("click.mp3");
-		computerRunningPlayer = new Player("computer_running.mp3");
-		computerRunningPlayer.setRepeating();
+		
 	}
 
 	public static void fromJSONObject(JSONObject machineConfig) {
@@ -172,18 +171,39 @@ public class Machine {
 			machine.toolbarHidden = machineConfig.getBoolean("toolbarHidden");
 			machine.updateToolbar();
 			
+			// Шоб не вводили хуйнину всякую
+			machine.screensHorizontallyTextField.setTextFormatter(new TextFormatter<>(change -> {
+				if (change.getControlNewText().matches("\\d*")) {
+					String
+						w = machine.screensHorizontallyTextField.getText(),
+						h = machine.screensVerticallyTextField.getText();
+					
+					if (w.length() > 0 && h.length() > 0) {
+						machine.screenComponent.blocksHorizontally = Integer.parseInt(w);
+						machine.screenComponent.blocksVertically = Integer.parseInt(h);
+					}
+					
+					return change;
+				}
+				else {
+					return null;
+				}
+			}));
+			machine.screensHorizontallyTextField.setTextFormatter(machine.screensHorizontallyTextField.getTextFormatter());
+			
+			// А это более грамотная обработка клика на толлгеКнопку ебливую, которая вообще неадекватно реагирует по дефолту
 			machine.powerButton.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
 				event.consume();
-				
-				machine.powerButtonPlayer.stop();
-				machine.powerButtonPlayer.play();
+
+				machine.player.play(machine.player.powerButtonClicked);
 				
 				if (machine.started)
 					machine.shutdown(true);
 				else
 					machine.boot();
 			});
-
+			
+			// Приходится ебошить тень вручную, т.к. иначе оно оперирует баундсами, которые поганят скрин-ивенты
 			DropShadow effect = new DropShadow(BlurType.THREE_PASS_BOX, Color.rgb(0, 0, 0, 0.5), 0, 0, 0, 0);
 			effect.setWidth(screenImageViewBlurSize + 2);
 			effect.setHeight(screenImageViewBlurSize + 2);
@@ -213,6 +233,9 @@ public class Machine {
 			
 			// Грузим дефолтный конфиг машины и создаем жсон на его основе
 			JSONObject machineConfig = new JSONObject(IO.loadResourceAsString("resources/defaults/Machine.json"));
+			
+			// Пушим в него имечко юзверя
+			machineConfig.put("player", System.getProperty("user.name"));
 			
 			// Создаем основной путь всей вирт. машины
 			File machineFile;
@@ -282,6 +305,9 @@ public class Machine {
 
 			// Усе, уася, готова машинка
 			Machine.fromJSONObject(machineConfig);
+
+			// Сейвим на всякий
+			IO.saveConfig();
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -316,13 +342,15 @@ public class Machine {
 	}
 	
 	public void checkImageViewBingings() {
-		double width = screenGridPane.getWidth(), height = screenGridPane.getHeight();
+		double
+			width = screenGridPane.getWidth(),
+			height = screenGridPane.getHeight();
 		screenImageView.setFitWidth(width > gpuComponent.GlyphWIDTHMulWidth ? gpuComponent.GlyphWIDTHMulWidth : width);
 		screenImageView.setFitHeight(height > gpuComponent.GlyphHEIGHTMulHeight ? gpuComponent.GlyphHEIGHTMulHeight : height);
 	}
 	
 	private void updateToolbar() {
-		ColumnConstraints columnConstraints = windowGridPane.getColumnConstraints().get(1);
+		ColumnConstraints columnConstraints = mainGridPane.getColumnConstraints().get(1);
 		
 		new Timeline(
 			new KeyFrame(Duration.ZERO,
@@ -446,7 +474,7 @@ public class Machine {
 	}
 
 	public class LuaThread extends Thread {
-		private ArrayList<LuaState> signalStack = new ArrayList<>();
+		private LuaState[] signalStack = new LuaState[256];
 		private int lastOCPixelClickX, lastOCPixelClickY;
 
 		// Интересное решение: данный костыль работает "костыльнее", однако быстрее аналога на machine.lua
@@ -496,10 +524,10 @@ public class Machine {
 
 			Platform.runLater(() -> {
 				// Фокусирование экрана при клике на эту злоебучую область
-				windowGridPane.setOnMousePressed(event -> screenImageView.requestFocus());
+				mainGridPane.setOnMousePressed(event -> screenImageView.requestFocus());
 
 				// Ивенты клавиш всему окну
-				windowGridPane.setOnKeyPressed(event -> {
+				mainGridPane.setOnKeyPressed(event -> {
 //					System.out.println("PRESSED: " + event.getCharacter() + ", " + event.getText() + ", " + event.getCode());
 
 					lastCode = event.getCode();
@@ -512,7 +540,7 @@ public class Machine {
 				});
 
 				// Этот ивент всегда следует сразу за KeyPressed в случае несистемных клавиш
-				windowGridPane.setOnKeyTyped(event -> {
+				mainGridPane.setOnKeyTyped(event -> {
 					if (!codes.containsKey(lastCode)) {
 //						System.out.println("TYPED: " + event.getCharacter() + ", " + event.getText() + ", " + event.getCode());
 
@@ -522,7 +550,7 @@ public class Machine {
 					}
 				});
 
-				windowGridPane.setOnKeyReleased(event -> {
+				mainGridPane.setOnKeyReleased(event -> {
 //					System.out.println("RELEASED: " + event.getCharacter() + ", " + event.getText() + ", " + event.getCode());
 					
 					KeyCode keyCode = event.getCode();
@@ -649,7 +677,17 @@ public class Machine {
 		}
 
 		public void pushSignal(LuaState signal) {
-			signalStack.add(signal);
+			int nullIndex = -1;
+
+			for (int i = 0; i < signalStack.length; i++) {
+				if (signalStack[i] == null) {
+					nullIndex = i;
+					break;
+				}
+			}
+
+			if (nullIndex >= 0)
+				signalStack[nullIndex] = signal;
 
 			synchronized (this) {
 				notify();
@@ -663,11 +701,17 @@ public class Machine {
 //                System.out.println("Pulling signal infinite: " + (timeout == Double.POSITIVE_INFINITY) + ", timeout:" + timeout + ", deadline: " + deadline + ", delta: " + (deadline - System.currentTimeMillis()));
 				
 				while (System.currentTimeMillis() <= deadline) {
-					if (signalStack.size() > 0) {
-						LuaState result = signalStack.get(0);
+					if (signalStack[0] != null) {
+						LuaState result = signalStack[0];
 
 						// Шифтим
-						signalStack.remove(0);
+						boolean needClearEnd = signalStack[signalStack.length - 1] != null;
+							
+						for (int i = 1; i < signalStack.length; i++)
+							signalStack[i - 1] = signalStack[i];
+
+						if (needClearEnd)
+							signalStack[signalStack.length - 1] = null;
 
 						return result;
 					}
@@ -698,7 +742,7 @@ public class Machine {
 			luaThread.interrupt();
 			powerButton.setSelected(false);
 			propertiesVBox.setDisable(false);
-			computerRunningPlayer.stop();
+			player.stop(player.computerRunning);
 
 			if (resetGPU) {
 				gpuComponent.flush();
@@ -722,7 +766,7 @@ public class Machine {
 				propertiesVBox.setDisable(true);
 				powerButton.setSelected(true);
 				screenImageView.requestFocus();
-				computerRunningPlayer.play();
+				player.play(player.computerRunning);
 				
 				luaThread = new LuaThread();
 				luaThread.start();
