@@ -2,6 +2,7 @@ package vm.computer.components;
 
 import li.cil.repack.com.naef.jnlua.LuaState;
 import org.json.JSONObject;
+import vm.computer.LuaUtils;
 import vm.computer.Machine;
 
 import java.io.File;
@@ -12,10 +13,6 @@ import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Filesystem extends FilesystemBase {
-	private static final int
-		spaceUsed = 0,
-		spaceTotal = 12 * 1024 * 1024;
-	
 	private boolean temporary;
 	private HashMap<Integer, Handle> handles = new HashMap<>();
 	
@@ -31,19 +28,15 @@ public class Filesystem extends FilesystemBase {
 
 		// Продрачивание по хендлу бладсикером
 		machine.lua.pushJavaFunction(args -> {
-			args.checkInteger(1);
-			args.checkString(2);
-			args.checkInteger(3);
-			
-			int id = args.toInteger(1);
+			int id = args.checkInteger(1);
 			if (handles.containsKey(id)) {
 				machine.player.playHDDSound();
 
 				try {
 					RandomAccessFile randomAccessFile = handles.get(id).randomAccessFile;
-					long value = args.toInteger(3);
+					long value = args.checkInteger(3);
 					
-					switch (args.toString(2)) {
+					switch (args.checkString(2)) {
 						case "cur":
 							randomAccessFile.seek(randomAccessFile.getFilePointer() + value);
 							break;
@@ -92,10 +85,7 @@ public class Filesystem extends FilesystemBase {
 		
 		// Запись в хендл
 		machine.lua.pushJavaFunction(args -> {
-			args.checkInteger(1);
-			args.checkString(2);
-
-			int id = args.toInteger(1);
+			int id = args.checkInteger(1);
 			if (handles.containsKey(id)) {
 				machine.player.playHDDSound();
 				
@@ -113,9 +103,7 @@ public class Filesystem extends FilesystemBase {
 
 		// Закрытие хендлов
 		machine.lua.pushJavaFunction(args -> {
-			args.checkInteger(1);
-
-			int id = args.toInteger(1);
+			int id = args.checkInteger(1);
 			if (handles.containsKey(id)) {
 				handles.get(id).close();
 				handles.remove(id);
@@ -129,7 +117,11 @@ public class Filesystem extends FilesystemBase {
 		machine.lua.pushJavaFunction(args -> {
 			File file = getFsFile(args);
 
-			boolean reading = true, binary = false, append = false;
+			boolean
+				reading = true,
+				binary = false,
+				append = false;
+			
 			if (!args.isNoneOrNil(2)){
 				String mode = machine.lua.checkString(2);
 				reading = mode.contains("r");
@@ -265,28 +257,24 @@ public class Filesystem extends FilesystemBase {
 			}
 		});
 		machine.lua.setField(-2, "list");
-	
-		// Заюзаное пространство
-		machine.lua.pushJavaFunction(args -> {
-			machine.lua.pushInteger(spaceUsed);
-			return 1;
-		});
-		machine.lua.setField(-2, "spaceUsed");
-	
-		// Кол-во юзабельного пространства
-		machine.lua.pushJavaFunction(args -> {
-			machine.lua.pushInteger(spaceTotal);
-			return 1;
-		});
-		machine.lua.setField(-2, "spaceTotal");
 
-		// ))000
 		machine.lua.pushJavaFunction(args -> {
-			machine.lua.pushBoolean(false);
+			machine.player.playHDDSound();
 
-			return 1;
+			File file = getFsFile(args);
+			if (file.exists()) {
+				machine.lua.pushBoolean(file.renameTo(getFsFile(args.checkString(2))));
+				return 1;
+			}
+			else {
+				return pushFileNotExists();
+			}
 		});
-		machine.lua.setField(-2, "isReadOnly");
+		machine.lua.setField(-2, "rename");
+
+		LuaUtils.pushBooleanFunction(machine.lua, "isReadOnly", false);
+		LuaUtils.pushIntegerFunction(machine.lua, "spaceTotal", 12 * 1024 * 1024);
+		LuaUtils.pushIntegerFunction(machine.lua, "spaceUsed", 0);
 	}
 
 	@Override

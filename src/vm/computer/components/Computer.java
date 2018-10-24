@@ -31,10 +31,7 @@ public class Computer extends ComponentBase {
 		super.pushProxyFields();
 		
 		machine.lua.pushJavaFunction(args -> {
-			args.checkInteger(1);
-			args.checkInteger(2);
-
-			rawBeep(args.toInteger(1), args.toInteger(2));
+			rawBeep(args.checkInteger(1), (long) (args.checkNumber(2) * 1000));
 
 			return 0;
 		});
@@ -62,10 +59,10 @@ public class Computer extends ComponentBase {
 		machine.lua.setField(-2,  "isRunning");
 	}
 
-	public void rawBeep(int frequency, double duration) {
+	public void rawBeep(int frequency, long duration) {
 		try {
 			midiChannel.noteOn((int) (frequency / 2000d * 127), 127);
-			Thread.sleep((long) (duration * 1000));
+			Thread.sleep(duration);
 			midiChannel.allNotesOff();
 			Thread.sleep(100);
 		}

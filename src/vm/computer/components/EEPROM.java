@@ -1,6 +1,7 @@
 package vm.computer.components;
 
 import org.json.JSONObject;
+import vm.computer.LuaUtils;
 import vm.computer.Machine;
 
 import java.io.IOException;
@@ -65,6 +66,10 @@ public class EEPROM extends FilesystemBase {
 			return 1;
 		});
 		machine.lua.setField(-2, "getChecksum");
+
+		LuaUtils.pushIntegerFunction(machine.lua, "getDataSize", 4096);
+		LuaUtils.pushIntegerFunction(machine.lua, "getSize", 4096);
+		LuaUtils.pushVoidFunction(machine.lua, "makeReadOnly");
 	}
 
 	@Override
