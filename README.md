@@ -1,3 +1,3 @@
-Early access open pre alpha indev free-to-play OpenComputers emulator. For this moment it looks like that:
+Development is still in progress. But you can try the latest build located in /out/ directory without any guarantees <3
 
-![](https://i.imgur.com/DBCQefn.png)
+![](https://i.imgur.com/631D077.png)
