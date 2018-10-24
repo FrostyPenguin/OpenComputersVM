@@ -6,7 +6,7 @@ public class LuaUtils {
 	public static void pushIntegerFunction(LuaState lua, String name, int value) {
 		lua.pushJavaFunction(args -> {
 			lua.pushInteger(value);
-		    return 0;
+		    return 1;
 		});
 		lua.setField(-2, name);
 	}
@@ -14,15 +14,13 @@ public class LuaUtils {
     public static void pushNumberFunction(LuaState lua, String name, double value) {
         lua.pushJavaFunction(args -> {
             lua.pushNumber(value);
-            return 0;
+            return 1;
         });
         lua.setField(-2, name);
     }
 	
 	public static void pushVoidFunction(LuaState lua, String name) {
-		lua.pushJavaFunction(args -> {
-			return 0;
-		}); 
+		lua.pushJavaFunction(args -> 0); 
 		lua.setField(-2, name);
 	}
 

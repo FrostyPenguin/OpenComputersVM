@@ -201,7 +201,7 @@ public class Machine {
 				machine.player.play(machine.player.powerButtonClicked);
 				
 				if (machine.started)
-					machine.shutdown(true);
+					machine.shutdown();
 				else
 					machine.boot();
 			});
@@ -367,6 +367,13 @@ public class Machine {
 			)
 		).play();
 	}
+
+	private void error(String text) {
+		gpuComponent.rawError("Unrecoverable error\n\n" + text);
+		gpuComponent.updaterThread.update();
+
+		shutdown();
+	}
 	
 	public void onToolbarButtonPressed() {
 		toolbarHidden = !toolbarHidden;
@@ -379,7 +386,7 @@ public class Machine {
 	}
 	
 	private void onWindowClosed() {
-		shutdown(true);
+		shutdown();
 		gpuComponent.updaterThread.interrupt();
 	}
 
@@ -482,11 +489,10 @@ public class Machine {
 	}
 
 	public class LuaThread extends Thread {
+		public boolean shuttingDown = false;
+		
 		private LuaState[] signalStack = new LuaState[256];
 		private int lastOCPixelClickX, lastOCPixelClickY;
-
-		// Интересное решение: данный костыль работает "костыльнее", однако быстрее аналога на machine.lua
-		private boolean shuttingDown = false;
 
 		private HashMap<KeyCode, String> codes = new HashMap<>();
 		private KeyCode lastCode;
@@ -610,19 +616,17 @@ public class Machine {
 			}
 			catch (Exception e) {
 				if (shuttingDown) {
-					System.out.println("Успешно вырубаем компек))0");
+					System.out.println("Shutting down normally");
+					// Чистим экран исключительно по завершению процесса луа
+					// Иначе может возникнуть случай, когда экран уже очищен для выключения,
+					// а процесс луа еще дорабатывает остатки и рисует хуйню на экране
+					gpuComponent.flush();
+					gpuComponent.updaterThread.update();
 				}
 				else {
 					error(e.getMessage());
 				}
 			}
-		}
-
-		private void error(String text) {
-			gpuComponent.rawError("Unrecoverable error\n\n" + text);
-			gpuComponent.updaterThread.update();
-			
-			shutdown(false);
 		}
 		
 		private void pushKeySignal(KeyCode keyCode, String text, String name) {
@@ -730,9 +734,7 @@ public class Machine {
 					}
 					catch (ThreadDeath | InterruptedException e) {
 						System.out.println("Поток интерруптнулся чет у компа");
-
-						shuttingDown = true;
-						lua = new LuaState();
+						lua.setTotalMemory(1);
 						
 						break;
 					}
@@ -743,45 +745,48 @@ public class Machine {
 		}
 	}
 	
-	public void shutdown(boolean resetGPU) {
+	public void shutdown() {
 		if (started) {
 			started = false;
-
-			luaThread.interrupt();
+			
+			player.stop(player.computerRunning);
 			powerButton.setSelected(false);
 			propertiesVBox.setDisable(false);
-			player.stop(player.computerRunning);
-
-			if (resetGPU) {
-				gpuComponent.flush();
-				gpuComponent.updaterThread.update();
-			}
+			
+			luaThread.shuttingDown = true;
+			luaThread.interrupt();
 		}
 	}
 
 	public void boot() {
 		if (!started) {
-			try {
-				System.out.println("Loading EEPROM from " + eepromComponent.realPath);
-				eepromComponent.code = IO.loadFileAsByteArray(new File(eepromComponent.realPath).toURI());
+			started = true;
+			startTime = System.currentTimeMillis();
+			
+			File EEPROMFile = new File(eepromComponent.realPath);
+			if (EEPROMFile.exists()) {
+				try {
+					System.out.println("Loading EEPROM from " + eepromComponent.realPath);
+					eepromComponent.code = IO.loadFileAsByteArray(EEPROMFile.toURI());
+					
+					// Экранчик надо чистить, а то вдруг там бсод закрался
+					gpuComponent.flush();
+					gpuComponent.updaterThread.update();
 
-				started = true;
-				startTime = System.currentTimeMillis();
+					propertiesVBox.setDisable(true);
+					powerButton.setSelected(true);
+					screenImageView.requestFocus();
+					player.play(player.computerRunning);
 
-				// Экранчик надо чистить, а то вдруг там бсод закрался
-				gpuComponent.flush();
-				gpuComponent.updaterThread.update();
-				
-				propertiesVBox.setDisable(true);
-				powerButton.setSelected(true);
-				screenImageView.requestFocus();
-				player.play(player.computerRunning);
-				
-				luaThread = new LuaThread();
-				luaThread.start();
+					luaThread = new LuaThread();
+					luaThread.start();
+				}
+				catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-			catch (IOException e) {
-				e.printStackTrace();
+			else {
+				error("EEPROM.lua file not exists");
 			}
 		}
 	}

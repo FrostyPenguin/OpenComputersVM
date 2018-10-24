@@ -37,19 +37,19 @@ public class Computer extends ComponentBase {
 		});
 		machine.lua.setField(-2,  "beep");
 
-		machine.lua.pushJavaFunction(args -> {
-			machine.boot();
-
-			return 0;
-		});
-		machine.lua.setField(-2,  "start");
-
-		machine.lua.pushJavaFunction(args -> {
-			machine.shutdown(true);
-
-			return 0;
-		});
-		machine.lua.setField(-2,  "stop");
+//		machine.lua.pushJavaFunction(args -> {
+//			machine.boot();
+//
+//			return 0;
+//		});
+//		machine.lua.setField(-2,  "start");
+//
+//		machine.lua.pushJavaFunction(args -> {
+//			machine.shutdown(true);
+//
+//			return 0;
+//		});
+//		machine.lua.setField(-2,  "stop");
 
 		machine.lua.pushJavaFunction(args -> {
 			machine.lua.pushBoolean(true);
@@ -60,14 +60,19 @@ public class Computer extends ComponentBase {
 	}
 
 	public void rawBeep(int frequency, long duration) {
+		midiChannel.noteOn((int) (frequency / 2000d * 127), 127);
+		
 		try {
-			midiChannel.noteOn((int) (frequency / 2000d * 127), 127);
 			Thread.sleep(duration);
-			midiChannel.allNotesOff();
-			Thread.sleep(100);
 		}
-		catch (InterruptedException e) {
-			e.printStackTrace();
+		catch (InterruptedException e) {}
+		finally {
+			midiChannel.allNotesOff();
+
+			try {
+				Thread.sleep(100);
+			}
+			catch (InterruptedException e) {}
 		}
 	}
 }

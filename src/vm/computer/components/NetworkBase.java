@@ -56,7 +56,7 @@ public class NetworkBase extends ComponentBase {
 		// Нуачо, нах себе-то слать
 		if (!remoteAddress.equals(address)) {
 			LuaState signal = new LuaState();
-
+			
 			signal.pushString("modem_message");
 			signal.pushString(remoteAddress);
 			signal.pushString(address);

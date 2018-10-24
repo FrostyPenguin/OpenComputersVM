@@ -118,23 +118,23 @@ public class Filesystem extends FilesystemBase {
 			File file = getFsFile(args);
 
 			boolean
-				reading = true,
+				writing = false,
 				binary = false,
 				append = false;
 			
 			if (!args.isNoneOrNil(2)){
 				String mode = machine.lua.checkString(2);
-				reading = mode.contains("r");
+				writing = mode.contains("w");
 				binary = mode.contains("b");
 				append = mode.contains("a");
 			}
-			
+
 			if (file.getParentFile().exists()) {
-				if (!reading || file.exists()) {
+				if (writing || file.exists()) {
 					machine.lua.pushInteger(
-						reading ?
-						new ReadHandle(file, binary).id :
-						new WriteHandle(file, binary, append).id
+						writing ?
+						new WriteHandle(file, binary, append).id :
+						new ReadHandle(file, binary).id
 					);
 					
 					return 1;
