@@ -1,13 +1,13 @@
 package vm.computer.components;
 
+import li.cil.repack.com.naef.jnlua.LuaState;
 import org.json.JSONObject;
 import vm.computer.Machine;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.*;
 import java.util.Map;
 
 public class Internet extends ComponentBase {
@@ -20,6 +20,94 @@ public class Internet extends ComponentBase {
 	@Override
 	public void pushProxyFields() {
 		super.pushProxyFields();
+
+		machine.lua.pushJavaFunction(connectArgs -> {
+			try {
+				System.out.println("Opening TCP client connection: " + connectArgs.checkString(1) + ":" + connectArgs.checkInteger(2));
+				Socket socket = new Socket(connectArgs.checkString(1), connectArgs.isNoneOrNil(2) ? 80 : connectArgs.checkInteger(2));
+				
+				System.out.println("Connection estabilished: " + socket.getRemoteSocketAddress());
+				socket.setSoTimeout(100);
+
+				OutputStream outputStream = socket.getOutputStream();
+				InputStream inputStream = socket.getInputStream();
+				
+				machine.lua.newTable();
+				
+				// Чтение из сокета
+				machine.lua.pushJavaFunction(readArgs -> {
+					try {
+//						System.out.println("READING STARTED");
+						byte[] buffer = new byte[getArraySize(readArgs)];
+						int readCount = inputStream.read(buffer);
+//							System.out.println("READING FINISED, READ CUNT: " + readCount);
+
+						if (readCount > 0) {
+							byte[] result = new byte[readCount];
+							for (int i = 0; i < readCount; i++)
+								result[i] = buffer[i];
+
+							machine.lua.pushByteArray(result);
+							return 1;
+						}
+						else {
+							return pushEmptyArray();
+						}
+					}
+					catch (SocketTimeoutException e) {
+						return pushEmptyArray();
+					}
+					catch (IOException e) {
+						return pushIOExcetion(e.getMessage());
+					}
+				});
+				machine.lua.setField(-2, "read");
+
+				// Запись в сокет
+				machine.lua.pushJavaFunction(readArgs -> {
+					try {
+						byte[] data = readArgs.checkByteArray(1);
+						outputStream.write(data);
+						
+						machine.lua.pushInteger(data.length);
+						
+						return 1;
+					}
+					catch (IOException e) {
+						return pushIOExcetion(e.getMessage());
+					}
+				});
+				machine.lua.setField(-2, "write");
+
+				// Закрытие сокета
+				machine.lua.pushJavaFunction(args -> {
+					try {
+						socket.close();
+						inputStream.close();
+						outputStream.close();
+					}
+					catch (IOException e) {}
+					finally {
+						machine.lua.pushBoolean(true);
+						return 1;
+					}
+				});
+				machine.lua.setField(-2, "close");
+
+				// Какая-то хуйня, видимо, для чека статуса соединения, хз
+				machine.lua.pushJavaFunction(args -> {
+					machine.lua.pushBoolean(socket.isConnected());
+					return 1;
+				});
+				machine.lua.setField(-2, "finishConnect");
+				
+				return 1;
+			}
+			catch (IOException e) {
+				return pushIOExcetion(e.getMessage());
+			}
+		});
+		machine.lua.setField(-2, "connect");
 		
 		machine.lua.pushJavaFunction(requestArgs -> {
 			try {
@@ -62,7 +150,7 @@ public class Internet extends ComponentBase {
 				machine.lua.pushJavaFunction(readArgs -> {
 					try {
 //						System.out.println(", available: " + inputStream.available());
-						byte[] buffer = new byte[readArgs.isNoneOrNil(1) ? defaultReadLength : (int) Math.min(defaultReadLength, readArgs.checkNumber(1))];
+						byte[] buffer = new byte[getArraySize(readArgs)];
 						int readCount = inputStream.read(buffer);
 //						System.out.println("Buffer size: " + buffer.length + ", readCount: " + readCount);
 						
@@ -74,32 +162,28 @@ public class Internet extends ComponentBase {
 							machine.lua.pushByteArray(result);
 							return 1;
 						}
-						else{
+						else {
 							machine.lua.pushNil();
 							return 1;
 						}
 					}
 					catch (IOException e) {
-						return pushIOExcetion();	
+						return pushIOExcetion(e.getMessage());	
 					}
 				});
 				machine.lua.setField(-2, "read");
 
 				// Закрытие http request
-				machine.lua.pushJavaFunction(readArgs -> {
+				machine.lua.pushJavaFunction(args -> {
 					try {
 						inputStream.close();
 						connection.disconnect();
-						
+					}
+					catch (IOException e) {}
+					finally {
 						machine.lua.pushBoolean(true);
 						return 1;
 					}
-					catch (IOException e) {
-						e.printStackTrace();
-					}
-
-					machine.lua.pushBoolean(false);
-					return 1;
 				});
 				machine.lua.setField(-2, "close");
 
@@ -145,22 +229,13 @@ public class Internet extends ComponentBase {
 					}
 					catch (IOException e) {
 						e.printStackTrace();
-						return pushIOExcetion();
+						return pushIOExcetion(e.getMessage());
 					}
 				});
 				machine.lua.setField(-2, "response");
 				
 				return 1;
 			}
-//			catch (MalformedURLException e) {
-//				machine.lua.pushNil();
-//				machine.lua.pushString("malformed URL");
-//				
-//				return 2;
-//			}
-//			catch (IOException e) {
-//				return pushIOExcetion();
-//			}
 			catch (Exception e) {
 				e.printStackTrace();
 				return 0;
@@ -168,10 +243,19 @@ public class Internet extends ComponentBase {
 		});
 		machine.lua.setField(-2, "request");
 	}
+	
+	private int getArraySize(LuaState args) {
+		return args.isNoneOrNil(1) ? defaultReadLength : (int) Math.min(defaultReadLength, args.checkNumber(1));
+	}
+	
+	private int pushEmptyArray() {
+		machine.lua.pushByteArray(new byte[0]);
+		return 1;
+	}
 
-	private int pushIOExcetion() {
+	private int pushIOExcetion(String message) {
 		machine.lua.pushNil();
-		machine.lua.pushString("IOException blyad");
+		machine.lua.pushString("IOException: " + message);
 		return 2;
 	}
 	

@@ -50,13 +50,4 @@ public class LuaUtils {
 		return counter;
 	}
 	
-	public static void printArgs(String prefix, LuaState args) {
-		StringBuilder meow = new StringBuilder(prefix);
-		
-		for (int i = 1; i <= args.getTop(); i++) {
-			meow.append(args.toString(i)).append("   ");
-		}
-		
-		System.out.println(meow);
-	}
 }
