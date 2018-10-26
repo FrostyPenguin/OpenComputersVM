@@ -29,14 +29,14 @@ public class Component extends APIBase {
 		machine.lua.setField(-2, "proxy");
 
 		machine.lua.pushJavaFunction(args -> {
-			String filter = args.isString(1) ? args.toString(1) : null;
-			boolean exact = args.isBoolean(2) ? args.toBoolean(2) : true;
+			String filter = args.isNoneOrNil(1) ? "" : args.checkString(1);
+			boolean exact = args.isNoneOrNil(2) || args.checkBoolean(2);
 
 			machine.lua.newTable();
 			int tableIndex = machine.lua.getTop();
 
 			for (ComponentBase component : machine.componentList) {
-				if (filter == null || (exact ? component.type.equals(filter) : component.type.contains(filter))) {
+				if (filter.isEmpty() || (exact ? component.type.equals(filter) : component.type.contains(filter))) {
 					machine.lua.pushString(component.address);
 					machine.lua.pushString(component.type);
 					machine.lua.setTable(tableIndex);
