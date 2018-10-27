@@ -121,18 +121,18 @@ public class Filesystem extends FilesystemBase {
 				writing = false,
 				binary = false,
 				append = false;
-			
+
 			if (!args.isNoneOrNil(2)){
 				String mode = machine.lua.checkString(2);
 				writing = mode.contains("w");
 				binary = mode.contains("b");
 				append = mode.contains("a");
 			}
-
+			
 			if (file.getParentFile().exists()) {
-				if (writing || file.exists()) {
+				if (writing || append || file.exists()) {
 					machine.lua.pushInteger(
-						writing ?
+						writing || append ?
 						new WriteHandle(file, binary, append).id :
 						new ReadHandle(file, binary).id
 					);
