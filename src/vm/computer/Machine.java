@@ -708,7 +708,7 @@ public class Machine {
 
 		public LuaState pullSignal(double timeout) {
 			synchronized (this) {
-				long deadline = timeout == Double.POSITIVE_INFINITY ? Long.MAX_VALUE : System.currentTimeMillis() + (long) (timeout * 1000);
+				long deadline = timeout == Double.POSITIVE_INFINITY ? Long.MAX_VALUE : System.currentTimeMillis() + (long) (Math.max(0, timeout) * 1000);
 
 //                System.out.println("Pulling signal infinite: " + (timeout == Double.POSITIVE_INFINITY) + ", timeout:" + timeout + ", deadline: " + deadline + ", delta: " + (deadline - System.currentTimeMillis()));
 				

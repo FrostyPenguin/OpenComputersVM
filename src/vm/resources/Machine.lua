@@ -27,7 +27,6 @@ end
 sandbox.io = nil
 sandbox.dofile = nil
 sandbox._G = sandbox
-sandbox.collectgarbage = nil
 sandbox.eris = nil
 sandbox.print = nil
 sandbox.os.execute = nil
