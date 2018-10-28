@@ -3,11 +3,14 @@ package vm.computer.components;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.image.WritablePixelFormat;
 import li.cil.repack.com.naef.jnlua.LuaRuntimeException;
 import org.json.JSONObject;
 import vm.computer.Glyph;
 import vm.computer.LuaUtils;
 import vm.computer.Machine;
+
+import java.nio.IntBuffer;
 
 public class GPU extends ComponentBase {
 	public static class Color {
@@ -52,7 +55,13 @@ public class GPU extends ComponentBase {
 		public int waitDelay = 16;
 		public int[] buffer;
 		
+		private WritablePixelFormat<IntBuffer> argbPreInstance;
 		private boolean needUpdate = false;
+
+		public UpdaterThread() {
+			super("GPU-updater");
+			argbPreInstance = PixelFormat.getIntArgbPreInstance();
+		}
 
 		public void setBufferSize(int size) {
 			synchronized (this) {
@@ -101,7 +110,7 @@ public class GPU extends ComponentBase {
 				0,
 				GlyphWIDTHMulWidth,
 				GlyphHEIGHTMulHeight,
-				PixelFormat.getIntArgbInstance(),
+				argbPreInstance,
 				buffer,
 				0,
 				GlyphWIDTHMulWidth
@@ -213,10 +222,10 @@ public class GPU extends ComponentBase {
 			}
 			
 			updaterThread.update(
-				fixFoord(dstX, width),
-				fixFoord(dstY, height),
-				fixFoord(dstX + w - 1, width),
-				fixFoord(dstY + h - 1, height)
+				fixCoord(dstX, width),
+				fixCoord(dstY, height),
+				fixCoord(dstX + w - 1, width),
+				fixCoord(dstY + h - 1, height)
 			);
 			
 			machine.lua.pushBoolean(true);
@@ -253,11 +262,11 @@ public class GPU extends ComponentBase {
 			}
 			
 			// Пабыстрее)00
-			y = fixFoord(y, height);
+			y = fixCoord(y, height);
 			updaterThread.update(
-				fixFoord(x, width),
+				fixCoord(x, width),
 				y,
-				fixFoord(x + text.length() - 1, width),
+				fixCoord(x + text.length() - 1, width),
 				y
 			);
 
@@ -266,14 +275,14 @@ public class GPU extends ComponentBase {
 		machine.lua.setField(-2, "set");
 
 		machine.lua.pushJavaFunction(args -> {
-			int x = fixFoord(args.checkInteger(1) - 1, width),
-				y = fixFoord(args.checkInteger(2) - 1, height);
+			int x = fixCoord(args.checkInteger(1) - 1, width),
+				y = fixCoord(args.checkInteger(2) - 1, height);
 			
 			rawFill(
 				x,
 				y,
-				fixFoord(x + args.checkInteger(3) - 1, width),
-				fixFoord(y + args.checkInteger(4) - 1, height),
+				fixCoord(x + args.checkInteger(3) - 1, width),
+				fixCoord(y + args.checkInteger(4) - 1, height),
 				args.checkString(5).codePointAt(0)
 			);
 
@@ -395,7 +404,7 @@ public class GPU extends ComponentBase {
 		return index;
 	}
 	
-	private int fixFoord(int c, int limiter) {
+	private int fixCoord(int c, int limiter) {
 		return Math.max(Math.min(c, limiter - 1), 0);
 	}
 	

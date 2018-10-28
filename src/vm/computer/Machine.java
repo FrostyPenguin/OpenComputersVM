@@ -708,35 +708,42 @@ public class Machine {
 
 		public LuaState pullSignal(double timeout) {
 			synchronized (this) {
-				long deadline = timeout == Double.POSITIVE_INFINITY ? Long.MAX_VALUE : System.currentTimeMillis() + (long) (Math.max(0, timeout) * 1000);
+				long 
+					deadline = timeout == Double.POSITIVE_INFINITY ? Long.MAX_VALUE : System.currentTimeMillis() + (long) (timeout * 1000),
+					howMuchToWait;
 
 //                System.out.println("Pulling signal infinite: " + (timeout == Double.POSITIVE_INFINITY) + ", timeout:" + timeout + ", deadline: " + deadline + ", delta: " + (deadline - System.currentTimeMillis()));
 				
 				while (System.currentTimeMillis() <= deadline) {
-					if (signalStack[0] != null) {
-						LuaState result = signalStack[0];
-
-						// Шифтим
-						boolean needClearEnd = signalStack[signalStack.length - 1] != null;
-							
-						for (int i = 1; i < signalStack.length; i++)
-							signalStack[i - 1] = signalStack[i];
-
-						if (needClearEnd)
-							signalStack[signalStack.length - 1] = null;
-
-						return result;
-					}
-
-					try {
-						// Ждем на 1 мскек больше, т.к. wait(0) ждет бисканечна))00
-						wait(deadline - System.currentTimeMillis() + 1);
-					}
-					catch (ThreadDeath | InterruptedException e) {
-						System.out.println("Поток интерруптнулся чет у компа");
+					if (shuttingDown) {
 						lua.setTotalMemory(1);
-						
 						break;
+					}
+					else {
+						if (signalStack[0] != null) {
+							LuaState result = signalStack[0];
+
+							// Шифтим
+							boolean needClearEnd = signalStack[signalStack.length - 1] != null;
+
+							for (int i = 1; i < signalStack.length; i++)
+								signalStack[i - 1] = signalStack[i];
+
+							if (needClearEnd)
+								signalStack[signalStack.length - 1] = null;
+
+							return result;
+						}
+
+						try {
+							// Ждем cкока нужна)00
+							howMuchToWait = deadline - System.currentTimeMillis();
+							if (howMuchToWait > 0)
+								wait(howMuchToWait);
+						}
+						catch (ThreadDeath | InterruptedException e) {
+							System.out.println("Поток интерруптнулся чет у компа");
+						}
 					}
 				}
 				

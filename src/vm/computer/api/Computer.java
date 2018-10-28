@@ -23,7 +23,6 @@ public class Computer extends APIBase {
 				machine.shutdown();
 				if (reboot)
 					machine.boot();
-					
 			}).start();
 			
 			return 0;
