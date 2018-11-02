@@ -29,7 +29,7 @@ public class IO {
 	}
 
 	public static String loadFileAsString(URI uri) throws IOException {
-		return new String(loadFileAsByteArray(uri));
+		return new String(loadFileAsByteArray(uri), StandardCharsets.UTF_8);
 	}
 	
 	public static String loadResourceAsString(String name) throws IOException {
@@ -87,10 +87,9 @@ public class IO {
 		System.out.println("Saving config file...");
 
 		JSONArray JSONMachines = new JSONArray();
-		for (Machine machine : Machine.list) {
+		for (Machine machine : Machine.list)
 			JSONMachines.put(machine.toJSONObject());
-		}
-
+		
 		Files.write(
 			Paths.get(IO.configFile.toURI()),
 			new JSONObject()

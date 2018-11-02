@@ -76,14 +76,17 @@ public class GPU extends ComponentBase {
 		public void update(int fromX, int fromY, int toX, int toY) {
 			synchronized (this) {
 				int bufferIndex = fromY * (Glyph.WIDTH * Glyph.HEIGHT * width) + fromX * (Glyph.WIDTH),
-					glyphIndex, background, foreground;
+					lineStep = GlyphWidthMulWidthMulGlyphHeight - (toX - fromX + 1) * Glyph.WIDTH,
+					glyphIndex,
+					background,
+					foreground;
 
 				for (int y = fromY; y <= toY; y++) {
 					for (int x = fromX; x <= toX; x++) {
 						background = pixels[y][x].background.isPaletteIndex ? palette[pixels[y][x].background.value] : pixels[y][x].background.value;
 						foreground = pixels[y][x].foreground.isPaletteIndex ? palette[pixels[y][x].foreground.value] : pixels[y][x].foreground.value;
-
 						glyphIndex = 0;
+						
 						for (int j = 0; j < Glyph.HEIGHT; j++) {
 							for (int i = 0; i < Glyph.WIDTH; i++) {
 								buffer[bufferIndex + i] = Glyph.map[pixels[y][x].code].microPixels[glyphIndex] ? foreground : background;
@@ -97,7 +100,9 @@ public class GPU extends ComponentBase {
 						bufferIndex += Glyph.WIDTH - GlyphWidthMulWidthMulGlyphHeight;
 					}
 
-					bufferIndex += GlyphWidthMulWidthMulGlyphHeight - GlyphWIDTHMulWidth;
+					bufferIndex += lineStep;
+//					bufferIndex += (width - toX) * Glyph.WIDTH * Glyph.HEIGHT + fromX * Glyph.WIDTH;
+//					bufferIndex += GlyphWidthMulWidthMulGlyphHeight - GlyphWIDTHMulWidth;
 				}
 
 				needUpdate = true;
@@ -405,7 +410,7 @@ public class GPU extends ComponentBase {
 	}
 	
 	private int fixCoord(int c, int limiter) {
-		return Math.max(Math.min(c, limiter - 1), 0);
+		return Math.max(0, Math.min(c, limiter - 1));
 	}
 	
 	public void rawSetResolution(int newWidth, int newHeight) {
