@@ -18,6 +18,9 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
+		// Странная залупа, фиксящая визуальные баги на UNIX-подобных системах
+		System.setProperty("prism.order", "sw");
+		
 		// Грузим шрифт кубача
 		System.out.println("Loading font " + Font.loadFont(Main.class.getResource("resources/Minecraft.ttf").toString(), 10));
 		

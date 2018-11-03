@@ -53,7 +53,7 @@
     <session id="232186380">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="33" />
+          <entry key="project.closed" value="34" />
           <entry key="project.open.time.0" value="1" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.10" value="4" />
@@ -62,7 +62,7 @@
           <entry key="project.open.time.13" value="1" />
           <entry key="project.open.time.14" value="2" />
           <entry key="project.open.time.15" value="2" />
-          <entry key="project.open.time.16" value="2" />
+          <entry key="project.open.time.16" value="3" />
           <entry key="project.open.time.17" value="1" />
           <entry key="project.open.time.19" value="1" />
           <entry key="project.open.time.2" value="1" />
@@ -75,7 +75,7 @@
           <entry key="project.open.time.35" value="1" />
           <entry key="project.open.time.8" value="1" />
           <entry key="project.open.time.9" value="1" />
-          <entry key="project.opened" value="34" />
+          <entry key="project.opened" value="35" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -110,7 +110,7 @@
           <entry key="css" value="213" />
           <entry key="dummy" value="15" />
           <entry key="iml" value="1" />
-          <entry key="java" value="13014" />
+          <entry key="java" value="13101" />
           <entry key="json" value="39" />
           <entry key="lua" value="1386" />
         </counts>
@@ -119,7 +119,7 @@
         <counts>
           <entry key="CSS" value="213" />
           <entry key="IDEA_MODULE" value="1" />
-          <entry key="JAVA" value="13014" />
+          <entry key="JAVA" value="13101" />
           <entry key="JSON" value="39" />
           <entry key="PLAIN_TEXT" value="1401" />
         </counts>
@@ -131,8 +131,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/vm/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="229">
-              <caret line="33" column="16" lean-forward="true" selection-start-line="33" selection-start-column="16" selection-end-line="33" selection-end-column="16" />
+            <state relative-caret-position="294">
+              <caret line="23" column="30" lean-forward="true" selection-start-line="23" selection-start-column="30" selection-end-line="23" selection-end-column="30" />
             </state>
           </provider>
         </entry>
@@ -140,8 +140,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/vm/computer/Machine.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="327">
-              <caret line="776" column="48" lean-forward="true" selection-start-line="776" selection-start-column="48" selection-end-line="776" selection-end-column="48" />
+            <state relative-caret-position="20176">
+              <caret line="776" column="48" selection-start-line="776" selection-start-column="48" selection-end-line="776" selection-end-column="48" />
             </state>
           </provider>
         </entry>
@@ -158,8 +158,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/vm/computer/components/GPU.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-340">
-              <caret line="66" column="33" lean-forward="true" selection-start-line="66" selection-start-column="33" selection-end-line="66" selection-end-column="33" />
+            <state relative-caret-position="1716">
+              <caret line="66" column="33" selection-start-line="66" selection-start-column="33" selection-end-line="66" selection-end-column="33" />
             </state>
           </provider>
         </entry>
@@ -167,8 +167,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/vm/IO.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="307">
-              <caret line="30" column="37" lean-forward="true" selection-start-line="30" selection-start-column="37" selection-end-line="30" selection-end-column="37" />
+            <state relative-caret-position="780">
+              <caret line="30" column="37" selection-start-line="30" selection-start-column="37" selection-end-line="30" selection-end-column="37" />
             </state>
           </provider>
         </entry>
@@ -246,7 +246,6 @@
         <option value="$PROJECT_DIR$/src/vm/computer/components/HDDFilesystem.java" />
         <option value="$PROJECT_DIR$/src/vm/computer/Window.fxml" />
         <option value="$PROJECT_DIR$/src/vm/computer/components/Screen.java" />
-        <option value="$PROJECT_DIR$/src/vm/Main.java" />
         <option value="$PROJECT_DIR$/src/vm/styles/toolbar.css" />
         <option value="$PROJECT_DIR$/src/vm/styles/RAMSlider.css" />
         <option value="$PROJECT_DIR$/src/vm/styles/VolumeSlider.css" />
@@ -268,6 +267,7 @@
         <option value="$PROJECT_DIR$/src/vm/resources/Machine.lua" />
         <option value="$PROJECT_DIR$/src/vm/computer/components/GPU.java" />
         <option value="$PROJECT_DIR$/src/vm/IO.java" />
+        <option value="$PROJECT_DIR$/src/vm/Main.java" />
       </list>
     </option>
   </component>
@@ -498,6 +498,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -556,8 +558,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -634,19 +634,19 @@
     <frame x="0" y="23" width="1920" height="973" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49392098" visible="true" weight="0.20660277" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49392098" visible="true" weight="0.2087327" />
       <window_info id="Structure" order="1" sideWeight="0.506079" side_tool="true" weight="0.20660277" />
       <window_info id="Designer" order="2" />
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49893504" weight="0.32807216" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.6938232" visible="true" weight="0.25312147" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.6932907" visible="true" weight="0.25312147" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Event Log" order="8" sideWeight="0.30617678" side_tool="true" visible="true" weight="0.25312147" />
+      <window_info anchor="bottom" id="Event Log" order="8" sideWeight="0.30670926" side_tool="true" visible="true" weight="0.25312147" />
       <window_info anchor="bottom" id="Messages" order="9" sideWeight="0.49733758" weight="0.32807216" />
       <window_info anchor="bottom" id="LuaCheck" order="10" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
@@ -771,12 +771,12 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/vm/computer/Window.fxml">
+      <provider editor-type-id="JavaFX-Scene-Builder" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="516">
           <caret line="26" column="24" selection-start-line="26" selection-start-column="24" selection-end-line="26" selection-end-column="24" />
         </state>
       </provider>
-      <provider editor-type-id="JavaFX-Scene-Builder" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/vm/styles/toolbar.css">
       <provider selected="true" editor-type-id="text-editor">
@@ -981,13 +981,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/api/Computer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="572">
-          <caret line="22" column="29" selection-start-line="22" selection-start-column="29" selection-end-line="22" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/vm/resources/Machine.lua">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="312">
@@ -995,31 +988,38 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/computer/components/GPU.java">
+    <entry file="file://$PROJECT_DIR$/src/vm/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-340">
-          <caret line="66" column="33" lean-forward="true" selection-start-line="66" selection-start-column="33" selection-end-line="66" selection-end-column="33" />
+        <state relative-caret-position="294">
+          <caret line="23" column="30" lean-forward="true" selection-start-line="23" selection-start-column="30" selection-end-line="23" selection-end-column="30" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/vm/computer/Machine.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="327">
-          <caret line="776" column="48" lean-forward="true" selection-start-line="776" selection-start-column="48" selection-end-line="776" selection-end-column="48" />
+        <state relative-caret-position="20176">
+          <caret line="776" column="48" selection-start-line="776" selection-start-column="48" selection-end-line="776" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/api/Computer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="572">
+          <caret line="22" column="29" selection-start-line="22" selection-start-column="29" selection-end-line="22" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/vm/computer/components/GPU.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1716">
+          <caret line="66" column="33" selection-start-line="66" selection-start-column="33" selection-end-line="66" selection-end-column="33" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/vm/IO.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="307">
-          <caret line="30" column="37" lean-forward="true" selection-start-line="30" selection-start-column="37" selection-end-line="30" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/vm/Main.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="229">
-          <caret line="33" column="16" lean-forward="true" selection-start-line="33" selection-start-column="16" selection-end-line="33" selection-end-column="16" />
+        <state relative-caret-position="780">
+          <caret line="30" column="37" selection-start-line="30" selection-start-column="37" selection-end-line="30" selection-end-column="37" />
         </state>
       </provider>
     </entry>
