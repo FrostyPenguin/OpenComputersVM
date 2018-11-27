@@ -16,6 +16,30 @@ public class Computer extends APIBase {
 	@Override
 	public void pushFields() {
 		machine.lua.pushJavaFunction(args -> {
+			for (String user : machine.users)
+				machine.lua.pushString(user);
+			
+			return machine.users.size();
+		});
+		machine.lua.setField(-2, "users");
+		
+		machine.lua.pushJavaFunction(args -> {
+			machine.users.add(args.checkString(1));
+			machine.lua.pushBoolean(true);
+			return 1;
+		});
+		machine.lua.setField(-2, "addUser");
+
+		machine.lua.pushJavaFunction(args -> {
+			String user = args.checkString(1);
+			machine.users.remove(user);
+			
+			machine.lua.pushBoolean(true);
+			return 1;
+		});
+		machine.lua.setField(-2, "removeUser");
+		
+		machine.lua.pushJavaFunction(args -> {
 			boolean reboot = !args.isNoneOrNil(1) && args.checkBoolean(1);
 			System.out.println("Сышь компутер.шутдаун() спахал");
 			
@@ -65,12 +89,6 @@ public class Computer extends APIBase {
 		machine.lua.setField(-2, "pullSignal");
 
 		machine.lua.pushJavaFunction(args -> {
-			machine.lua.newTable();
-			return 1;
-		});
-		machine.lua.setField(-2, "users");
-
-		machine.lua.pushJavaFunction(args -> {
 			machine.lua.pushInteger(machine.lua.getTotalMemory());
 			return 1;
 		});
@@ -87,18 +105,6 @@ public class Computer extends APIBase {
 			return 1;
 		});
 		machine.lua.setField(-2, "isRobot");
-
-		machine.lua.pushJavaFunction(args -> {
-			machine.lua.pushBoolean(true);
-			return 1;
-		});
-		machine.lua.setField(-2, "addUser");
-
-		machine.lua.pushJavaFunction(args -> {
-			machine.lua.pushBoolean(true);
-			return 1;
-		});
-		machine.lua.setField(-2, "removeUser");
 
 		machine.lua.pushJavaFunction(args -> {
 			machine.lua.pushInteger(maxEnergy);

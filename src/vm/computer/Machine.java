@@ -43,9 +43,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 public class Machine {
 	public static final ArrayList<Machine> list = new ArrayList<>();
@@ -72,7 +70,6 @@ public class Machine {
 	public Component componentAPI;
 	public Computer computerAPI;
 	public Unicode unicodeAPI;
-//    public OS osAPI;
 	public GPU gpuComponent;
 	public EEPROM eepromComponent;
 	public Keyboard keyboardComponent;
@@ -82,6 +79,7 @@ public class Machine {
 	public Modem modemComponent;
 	public Tunnel tunnelComponent;
     public Internet internetComponent;
+    public HashSet<String> users = new HashSet<>();
     public Player player = new Player();
     
 	private Stage stage;
@@ -153,6 +151,12 @@ public class Machine {
 
 			// Вгондошиваем значение лимита оперативы
 			machine.RAMSlider.setValue(machineConfig.getDouble("totalMemory"));
+		
+			// Лоадим юзверей
+			JSONArray configUsers = machineConfig.getJSONArray("users");
+			for (int i = 0; i < configUsers.length(); i++) {
+				machine.users.add(configUsers.getString(i));
+			}
 			
 			// Пидорасим главное йоба-окошечко так, как надо
 			machine.stage.setX(machineConfig.getDouble("x"));
@@ -322,6 +326,10 @@ public class Machine {
 		for (ComponentBase component : componentList)
 			components.put(component.toJSONObject());
 		
+		JSONArray configUsers = new JSONArray();
+		for (String user : users)
+			configUsers.put(user);
+		
 		return new JSONObject()
 			.put("x", stage.getX())
 			.put("y", stage.getY())
@@ -331,7 +339,8 @@ public class Machine {
 			.put("components", components)
 			.put("totalMemory", RAMSlider.getValue())
 			.put("player", playerTextField.getText())
-			.put("volume", volumeSlider.getValue());
+			.put("volume", volumeSlider.getValue())
+			.put("users", configUsers);
 	}
 
 	public String getClipboard() {
