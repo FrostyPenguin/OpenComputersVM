@@ -73,7 +73,6 @@ end
 local computerComponent = sandboxComponentAPI.proxy(sandboxComponentAPI.list("computer")())
 sandboxComputerAPI.beep = computerComponent.beep
 
-
 -- Да пошли вы на хуй со своим кастомным говнищем. Че за дела? Хули под msvc компилером эта ебала вообще отсутствует? Пизда ноль унификации
 local oldOSDate = os.date
 sandbox.os.date = function(format, time)

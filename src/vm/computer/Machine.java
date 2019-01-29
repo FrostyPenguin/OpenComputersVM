@@ -505,7 +505,8 @@ public class Machine {
 
 		private HashMap<KeyCode, String> codes = new HashMap<>();
 		private KeyCode lastCode;
-		
+		private Timer keyDownRepeater;
+
 		@Override
 		public void run() {
 			// Инициализируем корректную Lua-машину
@@ -548,7 +549,7 @@ public class Machine {
 			Platform.runLater(() -> {
 				// Фокусирование экрана при клике на эту злоебучую область
 				mainGridPane.setOnMousePressed(event -> screenImageView.requestFocus());
-
+				
 				// Ивенты клавиш всему окну
 				mainGridPane.setOnKeyPressed(event -> {
 //					System.out.println("PRESSED: " + event.getCharacter() + ", " + event.getText() + ", " + event.getCode());
@@ -557,8 +558,8 @@ public class Machine {
 					
 					// Системная клавиша никогда не приведет к KeyTyped-ивенту
 					if (event.getText().length() == 0) {
-						pushKeySignal(lastCode, "", "key_down");
 						codes.put(lastCode, "");
+						pushKeyDownSignalRepeated(lastCode, "");
 					}
 				});
 
@@ -568,8 +569,8 @@ public class Machine {
 //						System.out.println("TYPED: " + event.getCharacter() + ", " + event.getText() + ", " + event.getCode());
 
 						String character = event.getCharacter();
-						pushKeySignal(lastCode, character, "key_down");
 						codes.put(lastCode, character);
+						pushKeyDownSignalRepeated(lastCode, character);
 					}
 				});
 
@@ -580,6 +581,7 @@ public class Machine {
 					if (codes.containsKey(keyCode)) {
 						pushKeySignal(keyCode, codes.get(keyCode), "key_up");
 						codes.remove(keyCode);
+						cancelKeyRepetition();
 					}
 				});
 
@@ -636,6 +638,28 @@ public class Machine {
 					error(e.getMessage());
 				}
 			}
+		}
+
+		// Отменяем многократное повторение клавиш
+		private void cancelKeyRepetition() {
+			if (keyDownRepeater != null) {
+				keyDownRepeater.cancel();
+				keyDownRepeater.purge();
+			}
+		}
+		
+		// Эта хуйнинка стартует многократное повторение ивента нажатой клавишии
+		private void pushKeyDownSignalRepeated(KeyCode keyCode, String text) {
+			pushKeySignal(keyCode, text, "key_down");
+	
+			cancelKeyRepetition();
+			keyDownRepeater = new Timer();
+			keyDownRepeater.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					pushKeySignal(keyCode, text, "key_down");
+				}
+			}, 500, 50);
 		}
 		
 		private void pushKeySignal(KeyCode keyCode, String text, String name) {
