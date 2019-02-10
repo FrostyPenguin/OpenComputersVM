@@ -2,6 +2,7 @@ package vm.computer.components;
 
 import li.cil.repack.com.naef.jnlua.LuaState;
 import org.json.JSONObject;
+import vm.IO;
 import vm.computer.LuaUtils;
 import vm.computer.Machine;
 
@@ -196,7 +197,9 @@ public class Filesystem extends FilesystemBase {
 
 			File file = getFsFile(args);
 			if (file.exists()) {
+				IO.deleteFolderContents(file);
 				machine.lua.pushBoolean(file.delete());
+				
 				return 1;
 			}
 			else {
@@ -239,10 +242,12 @@ public class Filesystem extends FilesystemBase {
 					
 					for (int i = 0; i < list.length; i++) {
 						machine.lua.pushInteger(i + 1);
+						
 						if (list[i].isDirectory())
 							machine.lua.pushString(list[i].getName() + "/");
 						else
 							machine.lua.pushString(list[i].getName());
+						
 						machine.lua.setTable(tableIndex);
 					}
 					

@@ -97,4 +97,17 @@ public class IO {
 				.toString(2).getBytes(StandardCharsets.UTF_8)
 		);
 	}
+
+	public static void deleteFolderContents(File folder) {
+		File[] files = folder.listFiles();
+		if (files != null) {
+			for (File file : files) {
+				if (file.isDirectory()) {
+					deleteFolderContents(file);
+				}
+				
+				file.delete();
+			}
+		}
+	}
 }

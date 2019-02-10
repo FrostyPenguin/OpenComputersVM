@@ -42,7 +42,7 @@ public class LuaUtils {
 				case NUMBER: lua.pushNumber(source.toNumber(i)); counter++; break;
 				case STRING: lua.pushString(source.toString(i)); counter++; break;
 				default:
-					System.out.println("Пошел на хуй");
+					System.out.println("Пошел на хуй" + source.type(i).toString());
 					break;
 			}
 		}
