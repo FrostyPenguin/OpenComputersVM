@@ -96,6 +96,8 @@ public class Machine {
 			Stage stage = new Stage();
 			FXMLLoader fxmlLoader = new FXMLLoader(Machine.class.getResource("Window.fxml"));
 			stage.setScene(new Scene(fxmlLoader.load()));
+			stage.setMinWidth(200);
+			stage.setMinHeight(200);
 			
 			// Выдрачиваем машинку из фхмл-контроллера и запоминаем эту стейдж-залупу
 			Machine machine = fxmlLoader.getController();
@@ -133,9 +135,9 @@ public class Machine {
 						break;
 					case "filesystem":
 						if (component.getBoolean("temporary"))
-							machine.temporaryFilesystemComponent = new Filesystem(machine, address, component.getString("label"), component.getString("path"), true);
+							machine.temporaryFilesystemComponent = new Filesystem(machine, address, component.getString("label"), component.getString("path"), true, 64 * 1024);
 						else
-							machine.filesystemComponent = new Filesystem(machine, address, component.getString("label"), component.getString("path"), false);
+							machine.filesystemComponent = new Filesystem(machine, address, component.getString("label"), component.getString("path"), false, 12 * 1024 * 1024);
 						break;
 					case "modem":
 						machine.modemComponent = new Modem(machine, address, component.getString("wakeMessage"), component.getBoolean("wakeMessageFuzzy"));

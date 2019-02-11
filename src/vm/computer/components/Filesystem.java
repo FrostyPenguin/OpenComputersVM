@@ -14,12 +14,14 @@ import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Filesystem extends FilesystemBase {
+	private int spaceTotal;
 	private boolean temporary;
 	private HashMap<Integer, Handle> handles = new HashMap<>();
 	
-	public Filesystem(Machine machine, String address, String label, String realPath, boolean temporary) {
+	public Filesystem(Machine machine, String address, String label, String realPath, boolean temporary, int spaceTotal) {
 		super(machine, address, "filesystem", label, realPath);
 		
+		this.spaceTotal = spaceTotal;
 		this.temporary = temporary;
 	}
 
@@ -278,7 +280,7 @@ public class Filesystem extends FilesystemBase {
 		machine.lua.setField(-2, "rename");
 
 		LuaUtils.pushBooleanFunction(machine.lua, "isReadOnly", false);
-		LuaUtils.pushIntegerFunction(machine.lua, "spaceTotal", 12 * 1024 * 1024);
+		LuaUtils.pushIntegerFunction(machine.lua, "spaceTotal", spaceTotal);
 		LuaUtils.pushIntegerFunction(machine.lua, "spaceUsed", 0);
 	}
 
