@@ -3,20 +3,21 @@ package vm.computer.components;
 import org.json.JSONObject;
 import vm.computer.LuaUtils;
 import vm.computer.Machine;
+import vm.computer.components.base.FilesystemBase;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.zip.CRC32;
 
-public class EEPROM extends FilesystemBase {
+public class Eeprom extends FilesystemBase {
 	public String data;
 	public byte[] code;
 	
-	public EEPROM(Machine machine, String address, String label, String realPath, String data) {
-		super(machine, address, "eeprom", label, realPath);
+	public Eeprom(Machine machine, String address, JSONObject  obj) {
+		super(machine, address, obj);
 		
-		this.data = data;
+		this.data = obj.optString("data","");
 	}
 
 	@Override

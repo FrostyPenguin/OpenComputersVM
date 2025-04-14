@@ -1,4 +1,4 @@
-package vm.computer.components;
+package vm.computer.components.base;
 
 import li.cil.repack.com.naef.jnlua.LuaState;
 import org.json.JSONObject;
@@ -10,11 +10,11 @@ public class NetworkBase extends ComponentBase {
 	public String wakeMessage;
 	public boolean wakeMessageFuzzy;
 
-	public NetworkBase(Machine machine, String address, String type, String wakeMessage, boolean wakeMessageFuzzy) {
-		super(machine, address, type);
+	public NetworkBase(Machine machine, String address, JSONObject obj) {
+		super(machine, address, obj);
 		
-		this.wakeMessage = wakeMessage;
-		this.wakeMessageFuzzy = wakeMessageFuzzy;
+		this.wakeMessage = obj.optString("wakeMessage","");
+		this.wakeMessageFuzzy = obj.optBoolean("wakeMessageFuzzy",false);
 	}
 
 	@Override

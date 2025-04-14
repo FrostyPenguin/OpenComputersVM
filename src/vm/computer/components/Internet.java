@@ -3,6 +3,7 @@ package vm.computer.components;
 import li.cil.repack.com.naef.jnlua.LuaState;
 import org.json.JSONObject;
 import vm.computer.Machine;
+import vm.computer.components.base.ComponentBase;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,10 +14,11 @@ import java.util.Map;
 public class Internet extends ComponentBase {
 	public static final int defaultReadLength = 1024;
 	
-	public Internet(Machine machine, String address) {
-		super(machine, address, "internet");
+	public Internet(Machine machine, String address, JSONObject obj) {
+		super(machine, address, obj);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void pushProxyFields() {
 		super.pushProxyFields();
@@ -34,7 +36,7 @@ public class Internet extends ComponentBase {
 				
 				machine.lua.newTable();
 				
-				// Чтение из сокета
+				// Lecture depuis une prise
 				machine.lua.pushJavaFunction(readArgs -> {
 					try {
 //						System.out.println("READING STARTED");
@@ -44,8 +46,7 @@ public class Internet extends ComponentBase {
 
 						if (readCount > 0) {
 							byte[] result = new byte[readCount];
-							for (int i = 0; i < readCount; i++)
-								result[i] = buffer[i];
+							System.arraycopy(buffer, 0, result, 0, readCount);
 
 							machine.lua.pushByteArray(result);
 							return 1;
@@ -58,12 +59,12 @@ public class Internet extends ComponentBase {
 						return pushEmptyArray();
 					}
 					catch (IOException e) {
-						return pushIOExcetion(e.getMessage());
+						return pushIOException(e.getMessage());
 					}
 				});
 				machine.lua.setField(-2, "read");
 
-				// Запись в сокет
+				// Write to socket
 				machine.lua.pushJavaFunction(readArgs -> {
 					try {
 						byte[] data = readArgs.checkByteArray(1);
@@ -74,27 +75,27 @@ public class Internet extends ComponentBase {
 						return 1;
 					}
 					catch (IOException e) {
-						return pushIOExcetion(e.getMessage());
+						return pushIOException(e.getMessage());
 					}
 				});
 				machine.lua.setField(-2, "write");
 
-				// Закрытие сокета
+				// Closing a socket
 				machine.lua.pushJavaFunction(args -> {
 					try {
 						socket.close();
 						inputStream.close();
 						outputStream.close();
 					}
-					catch (IOException e) {}
+					catch (IOException ignored) {}
 					finally {
 						machine.lua.pushBoolean(true);
-						return 1;
 					}
+					return 1;
 				});
 				machine.lua.setField(-2, "close");
 
-				// Какая-то хуйня, видимо, для чека статуса соединения, хз
+				// check the connection status
 				machine.lua.pushJavaFunction(args -> {
 					machine.lua.pushBoolean(socket.isConnected());
 					return 1;
@@ -104,7 +105,7 @@ public class Internet extends ComponentBase {
 				return 1;
 			}
 			catch (IOException e) {
-				return pushIOExcetion(e.getMessage());
+				return pushIOException(e.getMessage());
 			}
 		});
 		machine.lua.setField(-2, "connect");
@@ -116,15 +117,15 @@ public class Internet extends ComponentBase {
 
 				connection.setDoInput(true);
 				
-				// Подрубаем хедеры
+				// We cut the headers
 				if (!requestArgs.isNoneOrNil(3) && requestArgs.isTable(3)) {
-					requestArgs.toJavaObject(3, Map.class).forEach((key, value) -> {
+					((Map<String, String>) requestArgs.toJavaObject(3, Map.class)).forEach((key, value) -> {
 //						System.out.println("Setting header: "+ key.toString() + " : " + value.toString());
 						connection.setRequestProperty(key.toString(), value.toString());
 					});
 				}
 				
-				// Подрубаем метод запроса
+				// We hook up the request method
 				if (!requestArgs.isNoneOrNil(2)) {
 					String postData = requestArgs.checkString(2);
 
@@ -141,12 +142,12 @@ public class Internet extends ComponentBase {
 					connection.setRequestMethod("GET");
 				}
 
-				// Подрубаем читалку
+				// We're hooking up the reader
 				InputStream inputStream = connection.getInputStream();
 				
 				machine.lua.newTable();
 				
-				// Чтение из http request
+				// Reading from http request
 				machine.lua.pushJavaFunction(readArgs -> {
 					try {
 //						System.out.println(", available: " + inputStream.available());
@@ -156,8 +157,7 @@ public class Internet extends ComponentBase {
 						
 						if (readCount > 0) {
 							byte[] result = new byte[readCount];
-							for (int i = 0; i < readCount; i++)
-								result[i] = buffer[i];
+							System.arraycopy(buffer, 0, result, 0, readCount);
 
 							machine.lua.pushByteArray(result);
 							return 1;
@@ -168,29 +168,39 @@ public class Internet extends ComponentBase {
 						}
 					}
 					catch (IOException e) {
-						return pushIOExcetion(e.getMessage());	
+						return pushIOException(e.getMessage());
 					}
 				});
 				machine.lua.setField(-2, "read");
 
-				// Закрытие http request
+				// Closing http request
 				machine.lua.pushJavaFunction(args -> {
 					try {
 						inputStream.close();
 						connection.disconnect();
 					}
-					catch (IOException e) {}
+					catch (IOException ignored) {}
 					finally {
 						machine.lua.pushBoolean(true);
-						return 1;
 					}
+					return 1;
 				});
 				machine.lua.setField(-2, "close");
 
-				// Закрытие http request
+				// check the connection status
+				machine.lua.pushJavaFunction(args -> {
+					try {
+						machine.lua.pushBoolean(connection.getResponseCode() > 0);
+					} catch (IOException e) {
+						machine.lua.pushBoolean(false);
+					}
+					return 1;
+				});
+				machine.lua.setField(-2, "finishConnect");
+
+				// Closing http request
 				machine.lua.pushJavaFunction(readArgs -> {
 					try {
-						// Пушим код и текст
 						machine.lua.pushInteger(connection.getResponseCode());
 						machine.lua.pushString(connection.getResponseMessage());
 
@@ -229,7 +239,7 @@ public class Internet extends ComponentBase {
 					}
 					catch (IOException e) {
 						e.printStackTrace();
-						return pushIOExcetion(e.getMessage());
+						return pushIOException(e.getMessage());
 					}
 				});
 				machine.lua.setField(-2, "response");
@@ -253,7 +263,7 @@ public class Internet extends ComponentBase {
 		return 1;
 	}
 
-	private int pushIOExcetion(String message) {
+	private int pushIOException(String message) {
 		machine.lua.pushNil();
 		machine.lua.pushString("IOException: " + message);
 		return 2;

@@ -2,9 +2,6 @@
   "name": "My machine",
   "x": 3,
   "y": 3,
-  "width": 1200,
-  "height": 680,
-  "toolbarHidden": false,
   "totalMemory": 4.0,
   "volume": 1.0,
   "users": [],
@@ -16,6 +13,7 @@
     },
     {
       "type": "screen",
+      "keyboard" : "ae85cba9-054d-4adf-ae44-7d32d732f958",
       "precise": false,
       "blocksHorizontally": 3,
       "blocksVertically": 2
@@ -38,9 +36,6 @@
       "label": "EEPROM (Lua BIOS)"
     },
     {
-      "type": "keyboard"
-    },
-    {
       "type": "modem",
       "wakeMessage": "",
       "wakeMessageFuzzy": false
@@ -52,6 +47,10 @@
     },
     {
       "type": "internet"
+    },
+    {
+      "type": "data",
+      "tier": 3
     }
   ]
 }

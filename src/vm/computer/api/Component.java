@@ -2,7 +2,6 @@ package vm.computer.api;
 
 import li.cil.repack.com.naef.jnlua.LuaState;
 import vm.computer.Machine;
-import vm.computer.components.ComponentBase;
 
 public class Component extends APIBase {		
 	public Component(Machine machine) {
@@ -14,17 +13,19 @@ public class Component extends APIBase {
 		machine.lua.pushJavaFunction(args -> {
 			args.checkString(1);
 			String address = args.toString(1);
-
-			for (ComponentBase component : machine.componentList) {
-				if (component.address.equals(address)) {
-					machine.lua.rawGet(LuaState.REGISTRYINDEX, component.proxyReference);
-					return 1;
+			boolean found[] = {false};
+			machine.listComponents.forEach((type, list)->{
+				if (!found[0] && list.containsKey(address)){
+					machine.lua.rawGet(LuaState.REGISTRYINDEX, list.get(address).proxyReference);
+					found[0] = true;
 				}
+			});
+			if(!found[0]){
+				machine.lua.pushNil();
+				machine.lua.pushString("no such component");
+				return 2;
 			}
-
-			machine.lua.pushNil();
-			machine.lua.pushString("no such component");
-			return 2;
+			return 1;
 		});
 		machine.lua.setField(-2, "proxy");
 
@@ -35,13 +36,15 @@ public class Component extends APIBase {
 			machine.lua.newTable();
 			int tableIndex = machine.lua.getTop();
 
-			for (ComponentBase component : machine.componentList) {
-				if (filter.isEmpty() || (exact ? component.type.equals(filter) : component.type.contains(filter))) {
-					machine.lua.pushString(component.address);
-					machine.lua.pushString(component.type);
-					machine.lua.setTable(tableIndex);
+			machine.listComponents.forEach((type, list)->{
+				if (filter.isEmpty() || (exact ? type.equals(filter) : type.contains(filter))) {
+					list.forEach((addr,cmp)->{
+						machine.lua.pushString(addr);
+						machine.lua.pushString(type);
+						machine.lua.setTable(tableIndex);
+					});
 				}
-			}
+			});
 
 			return 1;
 		});
@@ -50,16 +53,19 @@ public class Component extends APIBase {
 		machine.lua.pushJavaFunction(args -> {
 			String address = args.checkString(1);
 
-			for (ComponentBase component : machine.componentList) {
-				if (component.address.equals(address)) {
-					machine.lua.pushString(component.type);
-					return 1;
+			boolean found[] = {false};
+			machine.listComponents.forEach((type, list)->{
+				if (!found[0] && list.containsKey(address)){
+					machine.lua.pushString(type);
+					found[0] = true;
 				}
+			});
+			if(!found[0]){
+				machine.lua.pushNil();
+				machine.lua.pushString("no such component");
+				return 2;
 			}
-
-			machine.lua.pushNil();
-			machine.lua.pushString("no such component");
-			return 2;
+			return 1;
 		});
 		machine.lua.setField(-2, "type");
 

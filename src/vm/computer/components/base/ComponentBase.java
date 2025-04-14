@@ -1,4 +1,4 @@
-package vm.computer.components;
+package vm.computer.components.base;
 
 import li.cil.repack.com.naef.jnlua.LuaState;
 import org.json.JSONObject;
@@ -9,12 +9,10 @@ public class ComponentBase {
 	public String address, type;
 	public Machine machine;
 	
-	public ComponentBase(Machine machine, String address, String type) {
+	public ComponentBase(Machine machine, String address, JSONObject obj) {
 		this.machine = machine;
-		this.type = type;
+		this.type = obj.getString("type");
 		this.address = address;
-
-		machine.componentList.add(this);
 	}
 	
 	public void pushProxy() {

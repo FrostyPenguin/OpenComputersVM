@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import vm.IO;
 import vm.computer.LuaUtils;
 import vm.computer.Machine;
+import vm.computer.components.base.FilesystemBase;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,11 +19,12 @@ public class Filesystem extends FilesystemBase {
 	private boolean temporary;
 	private HashMap<Integer, Handle> handles = new HashMap<>();
 	
-	public Filesystem(Machine machine, String address, String label, String realPath, boolean temporary, int spaceTotal) {
-		super(machine, address, "filesystem", label, realPath);
+	public Filesystem(Machine machine, String address, JSONObject obj) {
+		super(machine, address, obj);
 		
-		this.spaceTotal = spaceTotal;
-		this.temporary = temporary;
+		this.temporary = obj.optBoolean("temporary",false);
+		if(this.temporary) machine.temporaryFilesystemComponent = address;
+		this.spaceTotal = this.temporary ? 64 * 1024 : 12 * 1024 * 1024;
 	}
 
 	@Override

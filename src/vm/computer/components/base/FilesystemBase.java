@@ -1,4 +1,4 @@
-package vm.computer.components;
+package vm.computer.components.base;
 
 import org.json.JSONObject;
 import vm.computer.Machine;
@@ -6,11 +6,11 @@ import vm.computer.Machine;
 public class FilesystemBase extends ComponentBase {
 	public String realPath, label;
 
-	public FilesystemBase(Machine machine, String address, String type, String label, String realPath) {
-		super(machine, address, type);
+	public FilesystemBase(Machine machine, String address, JSONObject obj) {
+		super(machine, address, obj);
 
-		this.label = label;
-		this.realPath = realPath;
+		this.label = obj.optString("label","");
+		this.realPath = obj.getString("path");
 	}
 
 	@Override

@@ -8,7 +8,8 @@ public class KeyMap {
 	private static final HashMap<KeyCode, OCKey> map = new HashMap<>();
 
 	public static class OCKey {
-		int ascii, unicode;
+		public int ascii;
+		public int unicode;
 
 		public OCKey(int ascii) {
 			this.ascii = ascii;

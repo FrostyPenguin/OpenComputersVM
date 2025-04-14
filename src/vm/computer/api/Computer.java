@@ -41,7 +41,7 @@ public class Computer extends APIBase {
 		
 		machine.lua.pushJavaFunction(args -> {
 			boolean reboot = !args.isNoneOrNil(1) && args.checkBoolean(1);
-			System.out.println("Сышь компутер.шутдаун() спахал");
+			System.out.println("Shutdown computer.shutdown()");
 			
 			new Thread(() -> {
 				machine.shutdown();
@@ -60,7 +60,7 @@ public class Computer extends APIBase {
 		machine.lua.setField(-2, "getProgramLocations");
 
 		machine.lua.pushJavaFunction(args -> {
-			machine.lua.pushString(machine.temporaryFilesystemComponent.address);
+			machine.lua.pushString(machine.temporaryFilesystemComponent);
 
 			return 1;
 		});

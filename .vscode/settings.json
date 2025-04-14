@@ -1,0 +1,11 @@
+{
+    "java.project.referencedLibraries": [
+        ".\\src\\vm\\libraries\\luaj-jse-3.0.1.jar",
+        ".\\src\\vm\\libraries\\OpenComputers-JNLua.jar",
+        ".\\src\\vm\\libraries\\commons-lang3-3.8.1.jar",
+        ".\\src\\vm\\libraries\\json-20180813.jar"
+    ],
+    "java.project.sourcePaths": [
+        "src"
+    ]
+}

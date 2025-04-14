@@ -9,10 +9,11 @@ import org.json.JSONObject;
 import vm.computer.Glyph;
 import vm.computer.LuaUtils;
 import vm.computer.Machine;
+import vm.computer.components.base.ComponentBase;
 
 import java.nio.IntBuffer;
 
-public class GPU extends ComponentBase {
+public class Gpu extends ComponentBase {
 	public static class Color {
 		static final Color
 			BLACK = new Color(0x000000),
@@ -49,9 +50,9 @@ public class GPU extends ComponentBase {
 		}
 	}
 
-	// Поток-дрочер, обновляющий пиксельную инфу по запросу
+	// Le thread de mise à jour, qui rafraîchit les informations sur les pixels sur demande.
 	public class UpdaterThread extends Thread {
-		// По сути лимитировщик FPS
+		// Essentiellement, un limiteur de FPS.
 		public int waitDelay = 16;
 		public int[] buffer;
 		
@@ -155,10 +156,13 @@ public class GPU extends ComponentBase {
 	private Pixel[][] pixels;
 	private PixelWriter pixelWriter;
 
-	public GPU(Machine machine, String address) {
-		super(machine, address,"gpu");
+	private String BindedScreenAddr = "";
+
+	public Gpu(Machine machine, String address, JSONObject obj) {
+		super(machine, address,obj);
 		
 		updaterThread.start();
+		this.rawSetResolution(obj.optInt("width",80), obj.optInt("height",25));
 	}
 
 	@Override
@@ -334,7 +338,7 @@ public class GPU extends ComponentBase {
 		machine.lua.setField(-2, "getViewport");
 
 		machine.lua.pushJavaFunction(args -> {
-			machine.lua.pushString(machine.screenComponent.address);
+			machine.lua.pushString(BindedScreenAddr);
 			return 1;
 		});
 		machine.lua.setField(-2, "getScreen");
@@ -368,9 +372,19 @@ public class GPU extends ComponentBase {
 		});
 		machine.lua.setField(-2, "getPaletteColor");
 
+		machine.lua.pushJavaFunction(args -> {
+			BindedScreenAddr = args.checkString(1);
+
+			machine.lua.pushBoolean(true);
+
+			return 1;
+		});
+		machine.lua.setField(-2, "bind");
+
 		LuaUtils.pushBooleanFunction(machine.lua, "setViewport", true);
 		LuaUtils.pushBooleanFunction(machine.lua, "setDepth", true);
-		LuaUtils.pushBooleanFunction(machine.lua, "bind", true);
+
+
 	}
 
 	@Override
@@ -378,7 +392,7 @@ public class GPU extends ComponentBase {
 		return super.toJSONObject().put("width", width).put("height", height);
 	}
 
-	// Возвращение инфы о текущем цвете
+	// Retour d'informations sur la couleur actuelle.
     private int getColorPush(Color color) {
         if (color.isPaletteIndex) {
             machine.lua.pushInteger(color.value);
@@ -390,7 +404,7 @@ public class GPU extends ComponentBase {
         return 1;
     }
 	
-    // Возвращение инфы о старом цвете до операции gpu.set
+    // Retour d'informations sur l'ancienne couleur avant l'opération gpu.set.
 	private int setColorPush(Color color) {
 		if (color.isPaletteIndex) {
 			machine.lua.pushInteger(palette[color.value]);
@@ -423,10 +437,10 @@ public class GPU extends ComponentBase {
 		Pixel[][] oldPixels = pixels;
 		pixels = new Pixel[height][width];
 		
-		// Если мы тока создали объект видяхи, и никаких пикселей в помине нет
+		// If we just created the graphics object and there are no pixels yet in memory.
 		if (oldPixels == null)
 			flushPixels();
-		// Ну, а иначе копируем старые пиксели в новый йоба-буфер
+		// Well, otherwise we copy the old pixels into the new buffer.
 		else {
 			for (int j = 0; j < height; j++)
 				for (int i = 0; i < width; i++)
@@ -436,19 +450,27 @@ public class GPU extends ComponentBase {
 						pixels[j][i] = new Pixel(background, foreground, 32);
 		}
 		
-		// Сначала создаем записывабельную пикчу
+		// First, we create a writable picture.
 		WritableImage writableImage = new WritableImage(GlyphWIDTHMulWidth, GlyphHEIGHTMulHeight);
 		pixelWriter = writableImage.getPixelWriter();
 		
-		// Потом адейтим буфер видяхи в нее
+		// Then we update the graphics buffer into it.
 		updaterThread.setBufferSize(GlyphWIDTHMulWidth * GlyphHEIGHTMulHeight);
 		updaterThread.update();
 		updaterThread.setPixels();
 
-		// А потом уже можна и вхуячить ее в виджет))0
-		machine.screenImageView.setImage(writableImage);
-		// И чекнуть размерчики
-		machine.checkImageViewBingings();
+		// And then we can insert it into the widget.
+		try {
+			
+			((Screen)machine.listComponents.get("screen").get(BindedScreenAddr)).controller.screenImageView.setImage(writableImage);
+			((Screen)machine.listComponents.get("screen").get(BindedScreenAddr)).controller.setGlyphMul(GlyphWIDTHMulWidth,GlyphHEIGHTMulHeight);
+			// And check the dimensions.
+			((Screen)machine.listComponents.get("screen").get(BindedScreenAddr)).controller.checkImageViewBindings();
+		}catch (NullPointerException ignored){
+
+		}
+
+
 	}
 
 	private void flushPixels() {

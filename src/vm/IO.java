@@ -15,7 +15,7 @@ import java.util.zip.ZipInputStream;
 
 public class IO {
 	public static final File
-		dataFile = new File(System.getProperty("user.home"), "OpenComputersVM"),
+		dataFile = new File(System.getProperty("user.dir"), "OpenComputersVM"),
 		configFile = new File(dataFile, "Config6.json"),
 		librariesFile = new File(dataFile, "Libraries"),
 		machinesFile = new File(dataFile, "Machines");

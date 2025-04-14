@@ -1,19 +1,20 @@
 package vm.computer.components;
 
 import vm.computer.Machine;
+import vm.computer.components.base.ComponentBase;
 
 import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Synthesizer;
 
+import org.json.JSONObject;
+
 public class Computer extends ComponentBase {
 	private MidiChannel midiChannel;
 	
-	public Computer(Machine machine, String address) {
-		super(machine, address, "computer");
-		
-		this.machine = machine;
+	public Computer(Machine machine, String address,JSONObject obj) {
+		super(machine, address, obj);
 
 		try {
 			Synthesizer synthesizer = MidiSystem.getSynthesizer();
